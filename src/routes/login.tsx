@@ -44,8 +44,11 @@ function LoginPage() {
     const matched = usuarios.find((u) => u.email.includes(ra) || u.nome.toLowerCase().includes(ra.toLowerCase()));
     if (matched) {
       switchUser(matched.id);
-    } else if (usuarios.length > 0) {
-      switchUser(usuarios[0].id);
+    } else {
+      const first = usuarios[0];
+      if (first) {
+        switchUser(first.id);
+      }
     }
 
     if (senhaTemporaria) {

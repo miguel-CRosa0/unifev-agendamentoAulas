@@ -62,7 +62,8 @@ export function NovoAgendamentoDialog() {
       if (preselectedSalaCodigo) {
         setSalaCodigo(preselectedSalaCodigo);
       } else if (salas.length > 0 && !salaCodigo) {
-        setSalaCodigo(salas[0].codigo);
+        const firstSala = salas[0];
+        if (firstSala) setSalaCodigo(firstSala.codigo);
       }
 
       if (preselectedDisciplinaCodigo) {
@@ -77,17 +78,19 @@ export function NovoAgendamentoDialog() {
         }
       } else if (disciplinas.length > 0 && !disciplinaId) {
         const first = disciplinas[0];
-        setDisciplinaId(first.id);
-        setDisciplinaNome(first.nome);
-        setDisciplinaCodigo(first.codigo);
-        setTurma(first.turma);
-        setProfessorResponsavel(first.professor);
-        setAlunos(first.alunos);
+        if (first) {
+          setDisciplinaId(first.id);
+          setDisciplinaNome(first.nome);
+          setDisciplinaCodigo(first.codigo);
+          setTurma(first.turma);
+          setProfessorResponsavel(first.professor);
+          setAlunos(first.alunos);
+        }
       }
     }
   }, [novoAgendamentoOpen, preselectedSalaCodigo, preselectedDisciplinaCodigo, salas, disciplinas]);
 
-  const selectedSlot = TIME_SLOTS[Number(slotIndex)] || TIME_SLOTS[0];
+  const selectedSlot = TIME_SLOTS[Number(slotIndex)] ?? TIME_SLOTS[0]!;
   const selectedSala = salas.find((s) => s.codigo === salaCodigo);
 
   // Real-time conflict checking

@@ -194,8 +194,8 @@ interface StoreContextType {
   // Global Dialog State
   novoAgendamentoOpen: boolean;
   setNovoAgendamentoOpen: (open: boolean) => void;
-  preselectedSalaCodigo?: string;
-  preselectedDisciplinaCodigo?: string;
+  preselectedSalaCodigo?: string | undefined;
+  preselectedDisciplinaCodigo?: string | undefined;
   openNovoAgendamento: (salaCodigo?: string, disciplinaCodigo?: string) => void;
 }
 
@@ -297,7 +297,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, [currentUserId]);
 
   const currentUser = useMemo(() => {
-    return usuarios.find((u) => u.id === currentUserId) || usuarios[0] || initialUsuarios[0];
+    return (usuarios.find((u) => u.id === currentUserId) || usuarios[0] || initialUsuarios[0]) as Usuario;
   }, [usuarios, currentUserId]);
 
   const unreadNotificacoesCount = notificacoes.length;

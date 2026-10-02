@@ -83,7 +83,7 @@ export function NovaDisciplinaDialog({
         semestre,
         professor: professor.trim(),
         alunos: Number(alunos) || 30,
-        salaPadrao: salaPadrao || undefined,
+        ...(salaPadrao ? { salaPadrao } : {}),
       });
       toast.success(`Disciplina ${codigo} atualizada com sucesso!`);
     } else {
@@ -95,7 +95,7 @@ export function NovaDisciplinaDialog({
         semestre,
         professor: professor.trim(),
         alunos: Number(alunos) || 30,
-        salaPadrao: salaPadrao || undefined,
+        ...(salaPadrao ? { salaPadrao } : {}),
       });
       toast.success(`Disciplina ${codigo} adicionada com sucesso!`);
     }
