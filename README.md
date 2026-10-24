@@ -1,24 +1,21 @@
-# Room Schedule Hub
+# Unifev — Agendamento de Aulas
 
-faça um front de uma dashboard para um sistema de agendamentos de salas, cores principais, azul e branco, tem que ter infos ja cadastradas, como placeholder's
+Dashboard para agendamento de salas de aula e laboratórios da Unifev.
 
-This project was built with [Lovable](https://lovable.dev).
+## Stack
 
-## Build with Lovable
+- [TanStack Start](https://tanstack.com/start) (React 19 + TanStack Router, roteamento por arquivos em `src/routes`)
+- Vite + Tailwind CSS v4
+- Componentes [shadcn/ui](https://ui.shadcn.com) (Radix UI)
+- Nitro para o build de produção (preset Vercel no deploy)
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/85e5f499-1cd0-4a52-ad4a-f970366639c2).
+## Desenvolvimento
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Requer Node.js >= 20.12.
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+npm install
+npm run dev     # http://localhost:8080
+npm run build
+npm run lint
 ```
