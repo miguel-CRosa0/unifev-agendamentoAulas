@@ -1,0 +1,183 @@
+// Esquema do banco. Escrito para funcionar tanto em PostgreSQL (Supabase)
+// quanto em MySQL: sem enums nativos, sem arrays e sem tipos exclusivos de um banco.
+// Para trocar de banco, altere `provider` abaixo e o adapter em src/lib/db.server.ts.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- Autenticação (tabelas usadas pelo Better Auth) ----------
+
+model User {
+  id                 String   @id
+  name               String
+  email              String   @unique
+  emailVerified      Boolean  @default(false)
+  image              String?
+  // RA do usuário (plugin username do Better Auth)
+  username           String?  @unique
+  displayUsername    String?
+  telefone           String?
+  // "Administrador" | "Coordenador" | "Professor"
+  perfil             String   @default("Professor")
+  tambemProfessor    Boolean  @default(false)
+  nivelAcesso        Json?
+  mustChangePassword Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  sessions     Session[]
+  accounts     Account[]
+  agendamentos Agendamento[]
+
+  @@map("usuarios")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("sessoes")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("contas")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String   @db.Text
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verificacoes")
+}
+
+// ---------- Domínio ----------
+
+model Sala {
+  id          String @id @default(cuid())
+  codigo      String @unique @db.VarChar(20)
+  nome        String
+  localizacao String
+  capacidade  Int
+  // "disponível" | "ocupada" | "manutenção"
+  status      String @default("disponível") @db.VarChar(20)
+
+  recursos     Recurso[]
+  agendamentos Agendamento[]
+  disciplinas  Disciplina[]
+
+  @@map("salas")
+}
+
+model Recurso {
+  id        String @id @default(cuid())
+  nome      String
+  descricao String @default("")
+  salaId    String
+  sala      Sala   @relation(fields: [salaId], references: [id], onDelete: Cascade)
+
+  @@index([salaId])
+  @@map("recursos")
+}
+
+model Disciplina {
+  id        String  @id @default(cuid())
+  codigo    String  @unique @db.VarChar(20)
+  nome      String
+  turma     String
+  // "Matutino" | "Vespertino" | "Noturno" | "Integral"
+  turno     String  @db.VarChar(20)
+  semestre  String
+  professor String
+  alunos    Int
+  salaId    String?
+  sala      Sala?   @relation(fields: [salaId], references: [id], onDelete: SetNull)
+
+  @@index([salaId])
+  @@map("disciplinas")
+}
+
+model Agendamento {
+  id                   String   @id @default(cuid())
+  // AAAA-MM-DD e HH:MM, guardados como texto para comparação simples e portabilidade
+  data                 String   @db.VarChar(10)
+  horaInicio           String   @db.VarChar(5)
+  horaFim              String   @db.VarChar(5)
+  // "confirmado" | "pendente" | "cancelado"
+  status               String   @default("pendente") @db.VarChar(20)
+  salaId               String
+  sala                 Sala     @relation(fields: [salaId], references: [id], onDelete: Cascade)
+  // Cópia dos dados da disciplina no momento do agendamento
+  disciplina           String
+  disciplinaCodigo     String   @db.VarChar(20)
+  turma                String
+  professorResponsavel String
+  alunos               Int
+  solicitanteId        String?
+  solicitante          User?    @relation(fields: [solicitanteId], references: [id], onDelete: SetNull)
+  createdAt            DateTime @default(now())
+
+  @@index([salaId, data])
+  @@index([solicitanteId])
+  @@map("agendamentos")
+}
+
+model Notificacao {
+  id        String   @id @default(cuid())
+  mensagem  String   @db.Text
+  // "conflito" | "confirmacao" | "cancelamento" | "sistema"
+  tipo      String   @db.VarChar(20)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("notificacoes")
+}
+
+// Linha única (id = 1) com as regras do sistema
+model Configuracao {
+  id                            Int     @id @default(1)
+  antecedenciaMinima            Int     @default(24)
+  duracaoMaxima                 Int     @default(100)
+  bloquearConflitos             Boolean @default(true)
+  aprovacaoCoordenador          Boolean @default(true)
+  senhaTemporariaNascimento     Boolean @default(true)
+  trocaObrigatoriaPrimeiroLogin Boolean @default(true)
+  tamanhoMinimoSenha            Int     @default(8)
+
+  @@map("configuracoes")
+}

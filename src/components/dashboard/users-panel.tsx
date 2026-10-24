@@ -6,7 +6,6 @@ import {
   Search,
   ShieldCheck,
   Trash2,
-  UserCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -65,7 +64,7 @@ const AVAILABLE_PERMISSIONS = [
 ];
 
 export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
-  const { updateUsuario, deleteUsuario, switchUser, currentUser } = useStore();
+  const { updateUsuario, deleteUsuario, resetSenhaUsuario, currentUser } = useStore();
 
   const [search, setSearch] = useState("");
   const [filterRole, setFilterRole] = useState<string>("todos");
@@ -101,38 +100,38 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
     );
   };
 
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingUser) return;
 
-    updateUsuario(editingUser.id, {
+    const salvo = await updateUsuario(editingUser.id, {
       nome: editNome,
       email: editEmail,
       perfil: editPerfil,
-      tambemProfessor: editPerfil === "Coordenador",
       nivelAcesso: editNivelAcesso,
     });
+    if (!salvo) return;
 
     toast.success(`Usuário ${editNome} atualizado com sucesso!`);
     setEditingUser(null);
   };
 
-  const handleResetPassword = (user: Usuario) => {
-    const tempPass = "2004" + Math.floor(1000 + Math.random() * 9000);
-    toast.info(
-      `Nova senha temporária para ${user.nome}: ${tempPass}`,
-      { duration: 8000 }
-    );
+  const handleResetPassword = async (user: Usuario) => {
+    if (!confirm(`Gerar uma nova senha temporária para ${user.nome}? A senha atual deixará de funcionar.`)) return;
+    const resultado = await resetSenhaUsuario(user.id);
+    if (!resultado) return;
+    toast.info(`Nova senha temporária para ${user.nome}: ${resultado.senhaTemporaria}`, {
+      duration: 15000,
+    });
   };
 
-  const handleDeleteUser = (user: Usuario) => {
+  const handleDeleteUser = async (user: Usuario) => {
     if (user.id === currentUser.id) {
       toast.error("Você não pode excluir o usuário conectado na sessão ativa.");
       return;
     }
     if (confirm(`Tem certeza que deseja remover o usuário ${user.nome}?`)) {
-      deleteUsuario(user.id);
-      toast.success(`Usuário ${user.nome} removido.`);
+      if (await deleteUsuario(user.id)) toast.success(`Usuário ${user.nome} removido.`);
     }
   };
 
@@ -356,17 +355,6 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-52">
-                          {!isCurrent && (
-                            <DropdownMenuItem
-                              onClick={() => {
-                                switchUser(u.id);
-                                toast.success(`Sessão alternada para ${u.nome}`);
-                              }}
-                              className="cursor-pointer"
-                            >
-                              <UserCheck className="h-4 w-4 mr-2 text-primary" /> Alternar para este usuário
-                            </DropdownMenuItem>
-                          )}
                           <DropdownMenuItem onClick={() => handleOpenEdit(u)} className="cursor-pointer">
                             <Pencil className="h-4 w-4 mr-2" /> Editar Acessos e Perfil
                           </DropdownMenuItem>

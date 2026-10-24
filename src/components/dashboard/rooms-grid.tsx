@@ -89,10 +89,9 @@ export function RoomsGrid({ salas }: { salas: Sala[] }) {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  const handleDelete = (sala: Sala) => {
-    if (confirm(`Tem certeza que deseja excluir a sala ${sala.codigo}?`)) {
-      deleteSala(sala.id);
-      toast.success(`Sala ${sala.codigo} excluída.`);
+  const handleDelete = async (sala: Sala) => {
+    if (confirm(`Tem certeza que deseja excluir a sala ${sala.codigo}? Os agendamentos dela também serão removidos.`)) {
+      if (await deleteSala(sala.id)) toast.success(`Sala ${sala.codigo} excluída.`);
     }
   };
 

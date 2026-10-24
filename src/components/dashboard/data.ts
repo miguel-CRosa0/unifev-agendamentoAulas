@@ -48,6 +48,8 @@ export interface Usuario {
   // Um Coordenador também é Professor (herança do ator Usuário no diagrama).
   tambemProfessor?: boolean;
   nivelAcesso: string[];
+  ra?: string;
+  telefone?: string;
 }
 
 export interface Notificacao {
@@ -325,3 +327,126 @@ export const agendaDoDia = [
   { time: "17:10", itens: [] },
   { time: "19:00", itens: ["Engenharia de Software — SAL-305 · Prof. Gabriel Teixeira"] },
 ];
+
+export interface DisciplinaItem {
+  id: string;
+  codigo: string;
+  nome: string;
+  turma: string;
+  turno: "Matutino" | "Vespertino" | "Noturno" | "Integral";
+  semestre: string;
+  professor: string;
+  alunos: number;
+  salaPadrao?: string;
+}
+
+export const initialDisciplinas: DisciplinaItem[] = [
+  {
+    id: "d1",
+    codigo: "POO-204",
+    nome: "Programação Orientada a Objetos",
+    turma: "ADS 3º semestre — Noturno",
+    turno: "Noturno",
+    semestre: "3º Semestre",
+    professor: "Prof. Ana Souza",
+    alunos: 38,
+    salaPadrao: "LAB-101",
+  },
+  {
+    id: "d2",
+    codigo: "RED-118",
+    nome: "Redes de Computadores",
+    turma: "Redes 2º semestre — Matutino",
+    turno: "Matutino",
+    semestre: "2º Semestre",
+    professor: "Prof. Bruno Lima",
+    alunos: 22,
+    salaPadrao: "LAB-102",
+  },
+  {
+    id: "d3",
+    codigo: "SEM-010",
+    nome: "Seminário de Integração",
+    turma: "Todos os cursos",
+    turno: "Vespertino",
+    semestre: "Multidisciplinar",
+    professor: "Prof.ª Carla Mendes",
+    alunos: 110,
+    salaPadrao: "AUD-001",
+  },
+  {
+    id: "d4",
+    codigo: "BDD-142",
+    nome: "Banco de Dados",
+    turma: "ADS 4º semestre — Vespertino",
+    turno: "Vespertino",
+    semestre: "4º Semestre",
+    professor: "Prof. Diego Rocha",
+    alunos: 41,
+    salaPadrao: "SAL-201",
+  },
+  {
+    id: "d5",
+    codigo: "QUI-060",
+    nome: "Química Aplicada",
+    turma: "Engenharia 1º semestre — Matutino",
+    turno: "Matutino",
+    semestre: "1º Semestre",
+    professor: "Prof.ª Fernanda Costa",
+    alunos: 28,
+    salaPadrao: "LAB-203",
+  },
+  {
+    id: "d6",
+    codigo: "ESW-231",
+    nome: "Engenharia de Software",
+    turma: "ADS 5º semestre — Noturno",
+    turno: "Noturno",
+    semestre: "5º Semestre",
+    professor: "Prof. Gabriel Teixeira",
+    alunos: 35,
+    salaPadrao: "SAL-305",
+  },
+  {
+    id: "d7",
+    codigo: "CAL-101",
+    nome: "Cálculo Diferencial e Integral I",
+    turma: "Engenharia 1º semestre — Matutino",
+    turno: "Matutino",
+    semestre: "1º Semestre",
+    professor: "Prof. Marcos Andrade",
+    alunos: 45,
+    salaPadrao: "SAL-201",
+  },
+  {
+    id: "d8",
+    codigo: "IA-402",
+    nome: "Inteligência Artificial e Aprendizado",
+    turma: "Ciência da Computação 6º sem",
+    turno: "Noturno",
+    semestre: "6º Semestre",
+    professor: "Prof.ª Ana Souza",
+    alunos: 32,
+    salaPadrao: "LAB-101",
+  },
+];
+
+export interface Configuracoes {
+  antecedenciaMinima: number;
+  duracaoMaxima: number;
+  bloquearConflitos: boolean;
+  aprovacaoCoordenador: boolean;
+  senhaTemporariaNascimento: boolean;
+  trocaObrigatoriaPrimeiroLogin: boolean;
+  tamanhoMinimoSenha: number;
+}
+
+export const configuracoesPadrao: Configuracoes = {
+  antecedenciaMinima: 24,
+  duracaoMaxima: 100,
+  bloquearConflitos: true,
+  aprovacaoCoordenador: true,
+  senhaTemporariaNascimento: true,
+  trocaObrigatoriaPrimeiroLogin: true,
+  tamanhoMinimoSenha: 8,
+};

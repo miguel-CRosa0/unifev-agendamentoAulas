@@ -46,9 +46,9 @@ function ConfiguracoesPage() {
     setTamanhoMinimoSenha(configuracoes.tamanhoMinimoSenha);
   }, [configuracoes]);
 
-  const handleSalvar = (e: React.FormEvent) => {
+  const handleSalvar = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateConfiguracoes({
+    const salvo = await updateConfiguracoes({
       antecedenciaMinima: Number(antecedencia) || 24,
       duracaoMaxima: Number(duracao) || 100,
       bloquearConflitos,
@@ -57,11 +57,11 @@ function ConfiguracoesPage() {
       trocaObrigatoriaPrimeiroLogin,
       tamanhoMinimoSenha: Number(tamanhoMinimoSenha) || 8,
     });
-    toast.success("Configurações do sistema salvas com sucesso!");
+    if (salvo) toast.success("Configurações do sistema salvas com sucesso!");
   };
 
-  const handleRestaurarPadroes = () => {
-    updateConfiguracoes({
+  const handleRestaurarPadroes = async () => {
+    const salvo = await updateConfiguracoes({
       antecedenciaMinima: 24,
       duracaoMaxima: 100,
       bloquearConflitos: true,
@@ -70,7 +70,7 @@ function ConfiguracoesPage() {
       trocaObrigatoriaPrimeiroLogin: true,
       tamanhoMinimoSenha: 8,
     });
-    toast.info("Configurações restauradas para os valores padrão de fábrica.");
+    if (salvo) toast.info("Configurações restauradas para os valores padrão de fábrica.");
   };
 
   return (

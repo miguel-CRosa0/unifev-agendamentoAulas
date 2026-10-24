@@ -46,7 +46,9 @@ export function CadastroPage() {
 
   const senhaTemporaria = nascimento ? nascimento.split("-").reverse().join("") : "--------";
 
-  function salvar(e: React.FormEvent) {
+  const [salvando, setSalvando] = useState(false);
+
+  async function salvar(e: React.FormEvent) {
     e.preventDefault();
 
     if (!nome || !email || !ra || !nascimento) {
@@ -65,16 +67,13 @@ export function CadastroPage() {
       nivelAcesso = ["Realizar agendamento"];
     }
 
-    addUsuario({
-      nome,
-      email,
-      perfil,
-      tambemProfessor: perfil === "Coordenador",
-      nivelAcesso,
-    });
+    setSalvando(true);
+    const resultado = await addUsuario({ nome, email, ra, telefone, nascimento, perfil, nivelAcesso });
+    setSalvando(false);
+    if (!resultado) return;
 
-    setCriadoInfo({ nome, senhaTemporaria });
-    toast.success(`Usuário ${nome} cadastrado com sucesso! Senha temporária: ${senhaTemporaria}`);
+    setCriadoInfo({ nome, senhaTemporaria: resultado.senhaTemporaria });
+    toast.success(`Usuário ${nome} cadastrado com sucesso! Senha temporária: ${resultado.senhaTemporaria}`);
 
     // Clear inputs
     setNome("");
@@ -201,7 +200,7 @@ export function CadastroPage() {
                 )}
 
                 <div className="flex gap-2 sm:col-span-2 pt-2">
-                  <Button type="submit" className="gap-1.5">
+                  <Button type="submit" className="gap-1.5" disabled={salvando}>
                     <UserPlus className="h-4 w-4" /> Cadastrar Usuário
                   </Button>
                   <Button

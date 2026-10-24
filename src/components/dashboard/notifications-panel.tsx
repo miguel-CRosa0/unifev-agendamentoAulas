@@ -52,13 +52,13 @@ export function NotificationsPanel({ notificacoes }: { notificacoes: Notificacao
     return n.tipo === filterTipo;
   });
 
-  const handleClearAll = () => {
-    clearAllNotificacoes();
+  const handleClearAll = async () => {
+    if (!(await clearAllNotificacoes())) return;
     toast.success("Todas as notificações foram limpas.");
   };
 
   const handleDelete = (id: string) => {
-    deleteNotificacao(id);
+    void deleteNotificacao(id);
   };
 
   return (

@@ -78,23 +78,22 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
     setDetailsOpen(true);
   };
 
-  const handleQuickApprove = (e: React.MouseEvent, id: string) => {
+  const handleQuickApprove = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    updateAgendamentoStatus(id, "confirmado");
+    if (!(await updateAgendamentoStatus(id, "confirmado"))) return;
     toast.success("Agendamento aprovado com sucesso!");
   };
 
-  const handleQuickCancel = (e: React.MouseEvent, id: string) => {
+  const handleQuickCancel = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    updateAgendamentoStatus(id, "cancelado");
+    if (!(await updateAgendamentoStatus(id, "cancelado"))) return;
     toast.success("Agendamento cancelado.");
   };
 
-  const handleQuickDelete = (e: React.MouseEvent, id: string) => {
+  const handleQuickDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     if (confirm("Remover este agendamento?")) {
-      deleteAgendamento(id);
-      toast.success("Agendamento removido.");
+      if (await deleteAgendamento(id)) toast.success("Agendamento removido.");
     }
   };
 

@@ -35,7 +35,7 @@ export function SalaDetailsDialog({
   );
 
   const handleStatusChange = (newStatus: StatusSala) => {
-    setSalaStatus(sala.id, newStatus);
+    void setSalaStatus(sala.id, newStatus);
   };
 
   return (

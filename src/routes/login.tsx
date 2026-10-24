@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { GraduationCap, KeyRound, LogIn, ShieldAlert, Sparkles, UserCheck } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { GraduationCap, KeyRound, Loader2, LogIn, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 
-import { useStore } from "@/context/store-context";
+import { authClient } from "@/lib/auth-client";
+import { sessaoQueryOptions } from "@/lib/sessao";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,51 +26,41 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const { usuarios, switchUser } = useStore();
+  const queryClient = useQueryClient();
   const [ra, setRa] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
+  const [entrando, setEntrando] = useState(false);
 
-  // Senha temporária = data de nascimento (ex.: 10082004)
-  const senhaTemporaria = /^\d{8}$/.test(senha);
-
-  function entrar(e: React.FormEvent) {
+  async function entrar(e: React.FormEvent) {
     e.preventDefault();
     if (!ra || !senha) {
       setErro("Informe o RA e a senha.");
       return;
     }
     setErro("");
+    setEntrando(true);
 
-    // Look for matching user or fallback to first
-    const matched = usuarios.find((u) => u.email.includes(ra) || u.nome.toLowerCase().includes(ra.toLowerCase()));
-    if (matched) {
-      switchUser(matched.id);
-    } else {
-      const first = usuarios[0];
-      if (first) {
-        switchUser(first.id);
-      }
-    }
-
-    if (senhaTemporaria) {
-      toast.info("Senha temporária detectada. Redirecionando para definição de senha pessoal.");
-      navigate({ to: "/nova-senha", search: { ra } });
+    const { error } = await authClient.signIn.username({ username: ra.trim(), password: senha });
+    if (error) {
+      setEntrando(false);
+      setErro("RA ou senha incorretos.");
       return;
     }
 
-    toast.success("Login realizado com sucesso! Bem-vindo ao SalaFácil.");
+    queryClient.clear();
+    const sessao = await queryClient.fetchQuery(sessaoQueryOptions);
+    setEntrando(false);
+
+    if (sessao?.mustChangePassword) {
+      toast.info("Primeiro acesso: defina sua senha pessoal para continuar.");
+      navigate({ to: "/nova-senha" });
+      return;
+    }
+
+    toast.success(`Bem-vindo(a), ${sessao?.nome ?? ""}!`);
     navigate({ to: "/" });
   }
-
-  const quickLoginAs = (userIndex: number) => {
-    const user = usuarios[userIndex] || usuarios[0];
-    if (user) {
-      switchUser(user.id);
-      toast.success(`Entrando como ${user.nome} (${user.perfil})...`);
-      navigate({ to: "/" });
-    }
-  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-primary/10 via-background to-background px-4 py-10">
@@ -116,63 +108,18 @@ function LoginPage() {
             </p>
           )}
 
-          <Button type="submit" className="w-full font-medium gap-1.5">
-            <LogIn className="h-4 w-4" /> Entrar
+          <Button type="submit" className="w-full font-medium gap-1.5" disabled={entrando}>
+            {entrando ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />} Entrar
           </Button>
         </form>
 
-        {/* Quick Demo Access Pills */}
-        <div className="mt-6 pt-5 border-t border-border">
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1 mb-2.5">
-            <Sparkles className="h-3.5 w-3.5 text-primary" /> Acesso Rápido de Demonstração:
-          </p>
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <button
-              type="button"
-              onClick={() => quickLoginAs(0)}
-              className="rounded-lg border border-border p-2 text-left hover:border-primary/50 hover:bg-accent/40 transition-colors"
-            >
-              <p className="font-semibold text-foreground">Administrador</p>
-              <p className="text-[10px] text-muted-foreground">Marcos Andrade</p>
-            </button>
-            <button
-              type="button"
-              onClick={() => quickLoginAs(1)}
-              className="rounded-lg border border-border p-2 text-left hover:border-primary/50 hover:bg-accent/40 transition-colors"
-            >
-              <p className="font-semibold text-foreground">Coordenadora</p>
-              <p className="text-[10px] text-muted-foreground">Carla Mendes</p>
-            </button>
-            <button
-              type="button"
-              onClick={() => quickLoginAs(2)}
-              className="rounded-lg border border-border p-2 text-left hover:border-primary/50 hover:bg-accent/40 transition-colors"
-            >
-              <p className="font-semibold text-foreground">Professora</p>
-              <p className="text-[10px] text-muted-foreground">Ana Souza</p>
-            </button>
-            <button
-              type="button"
-              onClick={() => quickLoginAs(3)}
-              className="rounded-lg border border-border p-2 text-left hover:border-primary/50 hover:bg-accent/40 transition-colors"
-            >
-              <p className="font-semibold text-foreground">Professor</p>
-              <p className="text-[10px] text-muted-foreground">Gabriel Teixeira</p>
-            </button>
-          </div>
-        </div>
-
         <div className="mt-5 flex items-center gap-2 rounded-lg border border-border bg-background p-3 text-xs text-muted-foreground">
           <KeyRound className="h-4 w-4 shrink-0 text-primary" />
-          Primeiro acesso? Digite qualquer RA e data no formato DDMMAAAA para testar a troca de senha.
+          Primeiro acesso? Use a senha temporária informada pelo administrador (sua data de nascimento, DDMMAAAA).
         </div>
 
         <p className="mt-4 text-center text-xs text-muted-foreground">
-          Gestão centralizada de novos acessos pelo painel de{" "}
-          <Link to="/cadastro" className="font-medium text-primary hover:underline">
-            Cadastro de Usuários
-          </Link>
-          .
+          Não tem acesso? Solicite o cadastro ao administrador do sistema.
         </p>
       </div>
     </div>

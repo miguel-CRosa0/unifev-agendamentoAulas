@@ -46,7 +46,7 @@ export function NovoAgendamentoDialog() {
     checkConflict,
   } = useStore();
 
-  const [data, setData] = useState("2026-09-03");
+  const [data, setData] = useState(() => new Date().toLocaleDateString("sv-SE"));
   const [slotIndex, setSlotIndex] = useState("0");
   const [salaCodigo, setSalaCodigo] = useState("");
   const [disciplinaId, setDisciplinaId] = useState("");
@@ -116,7 +116,9 @@ export function NovoAgendamentoDialog() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [salvando, setSalvando] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!salaCodigo) {
@@ -128,23 +130,19 @@ export function NovoAgendamentoDialog() {
       return;
     }
 
-    const salaObj = salas.find((s) => s.codigo === salaCodigo);
-
-    const result = addAgendamento({
+    setSalvando(true);
+    const result = await addAgendamento({
       data,
       horaInicio: selectedSlot.inicio,
       horaFim: selectedSlot.fim,
       salaCodigo,
-      salaNome: salaObj ? salaObj.nome : salaCodigo,
-      salaLocalizacao: salaObj ? salaObj.localizacao : "Campus Principal",
       disciplina: disciplinaNome,
       disciplinaCodigo: disciplinaCodigo || "GER-000",
       turma: turma || "Turma Geral",
       professorResponsavel: professorResponsavel || currentUser.nome,
-      solicitanteNome: currentUser.nome,
-      solicitantePerfil: currentUser.perfil,
       alunos: Number(alunos) || 30,
     });
+    setSalvando(false);
 
     if (result.success) {
       toast.success(result.message);
@@ -327,7 +325,7 @@ export function NovoAgendamentoDialog() {
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={Boolean(conflict)}>
+            <Button type="submit" disabled={Boolean(conflict) || salvando}>
               <CheckCircle2 className="mr-1.5 h-4 w-4" />
               Confirmar Agendamento
             </Button>

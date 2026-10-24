@@ -31,15 +31,15 @@ export function AgendamentoDetailsDialog({
 
   const room = salas.find((s) => s.codigo === agendamento.salaCodigo);
 
-  const handleStatusChange = (status: StatusAgendamento) => {
-    updateAgendamentoStatus(agendamento.id, status);
+  const handleStatusChange = async (status: StatusAgendamento) => {
+    if (!(await updateAgendamentoStatus(agendamento.id, status))) return;
     toast.success(`Agendamento ${status === "confirmado" ? "confirmado" : "cancelado"} com sucesso!`);
     onOpenChange(false);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (confirm("Tem certeza que deseja remover este agendamento?")) {
-      deleteAgendamento(agendamento.id);
+      if (!(await deleteAgendamento(agendamento.id))) return;
       toast.success("Agendamento removido.");
       onOpenChange(false);
     }

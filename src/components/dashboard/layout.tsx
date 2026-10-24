@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouter, useRouterState } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Bell,
   BookOpen,
@@ -14,12 +15,13 @@ import {
   Plus,
   Search,
   Settings,
+  KeyRound,
   ShieldCheck,
-  UserCheck,
   Users,
 } from "lucide-react";
 
 import { useStore } from "@/context/store-context";
+import { authClient } from "@/lib/auth-client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -52,16 +54,15 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
-  const {
-    currentUser,
-    usuarios,
-    switchUser,
-    openNovoAgendamento,
-    unreadNotificacoesCount,
-  } = useStore();
+  const { currentUser, openNovoAgendamento, unreadNotificacoesCount } = useStore();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await authClient.signOut();
+    queryClient.clear();
+    await router.invalidate();
     navigate({ to: "/login" });
   };
 
@@ -132,19 +133,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel className="text-xs">Alternar Perfil Ativo</DropdownMenuLabel>
+              <DropdownMenuLabel className="text-xs">
+                <p className="font-semibold text-foreground">{currentUser.nome}</p>
+                <p className="font-normal text-muted-foreground">RA {currentUser.ra}</p>
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {usuarios.map((u) => (
-                <DropdownMenuItem
-                  key={u.id}
-                  onClick={() => switchUser(u.id)}
-                  className="flex items-center justify-between cursor-pointer"
-                >
-                  <span className="text-xs font-medium">{u.nome}</span>
-                  <span className="text-[10px] text-muted-foreground">({u.perfil})</span>
-                  {u.id === currentUser.id && <UserCheck className="h-3 w-3 text-primary ml-1" />}
-                </DropdownMenuItem>
-              ))}
+              <DropdownMenuItem onClick={() => navigate({ to: "/nova-senha" })} className="cursor-pointer">
+                <KeyRound className="h-4 w-4 mr-2" /> Alterar senha
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-destructive cursor-pointer">
                 <LogOut className="h-4 w-4 mr-2" /> Sair do sistema

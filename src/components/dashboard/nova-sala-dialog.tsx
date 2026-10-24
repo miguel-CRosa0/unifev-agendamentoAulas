@@ -98,7 +98,7 @@ export function NovaSalaDialog({ open, onOpenChange, salaToEdit }: NovaSalaDialo
     setRecursos((prev) => prev.filter((r) => r.id !== id));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!codigo.trim() || !nome.trim()) {
@@ -107,24 +107,24 @@ export function NovaSalaDialog({ open, onOpenChange, salaToEdit }: NovaSalaDialo
     }
 
     if (salaToEdit) {
-      updateSala(salaToEdit.id, {
+      if (!(await updateSala(salaToEdit.id, {
         codigo: codigo.trim().toUpperCase(),
         nome: nome.trim(),
         localizacao: localizacao.trim(),
         capacidade: Number(capacidade) || 30,
         status,
         recursos,
-      });
+      }))) return;
       toast.success(`Sala ${codigo} atualizada com sucesso!`);
     } else {
-      addSala({
+      if (!(await addSala({
         codigo: codigo.trim().toUpperCase(),
         nome: nome.trim(),
         localizacao: localizacao.trim(),
         capacidade: Number(capacidade) || 30,
         status,
         recursos,
-      });
+      }))) return;
       toast.success(`Sala ${codigo} cadastrada com sucesso!`);
     }
 

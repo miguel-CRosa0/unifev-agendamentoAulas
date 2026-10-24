@@ -1,7 +1,12 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Lock, ShieldCheck } from "lucide-react";
+import { Loader2, Lock, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+
+import { trocarMinhaSenha } from "@/lib/api";
+import { mensagemErro } from "@/lib/erros";
+import { sessaoQueryOptions } from "@/lib/sessao";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,9 +14,6 @@ import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/nova-senha")({
   component: NovaSenhaPage,
-  validateSearch: (search: Record<string, unknown>) => ({
-    ra: typeof search['ra'] === "string" ? search['ra'] : "",
-  }),
   head: () => ({
     meta: [
       { title: "Definir nova senha — SalaFácil" },
@@ -25,15 +27,18 @@ export const Route = createFileRoute("/nova-senha")({
 });
 
 function NovaSenhaPage() {
-  const { ra } = Route.useSearch();
+  const { sessao } = Route.useRouteContext();
   const navigate = useNavigate();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [salvando, setSalvando] = useState(false);
   const [senha, setSenha] = useState("");
   const [confirma, setConfirma] = useState("");
   const [erro, setErro] = useState("");
 
   const forte = senha.length >= 8 && /[A-Za-z]/.test(senha) && /\d/.test(senha);
 
-  function salvar(e: React.FormEvent) {
+  async function salvar(e: React.FormEvent) {
     e.preventDefault();
     if (!forte) {
       setErro("A senha deve ter ao menos 8 caracteres, com letras e números.");
@@ -44,6 +49,16 @@ function NovaSenhaPage() {
       return;
     }
     setErro("");
+    setSalvando(true);
+    try {
+      await trocarMinhaSenha({ data: { novaSenha: senha } });
+    } catch (err) {
+      setErro(mensagemErro(err, "Não foi possível salvar a senha."));
+      setSalvando(false);
+      return;
+    }
+    await queryClient.invalidateQueries({ queryKey: sessaoQueryOptions.queryKey });
+    await router.invalidate();
     toast.success("Nova senha definida com sucesso! Acesso liberado.");
     navigate({ to: "/" });
   }
@@ -56,7 +71,7 @@ function NovaSenhaPage() {
         </div>
         <h1 className="mt-5 text-xl font-bold text-foreground">Crie sua nova senha</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          {ra ? `RA ${ra} — ` : ""}você entrou com a senha temporária. Defina uma senha pessoal para continuar.
+          {sessao?.ra ? `RA ${sessao.ra} — ` : ""}defina uma senha pessoal para continuar.
         </p>
 
         <form className="mt-6 space-y-4" onSubmit={salvar}>
@@ -77,7 +92,10 @@ function NovaSenhaPage() {
 
           {erro && <p className="text-sm text-destructive">{erro}</p>}
 
-          <Button type="submit" className="w-full">Salvar e continuar</Button>
+          <Button type="submit" className="w-full" disabled={salvando}>
+            {salvando && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
+            Salvar e continuar
+          </Button>
         </form>
 
         <div className="mt-5 flex items-center gap-2 rounded-lg border border-border bg-background p-3 text-xs text-muted-foreground">

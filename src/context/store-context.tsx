@@ -1,6 +1,11 @@
-import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
+import React, { createContext, useContext, useMemo, useState } from "react";
+import { queryOptions, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
 import {
   type Agendamento,
+  type Configuracoes,
+  type DisciplinaItem,
   type Indicador,
   type Notificacao,
   type Perfil,
@@ -8,190 +13,106 @@ import {
   type StatusAgendamento,
   type StatusSala,
   type Usuario,
-  agendamentos as initialAgendamentos,
-  indicadores as initialIndicadores,
-  notificacoes as initialNotificacoes,
-  salas as initialSalas,
-  usuarios as initialUsuarios,
+  configuracoesPadrao,
 } from "@/components/dashboard/data";
+import {
+  alterarStatusAgendamento,
+  alterarStatusSala,
+  atualizarConfiguracoes,
+  atualizarDisciplina,
+  atualizarSala,
+  atualizarUsuario,
+  criarAgendamento,
+  criarDisciplina,
+  criarSala,
+  criarUsuario,
+  excluirAgendamento,
+  excluirDisciplina,
+  excluirNotificacao,
+  excluirSala,
+  excluirUsuario,
+  getDados,
+  limparNotificacoes,
+  redefinirSenhaUsuario,
+} from "@/lib/api";
+import { mensagemErro } from "@/lib/erros";
 
-export interface DisciplinaItem {
-  id: string;
-  codigo: string;
+export type { DisciplinaItem, Configuracoes };
+
+export const dadosQueryOptions = queryOptions({
+  queryKey: ["dados"],
+  queryFn: () => getDados(),
+});
+
+export interface NovoUsuario {
   nome: string;
-  turma: string;
-  turno: "Matutino" | "Vespertino" | "Noturno" | "Integral";
-  semestre: string;
-  professor: string;
-  alunos: number;
-  salaPadrao?: string;
+  email: string;
+  ra: string;
+  telefone?: string;
+  nascimento: string;
+  perfil: Perfil;
+  nivelAcesso: string[];
 }
-
-export const initialDisciplinas: DisciplinaItem[] = [
-  {
-    id: "d1",
-    codigo: "POO-204",
-    nome: "Programação Orientada a Objetos",
-    turma: "ADS 3º semestre — Noturno",
-    turno: "Noturno",
-    semestre: "3º Semestre",
-    professor: "Prof. Ana Souza",
-    alunos: 38,
-    salaPadrao: "LAB-101",
-  },
-  {
-    id: "d2",
-    codigo: "RED-118",
-    nome: "Redes de Computadores",
-    turma: "Redes 2º semestre — Matutino",
-    turno: "Matutino",
-    semestre: "2º Semestre",
-    professor: "Prof. Bruno Lima",
-    alunos: 22,
-    salaPadrao: "LAB-102",
-  },
-  {
-    id: "d3",
-    codigo: "SEM-010",
-    nome: "Seminário de Integração",
-    turma: "Todos os cursos",
-    turno: "Vespertino",
-    semestre: "Multidisciplinar",
-    professor: "Prof.ª Carla Mendes",
-    alunos: 110,
-    salaPadrao: "AUD-001",
-  },
-  {
-    id: "d4",
-    codigo: "BDD-142",
-    nome: "Banco de Dados",
-    turma: "ADS 4º semestre — Vespertino",
-    turno: "Vespertino",
-    semestre: "4º Semestre",
-    professor: "Prof. Diego Rocha",
-    alunos: 41,
-    salaPadrao: "SAL-201",
-  },
-  {
-    id: "d5",
-    codigo: "QUI-060",
-    nome: "Química Aplicada",
-    turma: "Engenharia 1º semestre — Matutino",
-    turno: "Matutino",
-    semestre: "1º Semestre",
-    professor: "Prof.ª Fernanda Costa",
-    alunos: 28,
-    salaPadrao: "LAB-203",
-  },
-  {
-    id: "d6",
-    codigo: "ESW-231",
-    nome: "Engenharia de Software",
-    turma: "ADS 5º semestre — Noturno",
-    turno: "Noturno",
-    semestre: "5º Semestre",
-    professor: "Prof. Gabriel Teixeira",
-    alunos: 35,
-    salaPadrao: "SAL-305",
-  },
-  {
-    id: "d7",
-    codigo: "CAL-101",
-    nome: "Cálculo Diferencial e Integral I",
-    turma: "Engenharia 1º semestre — Matutino",
-    turno: "Matutino",
-    semestre: "1º Semestre",
-    professor: "Prof. Marcos Andrade",
-    alunos: 45,
-    salaPadrao: "SAL-201",
-  },
-  {
-    id: "d8",
-    codigo: "IA-402",
-    nome: "Inteligência Artificial e Aprendizado",
-    turma: "Ciência da Computação 6º sem",
-    turno: "Noturno",
-    semestre: "6º Semestre",
-    professor: "Prof.ª Ana Souza",
-    alunos: 32,
-    salaPadrao: "LAB-101",
-  },
-];
-
-export interface Configuracoes {
-  antecedenciaMinima: number;
-  duracaoMaxima: number;
-  bloquearConflitos: boolean;
-  aprovacaoCoordenador: boolean;
-  senhaTemporariaNascimento: boolean;
-  trocaObrigatoriaPrimeiroLogin: boolean;
-  tamanhoMinimoSenha: number;
-}
-
-const initialConfiguracoes: Configuracoes = {
-  antecedenciaMinima: 24,
-  duracaoMaxima: 100,
-  bloquearConflitos: true,
-  aprovacaoCoordenador: true,
-  senhaTemporariaNascimento: true,
-  trocaObrigatoriaPrimeiroLogin: true,
-  tamanhoMinimoSenha: 8,
-};
 
 interface StoreContextType {
   // Salas
   salas: Sala[];
-  addSala: (nova: Omit<Sala, "id">) => Sala;
-  updateSala: (id: string, updates: Partial<Sala>) => void;
-  deleteSala: (id: string) => void;
-  setSalaStatus: (id: string, status: StatusSala) => void;
+  addSala: (nova: Omit<Sala, "id">) => Promise<boolean>;
+  updateSala: (id: string, updates: Partial<Omit<Sala, "id">>) => Promise<boolean>;
+  deleteSala: (id: string) => Promise<boolean>;
+  setSalaStatus: (id: string, status: StatusSala) => Promise<boolean>;
 
   // Agendamentos
   agendamentos: Agendamento[];
   addAgendamento: (
-    novo: Omit<Agendamento, "id" | "status"> & { status?: StatusAgendamento }
-  ) => { success: boolean; message: string; agendamento?: Agendamento };
-  updateAgendamentoStatus: (id: string, status: StatusAgendamento) => void;
-  deleteAgendamento: (id: string) => void;
+    novo: Omit<
+      Agendamento,
+      "id" | "status" | "salaNome" | "salaLocalizacao" | "solicitanteNome" | "solicitantePerfil"
+    >,
+  ) => Promise<{ success: boolean; message: string }>;
+  updateAgendamentoStatus: (id: string, status: StatusAgendamento) => Promise<boolean>;
+  deleteAgendamento: (id: string) => Promise<boolean>;
   checkConflict: (
     data: string,
     horaInicio: string,
     horaFim: string,
     salaCodigo: string,
-    excludeId?: string
+    excludeId?: string,
   ) => Agendamento | null;
 
   // Disciplinas
   disciplinas: DisciplinaItem[];
-  addDisciplina: (disc: Omit<DisciplinaItem, "id">) => DisciplinaItem;
-  updateDisciplina: (id: string, updates: Partial<DisciplinaItem>) => void;
-  deleteDisciplina: (id: string) => void;
+  addDisciplina: (disc: Omit<DisciplinaItem, "id">) => Promise<boolean>;
+  updateDisciplina: (id: string, updates: Partial<Omit<DisciplinaItem, "id">>) => Promise<boolean>;
+  deleteDisciplina: (id: string) => Promise<boolean>;
 
   // Usuários
   usuarios: Usuario[];
-  addUsuario: (user: Omit<Usuario, "id">) => Usuario;
-  updateUsuario: (id: string, updates: Partial<Usuario>) => void;
-  deleteUsuario: (id: string) => void;
+  addUsuario: (user: NovoUsuario) => Promise<{ senhaTemporaria: string } | null>;
+  updateUsuario: (
+    id: string,
+    updates: Pick<Usuario, "nome" | "email" | "perfil" | "nivelAcesso">,
+  ) => Promise<boolean>;
+  deleteUsuario: (id: string) => Promise<boolean>;
+  resetSenhaUsuario: (id: string) => Promise<{ senhaTemporaria: string } | null>;
 
   // Notificações
   notificacoes: Notificacao[];
   unreadNotificacoesCount: number;
-  addNotificacao: (notif: Omit<Notificacao, "id">) => void;
-  deleteNotificacao: (id: string) => void;
-  clearAllNotificacoes: () => void;
+  deleteNotificacao: (id: string) => Promise<boolean>;
+  clearAllNotificacoes: () => Promise<boolean>;
 
   // Configurações
   configuracoes: Configuracoes;
-  updateConfiguracoes: (updates: Partial<Configuracoes>) => void;
+  updateConfiguracoes: (updates: Partial<Configuracoes>) => Promise<boolean>;
 
-  // Current User / Session
+  // Usuário logado
   currentUser: Usuario;
-  switchUser: (id: string) => void;
 
-  // Computed Indicators
+  // Indicadores calculados
   indicadores: Indicador[];
 
-  // Global Dialog State
+  // Estado global do diálogo de agendamento
   novoAgendamentoOpen: boolean;
   setNovoAgendamentoOpen: (open: boolean) => void;
   preselectedSalaCodigo?: string | undefined;
@@ -201,352 +122,89 @@ interface StoreContextType {
 
 const StoreContext = createContext<StoreContextType | null>(null);
 
-const STORAGE_KEYS = {
-  SALAS: "salafacil_salas_v1",
-  AGENDAMENTOS: "salafacil_agendamentos_v1",
-  DISCIPLINAS: "salafacil_disciplinas_v1",
-  USUARIOS: "salafacil_usuarios_v1",
-  NOTIFICACOES: "salafacil_notificacoes_v1",
-  CONFIG: "salafacil_config_v1",
-  CURRENT_USER_ID: "salafacil_current_user_id_v1",
-};
+// Referências estáveis enquanto os dados carregam (evita recalcular os indicadores)
+const SEM_SALAS: Sala[] = [];
+const SEM_AGENDAMENTOS: Agendamento[] = [];
 
-export function StoreProvider({ children }: { children: React.ReactNode }) {
-  const [salas, setSalas] = useState<Sala[]>(initialSalas);
-  const [agendamentos, setAgendamentos] = useState<Agendamento[]>(initialAgendamentos);
-  const [disciplinas, setDisciplinas] = useState<DisciplinaItem[]>(initialDisciplinas);
-  const [usuarios, setUsuarios] = useState<Usuario[]>(initialUsuarios);
-  const [notificacoes, setNotificacoes] = useState<Notificacao[]>(initialNotificacoes);
-  const [configuracoes, setConfiguracoes] = useState<Configuracoes>(initialConfiguracoes);
-  const [currentUserId, setCurrentUserId] = useState<string>("u1");
+export function StoreProvider({
+  currentUser,
+  children,
+}: {
+  currentUser: Usuario;
+  children: React.ReactNode;
+}) {
+  const queryClient = useQueryClient();
+  const { data } = useQuery(dadosQueryOptions);
 
-  // Modal control
+  const salas = data?.salas ?? SEM_SALAS;
+  const agendamentos = data?.agendamentos ?? SEM_AGENDAMENTOS;
+  const disciplinas = data?.disciplinas ?? [];
+  const usuarios = data?.usuarios ?? [];
+  const notificacoes = data?.notificacoes ?? [];
+  const configuracoes = data?.configuracoes ?? configuracoesPadrao;
+
   const [novoAgendamentoOpen, setNovoAgendamentoOpen] = useState(false);
   const [preselectedSalaCodigo, setPreselectedSalaCodigo] = useState<string | undefined>();
   const [preselectedDisciplinaCodigo, setPreselectedDisciplinaCodigo] = useState<string | undefined>();
 
-  // Hydrate from localStorage once mounted
-  useEffect(() => {
+  /** Executa a operação no servidor, recarrega os dados e mostra o erro, se houver. */
+  async function executar<T>(operacao: () => Promise<T>): Promise<T | null> {
     try {
-      const storedSalas = localStorage.getItem(STORAGE_KEYS.SALAS);
-      if (storedSalas) setSalas(JSON.parse(storedSalas));
-
-      const storedAgendamentos = localStorage.getItem(STORAGE_KEYS.AGENDAMENTOS);
-      if (storedAgendamentos) setAgendamentos(JSON.parse(storedAgendamentos));
-
-      const storedDisciplinas = localStorage.getItem(STORAGE_KEYS.DISCIPLINAS);
-      if (storedDisciplinas) setDisciplinas(JSON.parse(storedDisciplinas));
-
-      const storedUsuarios = localStorage.getItem(STORAGE_KEYS.USUARIOS);
-      if (storedUsuarios) setUsuarios(JSON.parse(storedUsuarios));
-
-      const storedNotificacoes = localStorage.getItem(STORAGE_KEYS.NOTIFICACOES);
-      if (storedNotificacoes) setNotificacoes(JSON.parse(storedNotificacoes));
-
-      const storedConfig = localStorage.getItem(STORAGE_KEYS.CONFIG);
-      if (storedConfig) setConfiguracoes(JSON.parse(storedConfig));
-
-      const storedUserId = localStorage.getItem(STORAGE_KEYS.CURRENT_USER_ID);
-      if (storedUserId) setCurrentUserId(storedUserId);
+      const resultado = await operacao();
+      await queryClient.invalidateQueries({ queryKey: dadosQueryOptions.queryKey });
+      return resultado;
     } catch (e) {
-      console.error("Erro ao carregar dados do localStorage:", e);
+      toast.error(mensagemErro(e));
+      return null;
     }
-  }, []);
+  }
 
-  // Save changes to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.SALAS, JSON.stringify(salas));
-    } catch {}
-  }, [salas]);
+  const ok = async (operacao: () => Promise<unknown>) => (await executar(async () => (await operacao(), true))) ?? false;
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.AGENDAMENTOS, JSON.stringify(agendamentos));
-    } catch {}
-  }, [agendamentos]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.DISCIPLINAS, JSON.stringify(disciplinas));
-    } catch {}
-  }, [disciplinas]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.USUARIOS, JSON.stringify(usuarios));
-    } catch {}
-  }, [usuarios]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.NOTIFICACOES, JSON.stringify(notificacoes));
-    } catch {}
-  }, [notificacoes]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.CONFIG, JSON.stringify(configuracoes));
-    } catch {}
-  }, [configuracoes]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.CURRENT_USER_ID, currentUserId);
-    } catch {}
-  }, [currentUserId]);
-
-  const currentUser = useMemo(() => {
-    return (usuarios.find((u) => u.id === currentUserId) || usuarios[0] || initialUsuarios[0]) as Usuario;
-  }, [usuarios, currentUserId]);
-
-  const unreadNotificacoesCount = notificacoes.length;
-
-  // Conflict detection helper
+  // Verificação local para feedback imediato; o servidor confere de novo ao salvar.
   const checkConflict = (
     data: string,
     horaInicio: string,
     horaFim: string,
     salaCodigo: string,
-    excludeId?: string
-  ): Agendamento | null => {
-    return (
-      agendamentos.find((a) => {
-        if (excludeId && a.id === excludeId) return false;
-        if (a.status === "cancelado") return false;
-        if (a.data !== data || a.salaCodigo !== salaCodigo) return false;
+    excludeId?: string,
+  ): Agendamento | null =>
+    agendamentos.find((a) => {
+      if (excludeId && a.id === excludeId) return false;
+      if (a.status === "cancelado") return false;
+      if (a.data !== data || a.salaCodigo !== salaCodigo) return false;
+      return a.horaInicio < horaFim && a.horaFim > horaInicio;
+    }) ?? null;
 
-        // Check time overlap: (StartA < EndB) and (EndA > StartB)
-        return a.horaInicio < horaFim && a.horaFim > horaInicio;
-      }) || null
-    );
-  };
+  const addAgendamento: StoreContextType["addAgendamento"] = async (novo) =>
+    (await executar(() =>
+      criarAgendamento({
+        data: {
+          data: novo.data,
+          horaInicio: novo.horaInicio,
+          horaFim: novo.horaFim,
+          salaCodigo: novo.salaCodigo,
+          disciplina: novo.disciplina,
+          disciplinaCodigo: novo.disciplinaCodigo,
+          turma: novo.turma,
+          professorResponsavel: novo.professorResponsavel,
+          alunos: novo.alunos,
+        },
+      }),
+    )) ?? { success: false, message: "Não foi possível salvar o agendamento." };
 
-  // Add Sala
-  const addSala = (nova: Omit<Sala, "id">): Sala => {
-    const sala: Sala = {
-      ...nova,
-      id: `s_${Date.now()}`,
-    };
-    setSalas((prev) => [sala, ...prev]);
-    addNotificacao({
-      mensagem: `Nova sala cadastrada: ${sala.codigo} — ${sala.nome}`,
-      dataHora: new Date().toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }),
-      tipo: "sistema",
-    });
-    return sala;
-  };
-
-  // Update Sala
-  const updateSala = (id: string, updates: Partial<Sala>) => {
-    setSalas((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, ...updates } : s))
-    );
-  };
-
-  // Delete Sala
-  const deleteSala = (id: string) => {
-    setSalas((prev) => prev.filter((s) => s.id !== id));
-  };
-
-  // Set Sala Status
-  const setSalaStatus = (id: string, status: StatusSala) => {
-    setSalas((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, status } : s))
-    );
-  };
-
-  // Add Agendamento
-  const addAgendamento = (
-    novo: Omit<Agendamento, "id" | "status"> & { status?: StatusAgendamento }
-  ): { success: boolean; message: string; agendamento?: Agendamento } => {
-    // Check conflicts
-    const conflict = checkConflict(
-      novo.data,
-      novo.horaInicio,
-      novo.horaFim,
-      novo.salaCodigo
-    );
-
-    if (conflict && configuracoes.bloquearConflitos) {
-      addNotificacao({
-        mensagem: `Conflito de horário bloqueado na sala ${novo.salaCodigo} para o dia ${novo.data.split("-").reverse().join("/")} às ${novo.horaInicio}.`,
-        dataHora: new Date().toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }),
-        tipo: "conflito",
-      });
-      return {
-        success: false,
-        message: `Conflito de horário: a sala ${novo.salaCodigo} já está reservada das ${conflict.horaInicio} às ${conflict.horaFim} (${conflict.disciplina}).`,
-      };
-    }
-
-    let finalStatus: StatusAgendamento = novo.status || "confirmado";
-    if (
-      novo.solicitantePerfil === "Professor" &&
-      configuracoes.aprovacaoCoordenador
-    ) {
-      finalStatus = "pendente";
-    }
-
-    const agendamento: Agendamento = {
-      ...novo,
-      id: `a_${Date.now()}`,
-      status: finalStatus,
-    };
-
-    setAgendamentos((prev) => [agendamento, ...prev]);
-
-    // Update room status to ocupada if it's today
-    const hoje = new Date().toISOString().slice(0, 10);
-    if (agendamento.data === hoje && finalStatus === "confirmado") {
-      setSalas((prev) =>
-        prev.map((s) =>
-          s.codigo === agendamento.salaCodigo ? { ...s, status: "ocupada" } : s
-        )
-      );
-    }
-
-    addNotificacao({
-      mensagem:
-        finalStatus === "pendente"
-          ? `Novo agendamento pendente de aprovação: ${agendamento.disciplina} na sala ${agendamento.salaCodigo}.`
-          : `Agendamento confirmado: ${agendamento.disciplina} na sala ${agendamento.salaCodigo} dia ${agendamento.data.split("-").reverse().join("/")}.`,
-      dataHora: new Date().toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }),
-      tipo: finalStatus === "pendente" ? "sistema" : "confirmacao",
-    });
-
-    return {
-      success: true,
-      message:
-        finalStatus === "pendente"
-          ? "Agendamento solicitado com sucesso! Aguardando aprovação da coordenação."
-          : "Agendamento confirmado com sucesso!",
-      agendamento,
-    };
-  };
-
-  // Update Agendamento Status
-  const updateAgendamentoStatus = (id: string, status: StatusAgendamento) => {
-    setAgendamentos((prev) =>
-      prev.map((a) => {
-        if (a.id === id) {
-          const updated = { ...a, status };
-          addNotificacao({
-            mensagem: `Status do agendamento de ${a.disciplina} alterado para ${status.toUpperCase()}.`,
-            dataHora: new Date().toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }),
-            tipo: status === "cancelado" ? "cancelamento" : "confirmacao",
-          });
-          return updated;
-        }
-        return a;
-      })
-    );
-  };
-
-  // Delete Agendamento
-  const deleteAgendamento = (id: string) => {
-    setAgendamentos((prev) => prev.filter((a) => a.id !== id));
-  };
-
-  // Disciplinas
-  const addDisciplina = (disc: Omit<DisciplinaItem, "id">): DisciplinaItem => {
-    const item: DisciplinaItem = {
-      ...disc,
-      id: `d_${Date.now()}`,
-    };
-    setDisciplinas((prev) => [item, ...prev]);
-    return item;
-  };
-
-  const updateDisciplina = (id: string, updates: Partial<DisciplinaItem>) => {
-    setDisciplinas((prev) =>
-      prev.map((d) => (d.id === id ? { ...d, ...updates } : d))
-    );
-  };
-
-  const deleteDisciplina = (id: string) => {
-    setDisciplinas((prev) => prev.filter((d) => d.id !== id));
-  };
-
-  // Usuários
-  const addUsuario = (user: Omit<Usuario, "id">): Usuario => {
-    const novo: Usuario = {
-      ...user,
-      id: `u_${Date.now()}`,
-    };
-    setUsuarios((prev) => [novo, ...prev]);
-    addNotificacao({
-      mensagem: `Novo usuário registrado: ${novo.nome} (${novo.perfil}).`,
-      dataHora: new Date().toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }),
-      tipo: "sistema",
-    });
-    return novo;
-  };
-
-  const updateUsuario = (id: string, updates: Partial<Usuario>) => {
-    setUsuarios((prev) =>
-      prev.map((u) => (u.id === id ? { ...u, ...updates } : u))
-    );
-  };
-
-  const deleteUsuario = (id: string) => {
-    setUsuarios((prev) => prev.filter((u) => u.id !== id));
-  };
-
-  // Notificações
-  const addNotificacao = (notif: Omit<Notificacao, "id">) => {
-    const n: Notificacao = {
-      ...notif,
-      id: `n_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
-    };
-    setNotificacoes((prev) => [n, ...prev]);
-  };
-
-  const deleteNotificacao = (id: string) => {
-    setNotificacoes((prev) => prev.filter((n) => n.id !== id));
-  };
-
-  const clearAllNotificacoes = () => {
-    setNotificacoes([]);
-  };
-
-  // Configurações
-  const updateConfiguracoes = (updates: Partial<Configuracoes>) => {
-    setConfiguracoes((prev) => ({ ...prev, ...updates }));
-  };
-
-  // Switch User
-  const switchUser = (id: string) => {
-    setCurrentUserId(id);
-  };
-
-  // Open modal with prefilled data
-  const openNovoAgendamento = (salaCodigo?: string, disciplinaCodigo?: string) => {
-    setPreselectedSalaCodigo(salaCodigo);
-    setPreselectedDisciplinaCodigo(disciplinaCodigo);
-    setNovoAgendamentoOpen(true);
-  };
-
-  // Computed Indicators
   const indicadores: Indicador[] = useMemo(() => {
     const totalSalas = salas.length;
-    const hojeStr = new Date().toISOString().slice(0, 10);
-    // Include 2026-09-03 or today's bookings for rich display
-    const agendamentosHoje = agendamentos.filter(
-      (a) => a.data === hojeStr || a.data === "2026-09-03"
-    ).length;
+    const hojeStr = new Date().toLocaleDateString("sv-SE");
+    const agendamentosHoje = agendamentos.filter((a) => a.data === hojeStr && a.status !== "cancelado").length;
 
-    // Count conflicts
     let conflitosCount = 0;
     const checked = new Set<string>();
     for (const a of agendamentos) {
       if (a.status === "cancelado") continue;
       const key = `${a.data}_${a.salaCodigo}_${a.horaInicio}_${a.horaFim}`;
-      if (checked.has(key)) {
-        conflitosCount++;
-      } else {
-        checked.add(key);
-      }
+      if (checked.has(key)) conflitosCount++;
+      else checked.add(key);
     }
 
     const salasOcupadas = salas.filter((s) => s.status === "ocupada").length;
@@ -580,42 +238,47 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     ];
   }, [salas, agendamentos]);
 
+  const openNovoAgendamento = (salaCodigo?: string, disciplinaCodigo?: string) => {
+    setPreselectedSalaCodigo(salaCodigo);
+    setPreselectedDisciplinaCodigo(disciplinaCodigo);
+    setNovoAgendamentoOpen(true);
+  };
+
   return (
     <StoreContext.Provider
       value={{
         salas,
-        addSala,
-        updateSala,
-        deleteSala,
-        setSalaStatus,
+        addSala: (nova) => ok(() => criarSala({ data: nova })),
+        updateSala: (id, dados) => ok(() => atualizarSala({ data: { id, dados } })),
+        deleteSala: (id) => ok(() => excluirSala({ data: { id } })),
+        setSalaStatus: (id, status) => ok(() => alterarStatusSala({ data: { id, status } })),
 
         agendamentos,
         addAgendamento,
-        updateAgendamentoStatus,
-        deleteAgendamento,
+        updateAgendamentoStatus: (id, status) => ok(() => alterarStatusAgendamento({ data: { id, status } })),
+        deleteAgendamento: (id) => ok(() => excluirAgendamento({ data: { id } })),
         checkConflict,
 
         disciplinas,
-        addDisciplina,
-        updateDisciplina,
-        deleteDisciplina,
+        addDisciplina: (disc) => ok(() => criarDisciplina({ data: disc })),
+        updateDisciplina: (id, dados) => ok(() => atualizarDisciplina({ data: { id, dados } })),
+        deleteDisciplina: (id) => ok(() => excluirDisciplina({ data: { id } })),
 
         usuarios,
-        addUsuario,
-        updateUsuario,
-        deleteUsuario,
+        addUsuario: (user) => executar(() => criarUsuario({ data: user })),
+        updateUsuario: (id, dados) => ok(() => atualizarUsuario({ data: { id, ...dados } })),
+        deleteUsuario: (id) => ok(() => excluirUsuario({ data: { id } })),
+        resetSenhaUsuario: (id) => executar(() => redefinirSenhaUsuario({ data: { id } })),
 
         notificacoes,
-        unreadNotificacoesCount,
-        addNotificacao,
-        deleteNotificacao,
-        clearAllNotificacoes,
+        unreadNotificacoesCount: notificacoes.length,
+        deleteNotificacao: (id) => ok(() => excluirNotificacao({ data: { id } })),
+        clearAllNotificacoes: () => ok(() => limparNotificacoes()),
 
         configuracoes,
-        updateConfiguracoes,
+        updateConfiguracoes: (updates) => ok(() => atualizarConfiguracoes({ data: updates })),
 
         currentUser,
-        switchUser,
 
         indicadores,
 

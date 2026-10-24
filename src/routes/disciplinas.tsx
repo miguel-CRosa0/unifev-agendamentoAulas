@@ -62,10 +62,9 @@ function DisciplinasPage() {
     return matchesSearch && matchesTurno;
   });
 
-  const handleDelete = (d: DisciplinaItem) => {
+  const handleDelete = async (d: DisciplinaItem) => {
     if (confirm(`Excluir a disciplina ${d.codigo} — ${d.nome}?`)) {
-      deleteDisciplina(d.id);
-      toast.success(`Disciplina ${d.codigo} removida.`);
+      if (await deleteDisciplina(d.id)) toast.success(`Disciplina ${d.codigo} removida.`);
     }
   };
 

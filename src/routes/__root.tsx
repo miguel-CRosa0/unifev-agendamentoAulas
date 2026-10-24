@@ -1,8 +1,9 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { QueryClient } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
   createRootRouteWithContext,
+  redirect,
   useRouter,
   HeadContent,
   Scripts,
@@ -11,6 +12,11 @@ import {
 import type { ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import { sessaoQueryOptions } from "@/lib/sessao";
+import { StoreProvider, dadosQueryOptions } from "@/context/store-context";
+import { Toaster } from "@/components/ui/sonner";
+
+const ROTAS_PUBLICAS = ["/login"];
 
 function NotFoundComponent() {
   return (
@@ -70,6 +76,22 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  beforeLoad: async ({ context, location }) => {
+    const sessao = await context.queryClient.ensureQueryData(sessaoQueryOptions);
+    const publica = ROTAS_PUBLICAS.includes(location.pathname);
+
+    if (!sessao) {
+      if (!publica) throw redirect({ to: "/login" });
+      return { sessao };
+    }
+    if (sessao.mustChangePassword && location.pathname !== "/nova-senha") {
+      throw redirect({ to: "/nova-senha" });
+    }
+    if (publica) throw redirect({ to: "/" });
+
+    await context.queryClient.ensureQueryData(dadosQueryOptions);
+    return { sessao };
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -99,7 +121,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <HeadContent />
       </head>
@@ -111,19 +133,19 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-import { StoreProvider } from "@/context/store-context";
-import { Toaster } from "@/components/ui/sonner";
-
 function RootComponent() {
-  const { queryClient } = Route.useRouteContext();
+  const { sessao } = Route.useRouteContext();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <StoreProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+    <>
+      {sessao && !sessao.mustChangePassword ? (
+        <StoreProvider currentUser={sessao}>
+          <Outlet />
+        </StoreProvider>
+      ) : (
         <Outlet />
-        <Toaster position="top-right" richColors />
-      </StoreProvider>
-    </QueryClientProvider>
+      )}
+      <Toaster position="top-right" richColors />
+    </>
   );
 }

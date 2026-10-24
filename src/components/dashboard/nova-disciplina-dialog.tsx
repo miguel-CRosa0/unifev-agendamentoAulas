@@ -66,7 +66,7 @@ export function NovaDisciplinaDialog({
     }
   }, [disciplinaToEdit, open, salas]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!codigo.trim() || !nome.trim() || !turma.trim() || !professor.trim()) {
@@ -75,7 +75,7 @@ export function NovaDisciplinaDialog({
     }
 
     if (disciplinaToEdit) {
-      updateDisciplina(disciplinaToEdit.id, {
+      if (!(await updateDisciplina(disciplinaToEdit.id, {
         codigo: codigo.trim().toUpperCase(),
         nome: nome.trim(),
         turma: turma.trim(),
@@ -84,10 +84,10 @@ export function NovaDisciplinaDialog({
         professor: professor.trim(),
         alunos: Number(alunos) || 30,
         ...(salaPadrao ? { salaPadrao } : {}),
-      });
+      }))) return;
       toast.success(`Disciplina ${codigo} atualizada com sucesso!`);
     } else {
-      addDisciplina({
+      if (!(await addDisciplina({
         codigo: codigo.trim().toUpperCase(),
         nome: nome.trim(),
         turma: turma.trim(),
@@ -96,7 +96,7 @@ export function NovaDisciplinaDialog({
         professor: professor.trim(),
         alunos: Number(alunos) || 30,
         ...(salaPadrao ? { salaPadrao } : {}),
-      });
+      }))) return;
       toast.success(`Disciplina ${codigo} adicionada com sucesso!`);
     }
 
