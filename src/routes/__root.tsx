@@ -84,8 +84,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       if (!publica) throw redirect({ to: "/login" });
       return { sessao };
     }
-    if (sessao.mustChangePassword && location.pathname !== "/nova-senha") {
-      throw redirect({ to: "/nova-senha" });
+    if (sessao.mustChangePassword) {
+      // Com senha temporária, só a tela de troca de senha é liberada (sem carregar dados)
+      if (location.pathname !== "/nova-senha") throw redirect({ to: "/nova-senha" });
+      return { sessao };
     }
     if (publica) throw redirect({ to: "/" });
 
