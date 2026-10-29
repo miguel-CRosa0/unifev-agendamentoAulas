@@ -53,6 +53,8 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
     openNovoAgendamento,
     updateAgendamentoStatus,
     deleteAgendamento,
+    currentUser,
+    isGestao,
   } = useStore();
 
   const [search, setSearch] = useState("");
@@ -257,7 +259,7 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
                               <DropdownMenuItem onClick={() => handleOpenDetails(ag)} className="cursor-pointer">
                                 Ver Detalhes
                               </DropdownMenuItem>
-                              {ag.status === "pendente" && (
+                              {ag.status === "pendente" && isGestao && (
                                 <DropdownMenuItem
                                   onClick={(e) => handleQuickApprove(e, ag.id)}
                                   className="text-emerald-600 cursor-pointer"
@@ -265,7 +267,7 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
                                   <CheckCircle2 className="h-3.5 w-3.5 mr-2" /> Aprovar Reserva
                                 </DropdownMenuItem>
                               )}
-                              {ag.status !== "cancelado" && (
+                              {ag.status !== "cancelado" && (isGestao || ag.solicitanteId === currentUser.id) && (
                                 <DropdownMenuItem
                                   onClick={(e) => handleQuickCancel(e, ag.id)}
                                   className="text-rose-600 cursor-pointer"
@@ -273,13 +275,17 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
                                   <XCircle className="h-3.5 w-3.5 mr-2" /> Cancelar Reserva
                                 </DropdownMenuItem>
                               )}
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={(e) => handleQuickDelete(e, ag.id)}
-                                className="text-destructive cursor-pointer"
-                              >
-                                <Trash2 className="h-3.5 w-3.5 mr-2" /> Excluir
-                              </DropdownMenuItem>
+                              {isGestao && (
+                                <>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    onClick={(e) => handleQuickDelete(e, ag.id)}
+                                    className="text-destructive cursor-pointer"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5 mr-2" /> Excluir
+                                  </DropdownMenuItem>
+                                </>
+                              )}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>

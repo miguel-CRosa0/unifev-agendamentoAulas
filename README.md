@@ -9,7 +9,7 @@ Dashboard para agendamento de salas de aula e laboratórios da Unifev.
 - Componentes [shadcn/ui](https://ui.shadcn.com) (Radix UI)
 - Nitro para o build de produção (preset Vercel no deploy)
 - Banco: PostgreSQL no Supabase, acessado via [Prisma](https://www.prisma.io) (esquema portável para MySQL)
-- Login: [Better Auth](https://www.better-auth.com) com RA + senha
+- Login: [Better Auth](https://www.better-auth.com) com RA (ou e-mail, para o administrador) + senha
 
 ## Desenvolvimento
 
@@ -22,24 +22,26 @@ Requer Node.js >= 20.12.
 ```sh
 npm install         # também gera o Prisma Client
 npm run db:deploy   # aplica as migrations no banco
-npm run db:seed     # dados de exemplo (só na primeira vez)
+npm run db:seed     # configurações padrão + conta do administrador
 npm run dev         # http://localhost:8080
 ```
 
 Outros comandos: `npm run build`, `npm run lint`, `npm run db:migrate` (cria uma migration
-após alterar `prisma/schema.prisma`) e `npm run db:studio` (visualizar o banco).
+após alterar `prisma/schema.prisma`), `npm run db:studio` (visualizar o banco) e
+`npm run db:limpar-exemplos` (remove os dados fictícios inseridos pelo seed antigo).
 
-## Usuários de exemplo (seed)
+## Acesso
 
-| Perfil        | Nome             | RA       | Senha temporária |
-| ------------- | ---------------- | -------- | ---------------- |
-| Administrador | Marcos Andrade   | 20260001 | 15031980         |
-| Coordenador   | Carla Mendes     | 20260002 | 22071985         |
-| Professor     | Ana Souza        | 20260003 | 10082004         |
-| Professor     | Gabriel Teixeira | 20260004 | 05111990         |
+O sistema tem um único administrador:
 
-No primeiro acesso é obrigatório definir uma senha pessoal. Novos usuários são cadastrados
-pelo administrador; a senha temporária é a data de nascimento (DDMMAAAA).
+| E-mail             | Senha inicial |
+| ------------------ | ------------- |
+| unifev@admin.com   | admin102030   |
+
+A conta é criada pelo seed e, se ele não tiver sido rodado, no primeiro acesso à tela de login.
+O banco começa vazio: o administrador cadastra salas, disciplinas e usuários (Coordenador ou
+Professor). Os usuários entram com o RA e a senha temporária (data de nascimento, DDMMAAAA, ou
+aleatória, conforme as Configurações) e precisam definir uma senha pessoal no primeiro acesso.
 
 ## Deploy (Vercel)
 

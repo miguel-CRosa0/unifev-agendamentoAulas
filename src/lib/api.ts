@@ -16,11 +16,12 @@ import type {
 import type { Configuracoes, DisciplinaItem } from "@/components/dashboard/data";
 import { auth } from "./auth.server";
 import { prisma } from "./db.server";
-import { criarContaUsuario, definirSenha } from "./usuarios.server";
+import { ADMIN_EMAIL, criarContaUsuario, definirSenha } from "./usuarios.server";
 
 // ---------- Sessão e permissões ----------
 
-const PERFIS = ["Administrador", "Coordenador", "Professor"] as const;
+// Perfis que o administrador pode atribuir (o único Administrador é unifev@admin.com)
+const PERFIS_CADASTRO = ["Coordenador", "Professor"] as const;
 const STATUS_SALA = ["disponível", "ocupada", "manutenção"] as const;
 const STATUS_AGENDAMENTO = ["confirmado", "pendente", "cancelado"] as const;
 const TURNOS = ["Matutino", "Vespertino", "Noturno", "Integral"] as const;
@@ -89,6 +90,24 @@ function dataBR(iso: string) {
   return iso.split("-").reverse().join("/");
 }
 
+function minutos(hhmm: string) {
+  const [h, m] = hhmm.split(":").map(Number);
+  return (h ?? 0) * 60 + (m ?? 0);
+}
+
+/** Instante do início do agendamento (Brasília não tem horário de verão desde 2019: UTC-3 fixo). */
+function inicioAgendamento(data: string, hora: string) {
+  return new Date(`${data}T${hora}:00-03:00`);
+}
+
+function horaAtualBrasilia() {
+  return new Date().toLocaleTimeString("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 function toUsuario(u: DbUser): Usuario {
   return {
     id: u.id,
@@ -137,6 +156,7 @@ function toAgendamento(a: DbAgendamento): Agendamento {
     disciplinaCodigo: a.disciplinaCodigo,
     turma: a.turma,
     professorResponsavel: a.professorResponsavel,
+    solicitanteId: a.solicitanteId,
     solicitanteNome: a.solicitante?.name ?? "Usuário removido",
     solicitantePerfil: (a.solicitante?.perfil as Perfil | undefined) ?? "Professor",
     alunos: a.alunos,
@@ -208,7 +228,9 @@ export interface DadosSistema {
 export const getDados = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async (): Promise<DadosSistema> => {
-    const [salas, agendamentos, disciplinas, usuarios, notificacoes, configuracoes] = await Promise.all([
+    const hoje = hojeISO();
+    const agora = horaAtualBrasilia();
+    const [salas, agendamentos, disciplinas, usuarios, notificacoes, configuracoes, emAndamento] = await Promise.all([
       prisma.sala.findMany({ include: salaInclude, orderBy: { codigo: "asc" } }),
       prisma.agendamento.findMany({
         include: agendamentoInclude,
@@ -218,9 +240,19 @@ export const getDados = createServerFn({ method: "GET" })
       prisma.user.findMany({ orderBy: { name: "asc" } }),
       prisma.notificacao.findMany({ orderBy: { createdAt: "desc" }, take: 100 }),
       obterConfiguracoes(),
+      prisma.agendamento.findMany({
+        where: { data: hoje, status: "confirmado", horaInicio: { lte: agora }, horaFim: { gt: agora } },
+        select: { salaId: true },
+      }),
     ]);
+    // "Ocupada" é calculado pelos agendamentos em andamento; status manual
+    // (ocupada/manutenção) definido pela gestão continua valendo.
+    const salasEmUso = new Set(emAndamento.map((a) => a.salaId));
     return {
-      salas: salas.map(toSala),
+      salas: salas.map((s) => {
+        const sala = toSala(s);
+        return sala.status === "disponível" && salasEmUso.has(s.id) ? { ...sala, status: "ocupada" as const } : sala;
+      }),
       agendamentos: agendamentos.map(toAgendamento),
       disciplinas: disciplinas.map(toDisciplina),
       usuarios: usuarios.map(toUsuario),
@@ -309,8 +341,31 @@ export const criarAgendamento = createServerFn({ method: "POST" })
     }
     const sala = await prisma.sala.findUnique({ where: { codigo: data.salaCodigo } });
     if (!sala) return { success: false, message: `Sala ${data.salaCodigo} não encontrada.` };
+    if (data.alunos > sala.capacidade) {
+      return {
+        success: false,
+        message: `A sala ${sala.codigo} comporta ${sala.capacidade} alunos (informado: ${data.alunos}).`,
+      };
+    }
 
     const config = await obterConfiguracoes();
+    const duracao = minutos(data.horaFim) - minutos(data.horaInicio);
+    if (duracao > config.duracaoMaxima) {
+      return {
+        success: false,
+        message: `A duração máxima por reserva é de ${config.duracaoMaxima} minutos (solicitado: ${duracao}).`,
+      };
+    }
+    const horasAteInicio = (inicioAgendamento(data.data, data.horaInicio).getTime() - Date.now()) / 3_600_000;
+    if (horasAteInicio < 0) {
+      return { success: false, message: "Não é possível agendar em um horário que já passou." };
+    }
+    if (horasAteInicio < config.antecedenciaMinima) {
+      return {
+        success: false,
+        message: `Os agendamentos precisam ser feitos com ao menos ${config.antecedenciaMinima}h de antecedência.`,
+      };
+    }
     const conflito = await prisma.agendamento.findFirst({
       where: {
         salaId: sala.id,
@@ -339,10 +394,6 @@ export const criarAgendamento = createServerFn({ method: "POST" })
     await prisma.agendamento.create({
       data: { ...campos, status, salaId: sala.id, solicitanteId: context.user.id },
     });
-
-    if (data.data === hojeISO() && status === "confirmado") {
-      await prisma.sala.update({ where: { id: sala.id }, data: { status: "ocupada" } });
-    }
 
     await notificar(
       status === "pendente"
@@ -455,12 +506,13 @@ export const criarUsuario = createServerFn({ method: "POST" })
       ra: z.string().trim().regex(/^[A-Za-z0-9_]{3,20}$/, "RA inválido"),
       telefone: z.string().optional(),
       nascimento: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-      perfil: z.enum(PERFIS),
+      perfil: z.enum(PERFIS_CADASTRO),
       nivelAcesso: z.array(z.string()),
     }),
   )
   .handler(async ({ data, context }) => {
     exigirPerfil(context.user, ADMIN, "cadastrar usuários");
+    if (data.email.toLowerCase() === ADMIN_EMAIL) throw new Error("Este e-mail é reservado ao administrador.");
     const existente = await prisma.user.findFirst({
       where: { OR: [{ email: data.email.toLowerCase() }, { username: data.ra.toLowerCase() }] },
     });
@@ -487,20 +539,35 @@ export const atualizarUsuario = createServerFn({ method: "POST" })
       id: z.string(),
       nome: z.string().trim().min(1),
       email: z.string().trim().email(),
-      perfil: z.enum(PERFIS),
+      perfil: z.enum(["Administrador", ...PERFIS_CADASTRO]),
       nivelAcesso: z.array(z.string()),
     }),
   )
   .handler(async ({ data, context }) => {
     exigirPerfil(context.user, ADMIN, "editar usuários");
-    if (data.id === context.user.id && data.perfil !== "Administrador") {
-      throw new Error("Você não pode remover o seu próprio perfil de Administrador.");
+    const alvo = await prisma.user.findUnique({ where: { id: data.id } });
+    if (!alvo) throw new Error("Usuário não encontrado.");
+    const email = data.email.toLowerCase();
+
+    if (alvo.email === ADMIN_EMAIL) {
+      // Conta do administrador: só o nome pode mudar
+      if (email !== ADMIN_EMAIL || data.perfil !== "Administrador") {
+        throw new Error("O e-mail e o perfil do administrador não podem ser alterados.");
+      }
+      await prisma.user.update({ where: { id: data.id }, data: { name: data.nome } });
+      return;
     }
+
+    if (data.perfil === "Administrador") throw new Error("O sistema tem um único administrador.");
+    if (email === ADMIN_EMAIL) throw new Error("Este e-mail é reservado ao administrador.");
+    const emailEmUso = await prisma.user.findFirst({ where: { email, id: { not: data.id } } });
+    if (emailEmUso) throw new Error("Já existe um usuário com este e-mail.");
+
     await prisma.user.update({
       where: { id: data.id },
       data: {
         name: data.nome,
-        email: data.email.toLowerCase(),
+        email,
         perfil: data.perfil,
         tambemProfessor: data.perfil === "Coordenador",
         nivelAcesso: data.nivelAcesso,

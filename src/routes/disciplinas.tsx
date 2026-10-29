@@ -43,7 +43,7 @@ export const Route = createFileRoute("/disciplinas")({
 });
 
 function DisciplinasPage() {
-  const { disciplinas, deleteDisciplina, openNovoAgendamento } = useStore();
+  const { disciplinas, deleteDisciplina, openNovoAgendamento, isGestao } = useStore();
 
   const [search, setSearch] = useState("");
   const [filterTurno, setFilterTurno] = useState<string>("todos");
@@ -92,15 +92,17 @@ function DisciplinasPage() {
               {disciplinas.length} disciplinas cadastradas · Gerenciamento acadêmico e alocação de salas
             </p>
           </div>
-          <Button
-            onClick={() => {
-              setEditingDisc(null);
-              setDialogOpen(true);
-            }}
-            className="gap-1.5 shadow-sm"
-          >
-            <Plus className="h-4 w-4" /> Nova disciplina
-          </Button>
+          {isGestao && (
+            <Button
+              onClick={() => {
+                setEditingDisc(null);
+                setDialogOpen(true);
+              }}
+              className="gap-1.5 shadow-sm"
+            >
+              <Plus className="h-4 w-4" /> Nova disciplina
+            </Button>
+          )}
         </div>
 
         {/* Search & Filters */}
@@ -195,19 +197,25 @@ function DisciplinasPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-40">
-                        <DropdownMenuItem onClick={() => handleEdit(d)} className="cursor-pointer">
-                          <Pencil className="h-3.5 w-3.5 mr-2" /> Editar
-                        </DropdownMenuItem>
+                        {isGestao && (
+                          <DropdownMenuItem onClick={() => handleEdit(d)} className="cursor-pointer">
+                            <Pencil className="h-3.5 w-3.5 mr-2" /> Editar
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem
                           onClick={() => openNovoAgendamento(d.salaPadrao, d.codigo)}
                           className="cursor-pointer"
                         >
                           <CalendarPlus className="h-3.5 w-3.5 mr-2" /> Agendar Sala
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleDelete(d)} className="text-destructive cursor-pointer">
-                          <Trash2 className="h-3.5 w-3.5 mr-2" /> Excluir
-                        </DropdownMenuItem>
+                        {isGestao && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => handleDelete(d)} className="text-destructive cursor-pointer">
+                              <Trash2 className="h-3.5 w-3.5 mr-2" /> Excluir
+                            </DropdownMenuItem>
+                          </>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -232,14 +240,18 @@ function DisciplinasPage() {
                   </div>
 
                   <div className="pt-2 border-t border-border flex items-center justify-between">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 text-xs text-muted-foreground"
-                      onClick={() => handleEdit(d)}
-                    >
-                      Editar
-                    </Button>
+                    {isGestao ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 text-xs text-muted-foreground"
+                        onClick={() => handleEdit(d)}
+                      >
+                        Editar
+                      </Button>
+                    ) : (
+                      <span />
+                    )}
                     <Button
                       size="sm"
                       variant="outline"

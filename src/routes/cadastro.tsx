@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import { CheckCircle2, ShieldCheck, UserPlus, Users } from "lucide-react";
 import { toast } from "sonner";
@@ -20,6 +20,9 @@ import {
 import type { Perfil } from "@/components/dashboard/data";
 
 export const Route = createFileRoute("/cadastro")({
+  beforeLoad: ({ context }) => {
+    if (context.sessao?.perfil !== "Administrador") throw redirect({ to: "/" });
+  },
   component: CadastroPage,
   head: () => ({
     meta: [
@@ -34,17 +37,18 @@ export const Route = createFileRoute("/cadastro")({
 });
 
 export function CadastroPage() {
-  const { usuarios, addUsuario } = useStore();
+  const { usuarios, addUsuario, configuracoes } = useStore();
 
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
   const [email, setEmail] = useState("");
   const [ra, setRa] = useState("");
   const [nascimento, setNascimento] = useState("");
-  const [perfil, setPerfil] = useState<Perfil>("Professor");
+  const [perfil, setPerfil] = useState<Exclude<Perfil, "Administrador">>("Professor");
   const [criadoInfo, setCriadoInfo] = useState<{ nome: string; senhaTemporaria: string } | null>(null);
 
-  const senhaTemporaria = nascimento ? nascimento.split("-").reverse().join("") : "--------";
+  const senhaPorNascimento = configuracoes.senhaTemporariaNascimento;
+  const senhaPrevista = nascimento ? nascimento.split("-").reverse().join("") : "DDMMAAAA";
 
   const [salvando, setSalvando] = useState(false);
 
@@ -56,16 +60,10 @@ export function CadastroPage() {
       return;
     }
 
-    let nivelAcesso: string[] = [];
-    if (perfil === "Administrador") {
-      nivelAcesso = ["Gerenciar salas", "Gerenciar usuários", "Definir nível de acesso", "Gerar relatório"];
-    } else if (perfil === "Coordenador") {
-      nivelAcesso = ["Realizar agendamento", "Editar agendamento", "Aprovar solicitações", "Ministrar disciplinas"];
-    } else if (perfil === "Professor") {
-      nivelAcesso = ["Realizar agendamento", "Editar agendamento", "Ministrar disciplinas"];
-    } else {
-      nivelAcesso = ["Realizar agendamento"];
-    }
+    const nivelAcesso =
+      perfil === "Coordenador"
+        ? ["Realizar agendamento", "Editar agendamento", "Aprovar solicitações", "Ministrar disciplinas"]
+        : ["Realizar agendamento", "Editar agendamento", "Ministrar disciplinas"];
 
     setSalvando(true);
     const resultado = await addUsuario({ nome, email, ra, telefone, nascimento, perfil, nivelAcesso });
@@ -75,7 +73,6 @@ export function CadastroPage() {
     setCriadoInfo({ nome, senhaTemporaria: resultado.senhaTemporaria });
     toast.success(`Usuário ${nome} cadastrado com sucesso! Senha temporária: ${resultado.senhaTemporaria}`);
 
-    // Clear inputs
     setNome("");
     setTelefone("");
     setEmail("");
@@ -90,7 +87,7 @@ export function CadastroPage() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">Cadastro de Usuários</h1>
             <p className="text-sm text-muted-foreground">
-              Cadastre novos professores e coordenadores com senha temporária baseada na data de nascimento.
+              Cadastre professores e coordenadores. Eles entram com o RA e a senha temporária.
             </p>
           </div>
           <Badge variant="outline" className="border-transparent bg-primary/10 text-primary">
@@ -126,7 +123,6 @@ export function CadastroPage() {
                     placeholder="(11) 98765-4321"
                     value={telefone}
                     onChange={(e) => setTelefone(e.target.value)}
-                    required
                   />
                 </div>
 
@@ -167,12 +163,11 @@ export function CadastroPage() {
 
                 <div className="space-y-1.5 sm:col-span-2">
                   <Label htmlFor="perfil">Perfil de Acesso (Papel)</Label>
-                  <Select value={perfil} onValueChange={(v) => setPerfil(v as Perfil)}>
+                  <Select value={perfil} onValueChange={(v) => setPerfil(v as Exclude<Perfil, "Administrador">)}>
                     <SelectTrigger id="perfil">
                       <SelectValue placeholder="Selecione o perfil" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Administrador">Administrador — Acesso irrestrito a salas e configurações</SelectItem>
                       <SelectItem value="Coordenador">Coordenador — Também Professor, aprova reservas</SelectItem>
                       <SelectItem value="Professor">Professor — Solicitação direta e gestão de turmas</SelectItem>
                     </SelectContent>
@@ -183,10 +178,22 @@ export function CadastroPage() {
                   <p className="text-xs uppercase font-bold tracking-wider text-muted-foreground">
                     Senha Temporária Gerada Automaticamente
                   </p>
-                  <p className="mt-1 font-mono text-2xl font-bold text-primary">{senhaTemporaria}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Calculada automaticamente como a data de nascimento no formato DDMMAAAA. No primeiro acesso pelo login com o RA, o usuário será conduzido à troca obrigatória por senha forte criptografada.
-                  </p>
+                  {senhaPorNascimento ? (
+                    <>
+                      <p className="mt-1 font-mono text-2xl font-bold text-primary">{senhaPrevista}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Data de nascimento no formato DDMMAAAA.
+                        {configuracoes.trocaObrigatoriaPrimeiroLogin &&
+                          " No primeiro acesso (login com o RA) o usuário terá de definir uma senha pessoal."}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Uma senha aleatória será gerada e exibida após o cadastro.
+                      {configuracoes.trocaObrigatoriaPrimeiroLogin &&
+                        " No primeiro acesso (login com o RA) o usuário terá de definir uma senha pessoal."}
+                    </p>
+                  )}
                 </div>
 
                 {criadoInfo && (

@@ -57,7 +57,7 @@ function statusIcon(status: Sala["status"]) {
 }
 
 export function RoomsGrid({ salas }: { salas: Sala[] }) {
-  const { setSalaStatus, deleteSala, openNovoAgendamento } = useStore();
+  const { setSalaStatus, deleteSala, openNovoAgendamento, isAdmin, isGestao } = useStore();
 
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("todos");
@@ -135,16 +135,18 @@ export function RoomsGrid({ salas }: { salas: Sala[] }) {
                 Código, capacidade, recursos multimídia e disponibilidade em tempo real
               </p>
             </div>
-            <Button
-              onClick={() => {
-                setSalaToEdit(null);
-                setNovaSalaOpen(true);
-              }}
-              size="sm"
-              className="gap-1.5 shadow-sm"
-            >
-              <Plus className="h-4 w-4" /> Nova sala
-            </Button>
+            {isAdmin && (
+              <Button
+                onClick={() => {
+                  setSalaToEdit(null);
+                  setNovaSalaOpen(true);
+                }}
+                size="sm"
+                className="gap-1.5 shadow-sm"
+              >
+                <Plus className="h-4 w-4" /> Nova sala
+              </Button>
+            )}
           </div>
 
           {/* Filters & Search */}
@@ -259,9 +261,13 @@ export function RoomsGrid({ salas }: { salas: Sala[] }) {
                             <DropdownMenuItem onClick={() => handleOpenDetails(sala)} className="cursor-pointer">
                               Ver Detalhes e Agenda
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleEdit(sala)} className="cursor-pointer">
-                              <Pencil className="h-3.5 w-3.5 mr-2" /> Editar Sala
-                            </DropdownMenuItem>
+                            {isAdmin && (
+                              <DropdownMenuItem onClick={() => handleEdit(sala)} className="cursor-pointer">
+                                <Pencil className="h-3.5 w-3.5 mr-2" /> Editar Sala
+                              </DropdownMenuItem>
+                            )}
+                            {isGestao && (
+                            <>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               onClick={() => setSalaStatus(sala.id, "disponível")}
@@ -281,13 +287,19 @@ export function RoomsGrid({ salas }: { salas: Sala[] }) {
                             >
                               Marcar como Manutenção
                             </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => handleDelete(sala)}
-                              className="text-destructive cursor-pointer"
-                            >
-                              <Trash2 className="h-3.5 w-3.5 mr-2" /> Excluir Sala
-                            </DropdownMenuItem>
+                            </>
+                            )}
+                            {isAdmin && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  onClick={() => handleDelete(sala)}
+                                  className="text-destructive cursor-pointer"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5 mr-2" /> Excluir Sala
+                                </DropdownMenuItem>
+                              </>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>

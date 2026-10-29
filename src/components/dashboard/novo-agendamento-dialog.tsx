@@ -44,9 +44,13 @@ export function NovoAgendamentoDialog() {
     preselectedDisciplinaCodigo,
     addAgendamento,
     checkConflict,
+    configuracoes,
   } = useStore();
 
-  const [data, setData] = useState(() => new Date().toLocaleDateString("sv-SE"));
+  // Padrão: amanhã (hoje normalmente fica dentro da antecedência mínima)
+  const [data, setData] = useState(() =>
+    new Date(Date.now() + 86_400_000).toLocaleDateString("sv-SE"),
+  );
   const [slotIndex, setSlotIndex] = useState("0");
   const [salaCodigo, setSalaCodigo] = useState("");
   const [disciplinaId, setDisciplinaId] = useState("");
@@ -100,6 +104,22 @@ export function NovoAgendamentoDialog() {
     selectedSlot.fim,
     salaCodigo
   );
+
+  // Mesmas regras validadas no servidor, mostradas antes de enviar
+  const horasAteInicio =
+    (new Date(`${data}T${selectedSlot.inicio}:00-03:00`).getTime() - Date.now()) / 3_600_000;
+  const minutos = (hhmm: string) => Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3, 5));
+  const duracaoSlot = minutos(selectedSlot.fim) - minutos(selectedSlot.inicio);
+  const aviso =
+    selectedSala && alunos > selectedSala.capacidade
+      ? `A sala ${selectedSala.codigo} comporta ${selectedSala.capacidade} alunos (informado: ${alunos}).`
+      : horasAteInicio < 0
+        ? "Este horário já passou. Escolha outra data ou horário."
+        : horasAteInicio < configuracoes.antecedenciaMinima
+          ? `Os agendamentos precisam ser feitos com ao menos ${configuracoes.antecedenciaMinima}h de antecedência.`
+          : duracaoSlot > configuracoes.duracaoMaxima
+            ? `A duração máxima por reserva é de ${configuracoes.duracaoMaxima} minutos (este horário tem ${duracaoSlot}).`
+            : null;
 
   const handleDisciplinaChange = (id: string) => {
     setDisciplinaId(id);
@@ -176,6 +196,13 @@ export function NovoAgendamentoDialog() {
                   das {conflict.horaInicio} às {conflict.horaFim} nesta data. Escolha outro horário ou sala.
                 </p>
               </div>
+            </div>
+          )}
+
+          {!conflict && aviso && (
+            <div className="flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-400">
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+              <p className="text-xs mt-0.5">{aviso}</p>
             </div>
           )}
 
@@ -325,7 +352,7 @@ export function NovoAgendamentoDialog() {
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={Boolean(conflict) || salvando}>
+            <Button type="submit" disabled={Boolean(conflict) || Boolean(aviso) || salvando}>
               <CheckCircle2 className="mr-1.5 h-4 w-4" />
               Confirmar Agendamento
             </Button>

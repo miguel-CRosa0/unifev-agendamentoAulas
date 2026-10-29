@@ -22,7 +22,7 @@ import {
 
 import { useStore } from "@/context/store-context";
 import { authClient } from "@/lib/auth-client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,10 +43,10 @@ const navItems = [
   { icon: CalendarDays, label: "Agendamentos", href: "/agendamentos" },
   { icon: MapPin, label: "Salas e laboratórios", href: "/salas" },
   { icon: BookOpen, label: "Disciplinas e turmas", href: "/disciplinas" },
-  { icon: Users, label: "Usuários e acessos", href: "/usuarios" },
+  { icon: Users, label: "Usuários e acessos", href: "/usuarios", adminOnly: true },
   { icon: FileBarChart, label: "Relatórios", href: "/relatorios" },
   { icon: MessageSquare, label: "Notificações", href: "/notificacoes", hasBadge: true },
-  { icon: Settings, label: "Configurações", href: "/configuracoes" },
+  { icon: Settings, label: "Configurações", href: "/configuracoes", adminOnly: true },
 ];
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -57,7 +57,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { currentUser, openNovoAgendamento, unreadNotificacoesCount } = useStore();
+  const { currentUser, openNovoAgendamento, unreadNotificacoesCount, isAdmin } = useStore();
+  const itensMenu = navItems.filter((item) => !item.adminOnly || isAdmin);
 
   const handleLogout = async () => {
     await authClient.signOut();
@@ -85,7 +86,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 p-4 overflow-y-auto">
-          {navItems.map((item) => {
+          {itensMenu.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
@@ -120,7 +121,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 className="w-full text-left flex items-center gap-3 rounded-lg border border-border bg-background p-3 hover:bg-accent/50 transition-colors"
               >
                 <Avatar className="h-9 w-9 border border-border">
-                  <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser.nome}`} alt={currentUser.nome} />
                   <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                     {currentUser.nome.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
@@ -135,7 +135,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel className="text-xs">
                 <p className="font-semibold text-foreground">{currentUser.nome}</p>
-                <p className="font-normal text-muted-foreground">RA {currentUser.ra}</p>
+                <p className="font-normal text-muted-foreground">
+                  {currentUser.ra ? `RA ${currentUser.ra}` : currentUser.email}
+                </p>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => navigate({ to: "/nova-senha" })} className="cursor-pointer">
@@ -168,7 +170,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 <span className="text-lg font-bold tracking-tight text-foreground">SalaFácil</span>
               </div>
               <nav className="flex flex-col gap-1 p-4">
-                {navItems.map((item) => (
+                {itensMenu.map((item) => (
                   <Link
                     key={item.label}
                     to={item.href}
@@ -236,7 +238,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               <DropdownMenuTrigger asChild>
                 <button type="button" className="rounded-full ring-offset-background transition-opacity hover:opacity-80">
                   <Avatar className="h-9 w-9 border border-border">
-                    <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser.nome}`} alt={currentUser.nome} />
                     <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                       {currentUser.nome.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
@@ -252,11 +253,19 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   </Badge>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate({ to: "/configuracoes" })} className="cursor-pointer">
-                  <Settings className="h-4 w-4 mr-2" /> Configurações
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate({ to: "/usuarios" })} className="cursor-pointer">
-                  <ShieldCheck className="h-4 w-4 mr-2" /> Gerenciar Acessos
+                {isAdmin && (
+                  <>
+                    <DropdownMenuItem onClick={() => navigate({ to: "/configuracoes" })} className="cursor-pointer">
+                      <Settings className="h-4 w-4 mr-2" /> Configurações
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate({ to: "/usuarios" })} className="cursor-pointer">
+                      <ShieldCheck className="h-4 w-4 mr-2" /> Gerenciar Acessos
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+                <DropdownMenuItem onClick={() => navigate({ to: "/nova-senha" })} className="cursor-pointer">
+                  <KeyRound className="h-4 w-4 mr-2" /> Alterar senha
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="text-destructive cursor-pointer">

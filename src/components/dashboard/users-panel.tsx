@@ -86,6 +86,8 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
     return matchesSearch && matchesRole;
   });
 
+  const editandoAdmin = editingUser?.perfil === "Administrador";
+
   const handleOpenEdit = (user: Usuario) => {
     setEditingUser(user);
     setEditNome(user.nome);
@@ -167,6 +169,7 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
                 type="email"
                 value={editEmail}
                 onChange={(e) => setEditEmail(e.target.value)}
+                disabled={editandoAdmin}
                 required
               />
             </div>
@@ -175,12 +178,11 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
               <Label htmlFor="perfil">Perfil de Acesso</Label>
               <Select
                 value={editPerfil}
+                disabled={editandoAdmin}
                 onValueChange={(v) => {
                   const perfil = v as Perfil;
                   setEditPerfil(perfil);
-                  if (perfil === "Administrador") {
-                    setEditNivelAcesso(AVAILABLE_PERMISSIONS);
-                  } else if (perfil === "Coordenador") {
+                  if (perfil === "Coordenador") {
                     setEditNivelAcesso([
                       "Realizar agendamento",
                       "Editar agendamento",
@@ -188,10 +190,8 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
                       "Ministrar disciplinas",
                       "Gerar relatório",
                     ]);
-                  } else if (perfil === "Professor") {
-                    setEditNivelAcesso(["Realizar agendamento", "Editar agendamento", "Ministrar disciplinas"]);
                   } else {
-                    setEditNivelAcesso(["Realizar agendamento"]);
+                    setEditNivelAcesso(["Realizar agendamento", "Editar agendamento", "Ministrar disciplinas"]);
                   }
                 }}
               >
@@ -199,13 +199,14 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
                   <SelectValue placeholder="Selecione o perfil" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Administrador">Administrador</SelectItem>
+                  {editandoAdmin && <SelectItem value="Administrador">Administrador</SelectItem>}
                   <SelectItem value="Coordenador">Coordenador (também Professor)</SelectItem>
                   <SelectItem value="Professor">Professor</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
+            {!editandoAdmin && (
             <div className="space-y-2">
               <Label>Níveis e Acessos Concedidos</Label>
               <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
@@ -229,6 +230,7 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
                 })}
               </div>
             </div>
+            )}
 
             <DialogFooter className="pt-2">
               <Button type="button" variant="outline" onClick={() => setEditingUser(null)}>
@@ -361,7 +363,7 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
                           <DropdownMenuItem onClick={() => handleResetPassword(u)} className="cursor-pointer">
                             <KeyRound className="h-4 w-4 mr-2 text-amber-600" /> Gerar Senha Temporária
                           </DropdownMenuItem>
-                          {!isCurrent && (
+                          {!isCurrent && u.perfil !== "Administrador" && (
                             <>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem

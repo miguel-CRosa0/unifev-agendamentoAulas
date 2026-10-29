@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { UserPlus } from "lucide-react";
 
 import { useStore } from "@/context/store-context";
@@ -7,6 +7,9 @@ import { UsersPanel } from "@/components/dashboard/users-panel";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/usuarios")({
+  beforeLoad: ({ context }) => {
+    if (context.sessao?.perfil !== "Administrador") throw redirect({ to: "/" });
+  },
   component: UsuariosPage,
   head: () => ({
     meta: [

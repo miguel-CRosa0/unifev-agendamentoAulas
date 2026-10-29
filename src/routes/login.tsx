@@ -15,7 +15,7 @@ export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
       { title: "Entrar — SalaFácil" },
-      { name: "description", content: "Acesse o SalaFácil com seu RA e senha para agendar salas e laboratórios." },
+      { name: "description", content: "Acesse o SalaFácil com seu RA (ou e-mail) e senha para agendar salas e laboratórios." },
       { property: "og:title", content: "Entrar — SalaFácil" },
       { property: "og:description", content: "Acesso ao sistema de agendamento de salas e laboratórios." },
       { property: "og:type", content: "website" },
@@ -27,24 +27,28 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [ra, setRa] = useState("");
+  const [login, setLogin] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
   const [entrando, setEntrando] = useState(false);
 
   async function entrar(e: React.FormEvent) {
     e.preventDefault();
-    if (!ra || !senha) {
-      setErro("Informe o RA e a senha.");
+    const identificacao = login.trim();
+    if (!identificacao || !senha) {
+      setErro("Informe o RA ou e-mail e a senha.");
       return;
     }
     setErro("");
     setEntrando(true);
 
-    const { error } = await authClient.signIn.username({ username: ra.trim(), password: senha });
+    // Com "@" é e-mail (ex.: administrador); senão, RA
+    const { error } = identificacao.includes("@")
+      ? await authClient.signIn.email({ email: identificacao.toLowerCase(), password: senha })
+      : await authClient.signIn.username({ username: identificacao, password: senha });
     if (error) {
       setEntrando(false);
-      setErro("RA ou senha incorretos.");
+      setErro(error.status === 401 ? "RA/e-mail ou senha incorretos." : "Não foi possível entrar. Tente novamente.");
       return;
     }
 
@@ -77,18 +81,18 @@ function LoginPage() {
 
         <h1 className="mt-6 text-xl font-bold text-foreground">Entrar no Sistema</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Informe seu RA institucional e senha. No primeiro acesso, sua senha é a data de nascimento (ex.: 10082004).
+          Informe seu RA institucional (ou e-mail) e sua senha.
         </p>
 
         <form className="mt-6 space-y-4" onSubmit={entrar}>
           <div className="space-y-1.5">
-            <Label htmlFor="ra">RA (Registro Acadêmico / Identificação)</Label>
+            <Label htmlFor="login">RA ou e-mail</Label>
             <Input
-              id="ra"
-              inputMode="numeric"
-              placeholder="Ex: 20260014"
-              value={ra}
-              onChange={(e) => setRa(e.target.value)}
+              id="login"
+              autoComplete="username"
+              autoCapitalize="none"
+              value={login}
+              onChange={(e) => setLogin(e.target.value)}
             />
           </div>
           <div className="space-y-1.5">
@@ -96,7 +100,7 @@ function LoginPage() {
             <Input
               id="senha"
               type="password"
-              placeholder="••••••••"
+              autoComplete="current-password"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
             />
@@ -115,7 +119,7 @@ function LoginPage() {
 
         <div className="mt-5 flex items-center gap-2 rounded-lg border border-border bg-background p-3 text-xs text-muted-foreground">
           <KeyRound className="h-4 w-4 shrink-0 text-primary" />
-          Primeiro acesso? Use a senha temporária informada pelo administrador (sua data de nascimento, DDMMAAAA).
+          Primeiro acesso? Use a senha temporária informada pelo administrador. Em seguida você definirá sua senha pessoal.
         </div>
 
         <p className="mt-4 text-center text-xs text-muted-foreground">

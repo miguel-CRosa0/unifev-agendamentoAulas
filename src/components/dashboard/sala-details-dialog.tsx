@@ -21,13 +21,15 @@ interface SalaDetailsDialogProps {
 }
 
 export function SalaDetailsDialog({
-  sala,
+  sala: salaSelecionada,
   open,
   onOpenChange,
   onEdit,
 }: SalaDetailsDialogProps) {
-  const { agendamentos, setSalaStatus, openNovoAgendamento } = useStore();
+  const { agendamentos, salas, setSalaStatus, openNovoAgendamento, isAdmin, isGestao } = useStore();
 
+  // Versão atualizada da sala (reflete mudanças de status feitas com o diálogo aberto)
+  const sala = salas.find((s) => s.id === salaSelecionada?.id) ?? salaSelecionada;
   if (!sala) return null;
 
   const bookingsForRoom = agendamentos.filter(
@@ -88,6 +90,7 @@ export function SalaDetailsDialog({
           </div>
 
           {/* Quick status switcher */}
+          {isGestao && (
           <div className="space-y-1.5">
             <p className="text-xs font-medium text-muted-foreground">Alterar Status Rápido:</p>
             <div className="flex gap-2">
@@ -120,6 +123,7 @@ export function SalaDetailsDialog({
               </Button>
             </div>
           </div>
+          )}
 
           {/* Resources */}
           <div className="space-y-1.5">
@@ -177,7 +181,7 @@ export function SalaDetailsDialog({
         </div>
 
         <DialogFooter className="flex-row justify-between sm:justify-between pt-4 border-t border-border">
-          {onEdit && (
+          {onEdit && isAdmin && (
             <Button
               type="button"
               variant="outline"

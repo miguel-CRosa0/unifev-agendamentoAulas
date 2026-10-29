@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Check, RotateCcw, Save, Settings, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
@@ -12,6 +12,9 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
 export const Route = createFileRoute("/configuracoes")({
+  beforeLoad: ({ context }) => {
+    if (context.sessao?.perfil !== "Administrador") throw redirect({ to: "/" });
+  },
   component: ConfiguracoesPage,
   head: () => ({
     meta: [

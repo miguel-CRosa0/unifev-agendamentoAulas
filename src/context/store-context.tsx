@@ -50,7 +50,7 @@ export interface NovoUsuario {
   ra: string;
   telefone?: string;
   nascimento: string;
-  perfil: Perfil;
+  perfil: Exclude<Perfil, "Administrador">;
   nivelAcesso: string[];
 }
 
@@ -67,7 +67,7 @@ interface StoreContextType {
   addAgendamento: (
     novo: Omit<
       Agendamento,
-      "id" | "status" | "salaNome" | "salaLocalizacao" | "solicitanteNome" | "solicitantePerfil"
+      "id" | "status" | "salaNome" | "salaLocalizacao" | "solicitanteId" | "solicitanteNome" | "solicitantePerfil"
     >,
   ) => Promise<{ success: boolean; message: string }>;
   updateAgendamentoStatus: (id: string, status: StatusAgendamento) => Promise<boolean>;
@@ -106,8 +106,10 @@ interface StoreContextType {
   configuracoes: Configuracoes;
   updateConfiguracoes: (updates: Partial<Configuracoes>) => Promise<boolean>;
 
-  // Usuário logado
+  // Usuário logado e permissões (as mesmas conferidas no servidor)
   currentUser: Usuario;
+  isAdmin: boolean;
+  isGestao: boolean;
 
   // Indicadores calculados
   indicadores: Indicador[];
@@ -195,7 +197,7 @@ export function StoreProvider({
 
   const indicadores: Indicador[] = useMemo(() => {
     const totalSalas = salas.length;
-    const hojeStr = new Date().toLocaleDateString("sv-SE");
+    const hojeStr = new Date().toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
     const agendamentosHoje = agendamentos.filter((a) => a.data === hojeStr && a.status !== "cancelado").length;
 
     let conflitosCount = 0;
@@ -279,6 +281,8 @@ export function StoreProvider({
         updateConfiguracoes: (updates) => ok(() => atualizarConfiguracoes({ data: updates })),
 
         currentUser,
+        isAdmin: currentUser.perfil === "Administrador",
+        isGestao: currentUser.perfil === "Administrador" || currentUser.perfil === "Coordenador",
 
         indicadores,
 

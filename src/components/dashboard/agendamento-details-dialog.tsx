@@ -25,9 +25,11 @@ export function AgendamentoDetailsDialog({
   open,
   onOpenChange,
 }: AgendamentoDetailsDialogProps) {
-  const { updateAgendamentoStatus, deleteAgendamento, salas } = useStore();
+  const { updateAgendamentoStatus, deleteAgendamento, salas, currentUser, isGestao } = useStore();
 
   if (!agendamento) return null;
+  // Gestão aprova/exclui; quem solicitou pode cancelar a própria reserva
+  const podeCancelar = isGestao || agendamento.solicitanteId === currentUser.id;
 
   const room = salas.find((s) => s.codigo === agendamento.salaCodigo);
 
@@ -151,17 +153,21 @@ export function AgendamentoDetailsDialog({
         </div>
 
         <DialogFooter className="flex-col sm:flex-row justify-between gap-2 pt-4 border-t border-border">
-          <Button
-            type="button"
-            variant="ghost"
-            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-            onClick={handleDelete}
-          >
-            <Trash2 className="h-4 w-4 mr-1.5" /> Excluir
-          </Button>
+          {isGestao ? (
+            <Button
+              type="button"
+              variant="ghost"
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onClick={handleDelete}
+            >
+              <Trash2 className="h-4 w-4 mr-1.5" /> Excluir
+            </Button>
+          ) : (
+            <span />
+          )}
 
           <div className="flex gap-2">
-            {agendamento.status !== "cancelado" && (
+            {agendamento.status !== "cancelado" && podeCancelar && (
               <Button
                 type="button"
                 variant="outline"
@@ -172,7 +178,7 @@ export function AgendamentoDetailsDialog({
               </Button>
             )}
 
-            {agendamento.status !== "confirmado" && (
+            {agendamento.status !== "confirmado" && isGestao && (
               <Button
                 type="button"
                 className="bg-emerald-600 hover:bg-emerald-700"

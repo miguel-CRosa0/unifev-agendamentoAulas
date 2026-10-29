@@ -44,7 +44,7 @@ function tipoBadge(tipo: Notificacao["tipo"]) {
 }
 
 export function NotificationsPanel({ notificacoes }: { notificacoes: Notificacao[] }) {
-  const { deleteNotificacao, clearAllNotificacoes } = useStore();
+  const { deleteNotificacao, clearAllNotificacoes, isGestao } = useStore();
   const [filterTipo, setFilterTipo] = useState<string>("todos");
 
   const filtered = notificacoes.filter((n) => {
@@ -75,7 +75,7 @@ export function NotificationsPanel({ notificacoes }: { notificacoes: Notificacao
             </p>
           </div>
 
-          {notificacoes.length > 0 && (
+          {notificacoes.length > 0 && isGestao && (
             <div className="flex gap-2">
               <Button
                 variant="outline"
@@ -157,14 +157,16 @@ export function NotificationsPanel({ notificacoes }: { notificacoes: Notificacao
                 <p className="text-sm text-foreground leading-snug">{n.mensagem}</p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => handleDelete(n.id)}
-                className="absolute top-3 right-3 text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100 transition-opacity"
-                title="Dispensar aviso"
-              >
-                <X className="h-4 w-4" />
-              </button>
+              {isGestao && (
+                <button
+                  type="button"
+                  onClick={() => handleDelete(n.id)}
+                  className="absolute top-3 right-3 text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100 transition-opacity"
+                  title="Dispensar aviso"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
           ))
         )}
