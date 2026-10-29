@@ -32,9 +32,10 @@ export function SalaDetailsDialog({
   const sala = salas.find((s) => s.id === salaSelecionada?.id) ?? salaSelecionada;
   if (!sala) return null;
 
-  const bookingsForRoom = agendamentos.filter(
-    (a) => a.salaCodigo === sala.codigo && a.status !== "cancelado"
-  );
+  const hoje = new Date().toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
+  const bookingsForRoom = agendamentos
+    .filter((a) => a.salaCodigo === sala.codigo && a.status !== "cancelado" && a.data >= hoje)
+    .sort((a, b) => a.data.localeCompare(b.data) || a.horaInicio.localeCompare(b.horaInicio));
 
   const handleStatusChange = (newStatus: StatusSala) => {
     void setSalaStatus(sala.id, newStatus);
@@ -82,7 +83,7 @@ export function SalaDetailsDialog({
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Agendamentos Ativos</p>
+              <p className="text-xs text-muted-foreground">Próximos agendamentos</p>
               <p className="text-base font-semibold text-foreground flex items-center gap-1.5 mt-0.5">
                 <CalendarDays className="h-4 w-4 text-primary" /> {bookingsForRoom.length} reservas
               </p>
@@ -154,7 +155,7 @@ export function SalaDetailsDialog({
 
             {bookingsForRoom.length === 0 ? (
               <p className="text-xs text-muted-foreground py-2">
-                Nenhum agendamento futuro para esta sala. Espaço totalmente livre.
+                Nenhum agendamento futuro para esta sala.
               </p>
             ) : (
               <div className="space-y-2 max-h-48 overflow-y-auto pr-1">

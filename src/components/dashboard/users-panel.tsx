@@ -37,7 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Perfil, Usuario } from "./data";
+import { PERMISSOES_POR_PERFIL, type Perfil, type Usuario } from "./data";
 
 function perfilColor(perfil: Usuario["perfil"]) {
   switch (perfil) {
@@ -52,17 +52,6 @@ function perfilColor(perfil: Usuario["perfil"]) {
   }
 }
 
-const AVAILABLE_PERMISSIONS = [
-  "Gerenciar salas",
-  "Gerenciar usuários",
-  "Definir nível de acesso",
-  "Gerar relatório",
-  "Realizar agendamento",
-  "Editar agendamento",
-  "Aprovar solicitações",
-  "Ministrar disciplinas",
-];
-
 export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
   const { updateUsuario, deleteUsuario, resetSenhaUsuario, currentUser } = useStore();
 
@@ -74,7 +63,6 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
   const [editNome, setEditNome] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editPerfil, setEditPerfil] = useState<Perfil>("Professor");
-  const [editNivelAcesso, setEditNivelAcesso] = useState<string[]>([]);
 
   const filtered = usuarios.filter((u) => {
     const matchesSearch =
@@ -93,13 +81,6 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
     setEditNome(user.nome);
     setEditEmail(user.email);
     setEditPerfil(user.perfil);
-    setEditNivelAcesso(user.nivelAcesso || []);
-  };
-
-  const togglePermission = (perm: string) => {
-    setEditNivelAcesso((prev) =>
-      prev.includes(perm) ? prev.filter((p) => p !== perm) : [...prev, perm]
-    );
   };
 
   const handleSaveEdit = async (e: React.FormEvent) => {
@@ -110,7 +91,6 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
       nome: editNome,
       email: editEmail,
       perfil: editPerfil,
-      nivelAcesso: editNivelAcesso,
     });
     if (!salvo) return;
 
@@ -144,10 +124,10 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-foreground">
-              Editar Permissões do Usuário
+              Editar Usuário
             </DialogTitle>
             <DialogDescription>
-              Ajuste o perfil de acesso e permissões individuais do sistema.
+              As permissões são definidas pelo perfil de acesso.
             </DialogDescription>
           </DialogHeader>
 
@@ -179,21 +159,7 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
               <Select
                 value={editPerfil}
                 disabled={editandoAdmin}
-                onValueChange={(v) => {
-                  const perfil = v as Perfil;
-                  setEditPerfil(perfil);
-                  if (perfil === "Coordenador") {
-                    setEditNivelAcesso([
-                      "Realizar agendamento",
-                      "Editar agendamento",
-                      "Aprovar solicitações",
-                      "Ministrar disciplinas",
-                      "Gerar relatório",
-                    ]);
-                  } else {
-                    setEditNivelAcesso(["Realizar agendamento", "Editar agendamento", "Ministrar disciplinas"]);
-                  }
-                }}
+                onValueChange={(v) => setEditPerfil(v as Perfil)}
               >
                 <SelectTrigger id="perfil">
                   <SelectValue placeholder="Selecione o perfil" />
@@ -206,31 +172,19 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
               </Select>
             </div>
 
-            {!editandoAdmin && (
             <div className="space-y-2">
-              <Label>Níveis e Acessos Concedidos</Label>
-              <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
-                {AVAILABLE_PERMISSIONS.map((perm) => {
-                  const checked = editNivelAcesso.includes(perm);
-                  return (
-                    <button
-                      key={perm}
-                      type="button"
-                      onClick={() => togglePermission(perm)}
-                      className={`text-left rounded-md border p-2 text-xs transition-colors ${
-                        checked
-                          ? "border-primary bg-primary/10 text-primary font-medium"
-                          : "border-border bg-background text-muted-foreground hover:bg-accent"
-                      }`}
-                    >
-                      {checked ? "✓ " : "+ "}
-                      {perm}
-                    </button>
-                  );
-                })}
+              <Label>Permissões do perfil</Label>
+              <div className="flex flex-wrap gap-1.5">
+                {PERMISSOES_POR_PERFIL[editPerfil].map((perm) => (
+                  <span
+                    key={perm}
+                    className="rounded-md bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground"
+                  >
+                    {perm}
+                  </span>
+                ))}
               </div>
             </div>
-            )}
 
             <DialogFooter className="pt-2">
               <Button type="button" variant="outline" onClick={() => setEditingUser(null)}>
@@ -358,7 +312,7 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-52">
                           <DropdownMenuItem onClick={() => handleOpenEdit(u)} className="cursor-pointer">
-                            <Pencil className="h-4 w-4 mr-2" /> Editar Acessos e Perfil
+                            <Pencil className="h-4 w-4 mr-2" /> Editar usuário e perfil
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleResetPassword(u)} className="cursor-pointer">
                             <KeyRound className="h-4 w-4 mr-2 text-amber-600" /> Gerar Senha Temporária
@@ -380,8 +334,7 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
                   </div>
 
                   <div className="mt-3 flex flex-wrap gap-1.5">
-                    {u.nivelAcesso &&
-                      u.nivelAcesso.map((f) => (
+                    {u.nivelAcesso.map((f) => (
                         <span
                           key={f}
                           className="rounded-md bg-secondary px-2 py-0.5 text-[10px] font-medium text-secondary-foreground"

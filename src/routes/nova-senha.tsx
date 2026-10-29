@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Loader2, Lock, ShieldCheck } from "lucide-react";
@@ -29,7 +29,6 @@ export const Route = createFileRoute("/nova-senha")({
 function NovaSenhaPage() {
   const { sessao } = Route.useRouteContext();
   const navigate = useNavigate();
-  const router = useRouter();
   const queryClient = useQueryClient();
   const [salvando, setSalvando] = useState(false);
   const [senha, setSenha] = useState("");
@@ -57,10 +56,11 @@ function NovaSenhaPage() {
       setSalvando(false);
       return;
     }
-    await queryClient.invalidateQueries({ queryKey: sessaoQueryOptions.queryKey });
-    await router.invalidate();
+    // Busca a sessão de novo (o cache ainda diz que a troca é obrigatória e
+    // faria a rota redirecionar de volta para esta tela)
+    await queryClient.fetchQuery({ ...sessaoQueryOptions, staleTime: 0 });
     toast.success("Nova senha definida com sucesso! Acesso liberado.");
-    navigate({ to: "/" });
+    await navigate({ to: "/" });
   }
 
   return (

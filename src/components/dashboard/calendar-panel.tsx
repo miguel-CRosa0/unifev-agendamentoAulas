@@ -21,17 +21,22 @@ function statusDot(status: Agendamento["status"]) {
   return "bg-destructive";
 }
 
+function hojeISO() {
+  return new Date().toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
+}
+
 export function CalendarPanel({ agendamentos }: { agendamentos: Agendamento[] }) {
-  const base = agendamentos[0]?.data ?? "2026-09-03";
-  const [ano, mes] = base.split("-").map(Number) as [number, number, number];
+  const [hoje] = useState(hojeISO);
+  const [ano, mes] = hoje.split("-").map(Number) as [number, number, number];
   const [cursor, setCursor] = useState({ ano, mes: mes - 1 });
-  const [selecionado, setSelecionado] = useState(base);
+  const [selecionado, setSelecionado] = useState(hoje);
 
   const porDia = useMemo(() => {
     const map = new Map<string, Agendamento[]>();
     for (const a of agendamentos) {
       map.set(a.data, [...(map.get(a.data) ?? []), a]);
     }
+    for (const lista of map.values()) lista.sort((x, y) => x.horaInicio.localeCompare(y.horaInicio));
     return map;
   }, [agendamentos]);
 
@@ -57,6 +62,17 @@ export function CalendarPanel({ agendamentos }: { agendamentos: Agendamento[] })
           Calendário de agendamentos
         </CardTitle>
         <div className="flex items-center gap-1">
+          <Button
+            variant="outline"
+            size="sm"
+            className="mr-1 h-8 text-xs"
+            onClick={() => {
+              setCursor({ ano, mes: mes - 1 });
+              setSelecionado(hoje);
+            }}
+          >
+            Hoje
+          </Button>
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => mover(-1)} aria-label="Mês anterior">
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -81,6 +97,7 @@ export function CalendarPanel({ agendamentos }: { agendamentos: Agendamento[] })
               const chave = iso(cursor.ano, cursor.mes, dia);
               const itens = porDia.get(chave) ?? [];
               const ativo = chave === selecionado;
+              const ehHoje = chave === hoje;
               return (
                 <button
                   key={chave}
@@ -89,7 +106,9 @@ export function CalendarPanel({ agendamentos }: { agendamentos: Agendamento[] })
                   className={`flex aspect-square flex-col items-center justify-start gap-1 rounded-lg border p-1.5 text-sm transition-colors ${
                     ativo
                       ? "border-primary bg-primary/10 font-semibold text-primary"
-                      : "border-border bg-background text-foreground hover:bg-accent"
+                      : ehHoje
+                        ? "border-primary/40 bg-background font-semibold text-primary hover:bg-accent"
+                        : "border-border bg-background text-foreground hover:bg-accent"
                   }`}
                 >
                   <span>{dia}</span>

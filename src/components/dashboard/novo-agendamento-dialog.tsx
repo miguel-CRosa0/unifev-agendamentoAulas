@@ -21,17 +21,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { HORARIOS_AULA, minutosDoDia } from "@/components/dashboard/data";
 
-const TIME_SLOTS = [
-  { label: "07:30 — 09:10 (Manhã 1)", inicio: "07:30", fim: "09:10" },
-  { label: "09:20 — 11:00 (Manhã 2)", inicio: "09:20", fim: "11:00" },
-  { label: "11:10 — 12:50 (Manhã 3)", inicio: "11:10", fim: "12:50" },
-  { label: "13:30 — 15:10 (Tarde 1)", inicio: "13:30", fim: "15:10" },
-  { label: "15:20 — 17:00 (Tarde 2)", inicio: "15:20", fim: "17:00" },
-  { label: "17:10 — 18:50 (Tarde 3)", inicio: "17:10", fim: "18:50" },
-  { label: "19:00 — 20:40 (Noite 1)", inicio: "19:00", fim: "20:40" },
-  { label: "20:50 — 22:30 (Noite 2)", inicio: "20:50", fim: "22:30" },
-];
+const TIME_SLOTS = HORARIOS_AULA;
 
 export function NovoAgendamentoDialog() {
   const {
@@ -49,7 +41,7 @@ export function NovoAgendamentoDialog() {
 
   // Padrão: amanhã (hoje normalmente fica dentro da antecedência mínima)
   const [data, setData] = useState(() =>
-    new Date(Date.now() + 86_400_000).toLocaleDateString("sv-SE"),
+    new Date(Date.now() + 86_400_000).toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" }),
   );
   const [slotIndex, setSlotIndex] = useState("0");
   const [salaCodigo, setSalaCodigo] = useState("");
@@ -58,7 +50,7 @@ export function NovoAgendamentoDialog() {
   const [disciplinaCodigo, setDisciplinaCodigo] = useState("");
   const [turma, setTurma] = useState("");
   const [professorResponsavel, setProfessorResponsavel] = useState("");
-  const [alunos, setAlunos] = useState(30);
+  const [alunos, setAlunos] = useState("");
 
   // Sync preselected data when dialog opens
   useEffect(() => {
@@ -78,17 +70,8 @@ export function NovoAgendamentoDialog() {
           setDisciplinaCodigo(found.codigo);
           setTurma(found.turma);
           setProfessorResponsavel(found.professor);
-          setAlunos(found.alunos);
-        }
-      } else if (disciplinas.length > 0 && !disciplinaId) {
-        const first = disciplinas[0];
-        if (first) {
-          setDisciplinaId(first.id);
-          setDisciplinaNome(first.nome);
-          setDisciplinaCodigo(first.codigo);
-          setTurma(first.turma);
-          setProfessorResponsavel(first.professor);
-          setAlunos(first.alunos);
+          setAlunos(String(found.alunos));
+          if (found.salaPadrao && !preselectedSalaCodigo) setSalaCodigo(found.salaPadrao);
         }
       }
     }
@@ -108,11 +91,12 @@ export function NovoAgendamentoDialog() {
   // Mesmas regras validadas no servidor, mostradas antes de enviar
   const horasAteInicio =
     (new Date(`${data}T${selectedSlot.inicio}:00-03:00`).getTime() - Date.now()) / 3_600_000;
-  const minutos = (hhmm: string) => Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3, 5));
-  const duracaoSlot = minutos(selectedSlot.fim) - minutos(selectedSlot.inicio);
+  const duracaoSlot = minutosDoDia(selectedSlot.fim) - minutosDoDia(selectedSlot.inicio);
+  const qtdAlunos = Number(alunos);
+  const hoje = new Date().toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
   const aviso =
-    selectedSala && alunos > selectedSala.capacidade
-      ? `A sala ${selectedSala.codigo} comporta ${selectedSala.capacidade} alunos (informado: ${alunos}).`
+    selectedSala && qtdAlunos > selectedSala.capacidade
+      ? `A sala ${selectedSala.codigo} comporta ${selectedSala.capacidade} alunos (informado: ${qtdAlunos}).`
       : horasAteInicio < 0
         ? "Este horário já passou. Escolha outra data ou horário."
         : horasAteInicio < configuracoes.antecedenciaMinima
@@ -129,7 +113,7 @@ export function NovoAgendamentoDialog() {
       setDisciplinaCodigo(disc.codigo);
       setTurma(disc.turma);
       setProfessorResponsavel(disc.professor);
-      setAlunos(disc.alunos);
+      setAlunos(String(disc.alunos));
       if (disc.salaPadrao && !preselectedSalaCodigo) {
         setSalaCodigo(disc.salaPadrao);
       }
@@ -145,8 +129,12 @@ export function NovoAgendamentoDialog() {
       toast.error("Selecione uma sala ou laboratório.");
       return;
     }
-    if (!disciplinaNome) {
-      toast.error("Informe a disciplina.");
+    if (!disciplinaNome.trim() || !disciplinaCodigo.trim() || !turma.trim() || !professorResponsavel.trim()) {
+      toast.error("Preencha a disciplina, o código, a turma e o professor responsável.");
+      return;
+    }
+    if (!Number.isInteger(qtdAlunos) || qtdAlunos < 1) {
+      toast.error("Informe a quantidade de alunos.");
       return;
     }
 
@@ -156,17 +144,23 @@ export function NovoAgendamentoDialog() {
       horaInicio: selectedSlot.inicio,
       horaFim: selectedSlot.fim,
       salaCodigo,
-      disciplina: disciplinaNome,
-      disciplinaCodigo: disciplinaCodigo || "GER-000",
-      turma: turma || "Turma Geral",
-      professorResponsavel: professorResponsavel || currentUser.nome,
-      alunos: Number(alunos) || 30,
+      disciplina: disciplinaNome.trim(),
+      disciplinaCodigo: disciplinaCodigo.trim().toUpperCase(),
+      turma: turma.trim(),
+      professorResponsavel: professorResponsavel.trim(),
+      alunos: qtdAlunos,
     });
     setSalvando(false);
 
     if (result.success) {
       toast.success(result.message);
       setNovoAgendamentoOpen(false);
+      setDisciplinaId("");
+      setDisciplinaNome("");
+      setDisciplinaCodigo("");
+      setTurma("");
+      setProfessorResponsavel("");
+      setAlunos("");
     } else {
       toast.error(result.message);
     }
@@ -185,6 +179,12 @@ export function NovoAgendamentoDialog() {
           </DialogDescription>
         </DialogHeader>
 
+        {salas.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+            Nenhuma sala cadastrada ainda. O administrador precisa cadastrar as salas e laboratórios
+            antes de os agendamentos serem feitos.
+          </div>
+        ) : (
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           {conflict && (
             <div className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
@@ -212,6 +212,7 @@ export function NovoAgendamentoDialog() {
               <Input
                 id="data"
                 type="date"
+                min={hoje}
                 value={data}
                 onChange={(e) => setData(e.target.value)}
                 required
@@ -259,9 +260,11 @@ export function NovoAgendamentoDialog() {
 
             <div className="space-y-1.5">
               <Label htmlFor="disciplina-select">Vincular Disciplina Cadastrada</Label>
-              <Select value={disciplinaId} onValueChange={handleDisciplinaChange}>
+              <Select value={disciplinaId} onValueChange={handleDisciplinaChange} disabled={disciplinas.length === 0}>
                 <SelectTrigger id="disciplina-select">
-                  <SelectValue placeholder="Selecione uma disciplina" />
+                  <SelectValue
+                    placeholder={disciplinas.length === 0 ? "Nenhuma disciplina cadastrada" : "Selecione uma disciplina"}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {disciplinas.map((d) => (
@@ -281,7 +284,7 @@ export function NovoAgendamentoDialog() {
                 id="disciplina"
                 value={disciplinaNome}
                 onChange={(e) => setDisciplinaNome(e.target.value)}
-                placeholder="Ex: Banco de Dados II"
+                placeholder="Nome da disciplina ou atividade"
                 required
               />
             </div>
@@ -292,7 +295,8 @@ export function NovoAgendamentoDialog() {
                 id="disc-codigo"
                 value={disciplinaCodigo}
                 onChange={(e) => setDisciplinaCodigo(e.target.value)}
-                placeholder="Ex: BDD-202"
+                placeholder="Código da disciplina"
+                required
               />
             </div>
           </div>
@@ -304,7 +308,7 @@ export function NovoAgendamentoDialog() {
                 id="turma"
                 value={turma}
                 onChange={(e) => setTurma(e.target.value)}
-                placeholder="Ex: ADS 4º semestre — Noturno"
+                placeholder="Curso, semestre e turno"
                 required
               />
             </div>
@@ -317,7 +321,7 @@ export function NovoAgendamentoDialog() {
                 min={1}
                 max={300}
                 value={alunos}
-                onChange={(e) => setAlunos(Number(e.target.value))}
+                onChange={(e) => setAlunos(e.target.value)}
                 required
               />
             </div>
@@ -330,7 +334,7 @@ export function NovoAgendamentoDialog() {
                 id="professor"
                 value={professorResponsavel}
                 onChange={(e) => setProfessorResponsavel(e.target.value)}
-                placeholder="Prof. Nome Completo"
+                placeholder="Nome do professor"
                 required
               />
             </div>
@@ -358,6 +362,7 @@ export function NovoAgendamentoDialog() {
             </Button>
           </DialogFooter>
         </form>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -22,6 +22,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const SEM_SALA = "none";
+
 interface NovaDisciplinaDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -39,10 +41,10 @@ export function NovaDisciplinaDialog({
   const [nome, setNome] = useState("");
   const [turma, setTurma] = useState("");
   const [turno, setTurno] = useState<"Matutino" | "Vespertino" | "Noturno" | "Integral">("Noturno");
-  const [semestre, setSemestre] = useState("1º Semestre");
+  const [semestre, setSemestre] = useState("");
   const [professor, setProfessor] = useState("");
-  const [alunos, setAlunos] = useState(35);
-  const [salaPadrao, setSalaPadrao] = useState("");
+  const [alunos, setAlunos] = useState("");
+  const [salaPadrao, setSalaPadrao] = useState(SEM_SALA);
 
   useEffect(() => {
     if (disciplinaToEdit) {
@@ -52,27 +54,34 @@ export function NovaDisciplinaDialog({
       setTurno(disciplinaToEdit.turno);
       setSemestre(disciplinaToEdit.semestre);
       setProfessor(disciplinaToEdit.professor);
-      setAlunos(disciplinaToEdit.alunos);
-      setSalaPadrao(disciplinaToEdit.salaPadrao || "");
+      setAlunos(String(disciplinaToEdit.alunos));
+      setSalaPadrao(disciplinaToEdit.salaPadrao || SEM_SALA);
     } else {
       setCodigo("");
       setNome("");
       setTurma("");
       setTurno("Noturno");
-      setSemestre("1º Semestre");
+      setSemestre("");
       setProfessor("");
-      setAlunos(35);
-      setSalaPadrao(salas[0]?.codigo || "");
+      setAlunos("");
+      setSalaPadrao(SEM_SALA);
     }
-  }, [disciplinaToEdit, open, salas]);
+  }, [disciplinaToEdit, open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!codigo.trim() || !nome.trim() || !turma.trim() || !professor.trim()) {
+    if (!codigo.trim() || !nome.trim() || !turma.trim() || !semestre.trim() || !professor.trim()) {
       toast.error("Preencha todos os campos obrigatórios.");
       return;
     }
+    const matriculados = Number(alunos);
+    if (!Number.isInteger(matriculados) || matriculados < 1) {
+      toast.error("Informe a quantidade de alunos matriculados.");
+      return;
+    }
+    // "" remove a sala habitual (o servidor converte em nenhuma sala)
+    const sala = salaPadrao === SEM_SALA ? "" : salaPadrao;
 
     if (disciplinaToEdit) {
       if (!(await updateDisciplina(disciplinaToEdit.id, {
@@ -80,10 +89,10 @@ export function NovaDisciplinaDialog({
         nome: nome.trim(),
         turma: turma.trim(),
         turno,
-        semestre,
+        semestre: semestre.trim(),
         professor: professor.trim(),
-        alunos: Number(alunos) || 30,
-        ...(salaPadrao ? { salaPadrao } : {}),
+        alunos: matriculados,
+        salaPadrao: sala,
       }))) return;
       toast.success(`Disciplina ${codigo} atualizada com sucesso!`);
     } else {
@@ -92,10 +101,10 @@ export function NovaDisciplinaDialog({
         nome: nome.trim(),
         turma: turma.trim(),
         turno,
-        semestre,
+        semestre: semestre.trim(),
         professor: professor.trim(),
-        alunos: Number(alunos) || 30,
-        ...(salaPadrao ? { salaPadrao } : {}),
+        alunos: matriculados,
+        ...(sala ? { salaPadrao: sala } : {}),
       }))) return;
       toast.success(`Disciplina ${codigo} adicionada com sucesso!`);
     }
@@ -131,7 +140,7 @@ export function NovaDisciplinaDialog({
 
             <div className="space-y-1.5">
               <Label htmlFor="turno">Turno</Label>
-              <Select value={turno} onValueChange={(v) => setTurno(v as any)}>
+              <Select value={turno} onValueChange={(v) => setTurno(v as DisciplinaItem["turno"])}>
                 <SelectTrigger id="turno">
                   <SelectValue placeholder="Selecione o turno" />
                 </SelectTrigger>
@@ -151,7 +160,7 @@ export function NovaDisciplinaDialog({
               id="disc-nome"
               value={nome}
               onChange={(e) => setNome(e.target.value)}
-              placeholder="Ex: Estruturas de Dados Avançadas"
+              placeholder="Ex: Estrutura de Dados"
               required
             />
           </div>
@@ -175,6 +184,7 @@ export function NovaDisciplinaDialog({
                 value={semestre}
                 onChange={(e) => setSemestre(e.target.value)}
                 placeholder="Ex: 3º Semestre"
+                required
               />
             </div>
           </div>
@@ -186,7 +196,7 @@ export function NovaDisciplinaDialog({
                 id="prof"
                 value={professor}
                 onChange={(e) => setProfessor(e.target.value)}
-                placeholder="Ex: Prof.ª Ana Souza"
+                placeholder="Nome do professor"
                 required
               />
             </div>
@@ -199,7 +209,7 @@ export function NovaDisciplinaDialog({
                 min={1}
                 max={300}
                 value={alunos}
-                onChange={(e) => setAlunos(Number(e.target.value))}
+                onChange={(e) => setAlunos(e.target.value)}
                 required
               />
             </div>
@@ -212,7 +222,7 @@ export function NovaDisciplinaDialog({
                 <SelectValue placeholder="Selecione a sala padrão" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">Nenhuma selecionada</SelectItem>
+                <SelectItem value={SEM_SALA}>Nenhuma</SelectItem>
                 {salas.map((s) => (
                   <SelectItem key={s.codigo} value={s.codigo}>
                     {s.codigo} — {s.nome} ({s.capacidade} lug.)

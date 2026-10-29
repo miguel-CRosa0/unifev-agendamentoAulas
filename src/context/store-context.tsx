@@ -51,7 +51,6 @@ export interface NovoUsuario {
   telefone?: string;
   nascimento: string;
   perfil: Exclude<Perfil, "Administrador">;
-  nivelAcesso: string[];
 }
 
 interface StoreContextType {
@@ -91,7 +90,7 @@ interface StoreContextType {
   addUsuario: (user: NovoUsuario) => Promise<{ senhaTemporaria: string } | null>;
   updateUsuario: (
     id: string,
-    updates: Pick<Usuario, "nome" | "email" | "perfil" | "nivelAcesso">,
+    updates: Pick<Usuario, "nome" | "email" | "perfil">,
   ) => Promise<boolean>;
   deleteUsuario: (id: string) => Promise<boolean>;
   resetSenhaUsuario: (id: string) => Promise<{ senhaTemporaria: string } | null>;
@@ -217,13 +216,13 @@ export function StoreProvider({
         label: "Salas e laboratórios",
         value: String(totalSalas).padStart(2, "0"),
         change: `${salas.filter((s) => s.status === "disponível").length} disponíveis agora`,
-        trend: "up",
+        trend: "neutral",
       },
       {
         label: "Agendamentos de hoje",
         value: String(agendamentosHoje).padStart(2, "0"),
         change: `${agendamentos.filter((a) => a.status === "pendente").length} pendentes de aprovação`,
-        trend: "up",
+        trend: "neutral",
       },
       {
         label: "Conflitos de horário",
@@ -234,8 +233,8 @@ export function StoreProvider({
       {
         label: "Taxa de ocupação",
         value: `${taxaOcupacao}%`,
-        change: `${salasOcupadas} de ${totalSalas} salas em uso`,
-        trend: "up",
+        change: `${salasOcupadas} de ${totalSalas} salas em uso agora`,
+        trend: "neutral",
       },
     ];
   }, [salas, agendamentos]);

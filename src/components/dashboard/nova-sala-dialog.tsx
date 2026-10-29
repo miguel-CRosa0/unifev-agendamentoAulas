@@ -47,7 +47,7 @@ export function NovaSalaDialog({ open, onOpenChange, salaToEdit }: NovaSalaDialo
   const [codigo, setCodigo] = useState("");
   const [nome, setNome] = useState("");
   const [localizacao, setLocalizacao] = useState("");
-  const [capacidade, setCapacidade] = useState(40);
+  const [capacidade, setCapacidade] = useState("");
   const [status, setStatus] = useState<StatusSala>("disponível");
   const [recursos, setRecursos] = useState<Recurso[]>([]);
   const [novoRecursoNome, setNovoRecursoNome] = useState("");
@@ -57,19 +57,16 @@ export function NovaSalaDialog({ open, onOpenChange, salaToEdit }: NovaSalaDialo
       setCodigo(salaToEdit.codigo);
       setNome(salaToEdit.nome);
       setLocalizacao(salaToEdit.localizacao);
-      setCapacidade(salaToEdit.capacidade);
+      setCapacidade(String(salaToEdit.capacidade));
       setStatus(salaToEdit.status);
       setRecursos(salaToEdit.recursos || []);
     } else {
       setCodigo("");
       setNome("");
-      setLocalizacao("Bloco A — 1º andar");
-      setCapacidade(40);
+      setLocalizacao("");
+      setCapacidade("");
       setStatus("disponível");
-      setRecursos([
-        { id: "rc1", nome: "Projetor Full HD", descricao: "HDMI / Wireless" },
-        { id: "rc2", nome: "Ar-condicionado", descricao: "Split" },
-      ]);
+      setRecursos([]);
     }
   }, [salaToEdit, open]);
 
@@ -101,8 +98,13 @@ export function NovaSalaDialog({ open, onOpenChange, salaToEdit }: NovaSalaDialo
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!codigo.trim() || !nome.trim()) {
-      toast.error("Preencha o código e o nome da sala.");
+    if (!codigo.trim() || !nome.trim() || !localizacao.trim()) {
+      toast.error("Preencha o código, o nome e a localização da sala.");
+      return;
+    }
+    const lugares = Number(capacidade);
+    if (!Number.isInteger(lugares) || lugares < 1) {
+      toast.error("Informe a capacidade da sala (número de lugares).");
       return;
     }
 
@@ -111,7 +113,7 @@ export function NovaSalaDialog({ open, onOpenChange, salaToEdit }: NovaSalaDialo
         codigo: codigo.trim().toUpperCase(),
         nome: nome.trim(),
         localizacao: localizacao.trim(),
-        capacidade: Number(capacidade) || 30,
+        capacidade: lugares,
         status,
         recursos,
       }))) return;
@@ -121,7 +123,7 @@ export function NovaSalaDialog({ open, onOpenChange, salaToEdit }: NovaSalaDialo
         codigo: codigo.trim().toUpperCase(),
         nome: nome.trim(),
         localizacao: localizacao.trim(),
-        capacidade: Number(capacidade) || 30,
+        capacidade: lugares,
         status,
         recursos,
       }))) return;
@@ -180,7 +182,7 @@ export function NovaSalaDialog({ open, onOpenChange, salaToEdit }: NovaSalaDialo
               id="nome"
               value={nome}
               onChange={(e) => setNome(e.target.value)}
-              placeholder="Ex: Laboratório de Robótica e Automação"
+              placeholder="Ex: Laboratório de Informática"
               required
             />
           </div>
@@ -205,7 +207,7 @@ export function NovaSalaDialog({ open, onOpenChange, salaToEdit }: NovaSalaDialo
                 min={1}
                 max={500}
                 value={capacidade}
-                onChange={(e) => setCapacidade(Number(e.target.value))}
+                onChange={(e) => setCapacidade(e.target.value)}
                 required
               />
             </div>

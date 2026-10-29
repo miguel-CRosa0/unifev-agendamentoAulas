@@ -1,4 +1,4 @@
-import type { Perfil } from "@/components/dashboard/data";
+import { PERMISSOES_POR_PERFIL, type Perfil } from "@/components/dashboard/data";
 import { auth } from "./auth.server";
 import { prisma } from "./db.server";
 
@@ -6,12 +6,7 @@ import { prisma } from "./db.server";
 export const ADMIN_EMAIL = "admin@unifev.com.br";
 const ADMIN_SENHA_INICIAL = "admin102030";
 
-export const PERMISSOES_ADMIN = [
-  "Gerenciar salas",
-  "Gerenciar usuários",
-  "Definir nível de acesso",
-  "Gerar relatório",
-];
+const PERMISSOES_ADMIN = PERMISSOES_POR_PERFIL.Administrador;
 
 export async function definirSenha(userId: string, senha: string) {
   const ctx = await auth.$context;
@@ -82,7 +77,7 @@ export async function garantirAdministrador() {
   // Qualquer outro usuário com perfil de administrador vira coordenador
   await prisma.user.updateMany({
     where: { perfil: "Administrador", id: { not: admin.id } },
-    data: { perfil: "Coordenador", tambemProfessor: true },
+    data: { perfil: "Coordenador", tambemProfessor: true, nivelAcesso: PERMISSOES_POR_PERFIL.Coordenador },
   });
   return admin;
 }

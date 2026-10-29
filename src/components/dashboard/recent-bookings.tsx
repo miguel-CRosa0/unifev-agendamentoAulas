@@ -237,7 +237,7 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
                       </TableCell>
                       <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-1">
-                          {ag.status === "pendente" && (
+                          {ag.status === "pendente" && isGestao && (
                             <Button
                               size="sm"
                               variant="outline"

@@ -30,7 +30,7 @@ interface GlobalSearchDialogProps {
 
 export function GlobalSearchDialog({ open, onOpenChange }: GlobalSearchDialogProps) {
   const navigate = useNavigate();
-  const { salas, agendamentos, disciplinas, usuarios, openNovoAgendamento } = useStore();
+  const { salas, agendamentos, disciplinas, usuarios, openNovoAgendamento, isAdmin } = useStore();
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -66,7 +66,7 @@ export function GlobalSearchDialog({ open, onOpenChange }: GlobalSearchDialogPro
             }}
           >
             <Plus className="mr-2 h-4 w-4 text-primary" />
-            <span>Gerenciar / Cadastrar Salas</span>
+            <span>Salas e laboratórios</span>
           </CommandItem>
           <CommandItem
             onSelect={() => {
@@ -152,6 +152,8 @@ export function GlobalSearchDialog({ open, onOpenChange }: GlobalSearchDialogPro
           ))}
         </CommandGroup>
 
+        {isAdmin && (
+        <>
         <CommandSeparator />
 
         <CommandGroup heading="Usuários">
@@ -172,6 +174,8 @@ export function GlobalSearchDialog({ open, onOpenChange }: GlobalSearchDialogPro
             </CommandItem>
           ))}
         </CommandGroup>
+        </>
+        )}
       </CommandList>
     </CommandDialog>
   );

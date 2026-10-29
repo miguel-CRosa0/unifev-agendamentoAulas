@@ -89,6 +89,22 @@ export interface Configuracoes {
   tamanhoMinimoSenha: number;
 }
 
+// Horários de aula oferecidos no agendamento (blocos de 100 minutos)
+export const HORARIOS_AULA = [
+  { label: "07:30 — 09:10 (Manhã 1)", inicio: "07:30", fim: "09:10" },
+  { label: "09:20 — 11:00 (Manhã 2)", inicio: "09:20", fim: "11:00" },
+  { label: "11:10 — 12:50 (Manhã 3)", inicio: "11:10", fim: "12:50" },
+  { label: "13:30 — 15:10 (Tarde 1)", inicio: "13:30", fim: "15:10" },
+  { label: "15:20 — 17:00 (Tarde 2)", inicio: "15:20", fim: "17:00" },
+  { label: "17:10 — 18:50 (Tarde 3)", inicio: "17:10", fim: "18:50" },
+  { label: "19:00 — 20:40 (Noite 1)", inicio: "19:00", fim: "20:40" },
+  { label: "20:50 — 22:30 (Noite 2)", inicio: "20:50", fim: "22:30" },
+];
+
+export function minutosDoDia(hhmm: string) {
+  return Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3, 5));
+}
+
 export const configuracoesPadrao: Configuracoes = {
   antecedenciaMinima: 24,
   duracaoMaxima: 100,
@@ -97,4 +113,25 @@ export const configuracoesPadrao: Configuracoes = {
   senhaTemporariaNascimento: true,
   trocaObrigatoriaPrimeiroLogin: true,
   tamanhoMinimoSenha: 8,
+};
+
+// O que cada perfil pode fazer. Reflete as verificações feitas no servidor (src/lib/api.ts).
+export const PERMISSOES_POR_PERFIL: Record<Perfil, string[]> = {
+  Administrador: [
+    "Gerenciar salas",
+    "Gerenciar usuários",
+    "Configurar o sistema",
+    "Gerenciar disciplinas",
+    "Aprovar agendamentos",
+    "Agendar sem aprovação",
+    "Gerar relatórios",
+  ],
+  Coordenador: [
+    "Gerenciar disciplinas",
+    "Alterar status de salas",
+    "Aprovar agendamentos",
+    "Agendar sem aprovação",
+    "Gerar relatórios",
+  ],
+  Professor: ["Solicitar agendamentos", "Cancelar os próprios agendamentos", "Gerar relatórios"],
 };

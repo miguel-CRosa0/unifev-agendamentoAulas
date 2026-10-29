@@ -60,13 +60,8 @@ export function CadastroPage() {
       return;
     }
 
-    const nivelAcesso =
-      perfil === "Coordenador"
-        ? ["Realizar agendamento", "Editar agendamento", "Aprovar solicitações", "Ministrar disciplinas"]
-        : ["Realizar agendamento", "Editar agendamento", "Ministrar disciplinas"];
-
     setSalvando(true);
-    const resultado = await addUsuario({ nome, email, ra, telefone, nascimento, perfil, nivelAcesso });
+    const resultado = await addUsuario({ nome, email, ra, telefone, nascimento, perfil });
     setSalvando(false);
     if (!resultado) return;
 
@@ -109,7 +104,7 @@ export function CadastroPage() {
                   <Label htmlFor="nome">Nome completo</Label>
                   <Input
                     id="nome"
-                    placeholder="Ex: Carlos Eduardo de Oliveira"
+                    placeholder="Nome e sobrenome"
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
                     required
@@ -120,7 +115,7 @@ export function CadastroPage() {
                   <Label htmlFor="telefone">Telefone / WhatsApp</Label>
                   <Input
                     id="telefone"
-                    placeholder="(11) 98765-4321"
+                    placeholder="(DDD) número"
                     value={telefone}
                     onChange={(e) => setTelefone(e.target.value)}
                   />
@@ -131,7 +126,7 @@ export function CadastroPage() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="carlos.oliveira@instituicao.edu.br"
+                    placeholder="nome@unifev.edu.br"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -143,7 +138,7 @@ export function CadastroPage() {
                   <Input
                     id="ra"
                     inputMode="numeric"
-                    placeholder="20260088"
+                    placeholder="Somente letras e números"
                     value={ra}
                     onChange={(e) => setRa(e.target.value)}
                     required
@@ -168,8 +163,8 @@ export function CadastroPage() {
                       <SelectValue placeholder="Selecione o perfil" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Coordenador">Coordenador — Também Professor, aprova reservas</SelectItem>
-                      <SelectItem value="Professor">Professor — Solicitação direta e gestão de turmas</SelectItem>
+                      <SelectItem value="Coordenador">Coordenador — também professor, aprova agendamentos</SelectItem>
+                      <SelectItem value="Professor">Professor — solicita agendamentos para aprovação</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

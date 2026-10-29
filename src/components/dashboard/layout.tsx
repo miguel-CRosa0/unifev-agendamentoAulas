@@ -80,9 +80,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             <GraduationCap className="h-5 w-5" />
           </div>
           <span className="text-lg font-bold tracking-tight text-foreground">SalaFácil</span>
-          <Badge variant="outline" className="ml-auto text-[10px] uppercase font-semibold text-primary border-primary/20 bg-primary/5">
-            v2.0
-          </Badge>
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 p-4 overflow-y-auto">

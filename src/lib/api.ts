@@ -14,6 +14,7 @@ import type {
   Usuario,
 } from "@/components/dashboard/data";
 import type { Configuracoes, DisciplinaItem } from "@/components/dashboard/data";
+import { PERMISSOES_POR_PERFIL } from "@/components/dashboard/data";
 import { auth } from "./auth.server";
 import { prisma } from "./db.server";
 import { ADMIN_EMAIL, criarContaUsuario, definirSenha } from "./usuarios.server";
@@ -115,7 +116,7 @@ function toUsuario(u: DbUser): Usuario {
     email: u.email,
     perfil: u.perfil as Perfil,
     tambemProfessor: u.tambemProfessor,
-    nivelAcesso: Array.isArray(u.nivelAcesso) ? (u.nivelAcesso as string[]) : [],
+    nivelAcesso: PERMISSOES_POR_PERFIL[u.perfil as Perfil] ?? [],
     ra: u.username ?? "",
     telefone: u.telefone ?? "",
   };
@@ -507,7 +508,6 @@ export const criarUsuario = createServerFn({ method: "POST" })
       telefone: z.string().optional(),
       nascimento: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
       perfil: z.enum(PERFIS_CADASTRO),
-      nivelAcesso: z.array(z.string()),
     }),
   )
   .handler(async ({ data, context }) => {
@@ -525,6 +525,7 @@ export const criarUsuario = createServerFn({ method: "POST" })
 
     await criarContaUsuario({
       ...data,
+      nivelAcesso: PERMISSOES_POR_PERFIL[data.perfil],
       senha: senhaTemporaria,
       mustChangePassword: config.trocaObrigatoriaPrimeiroLogin,
     });
@@ -540,7 +541,6 @@ export const atualizarUsuario = createServerFn({ method: "POST" })
       nome: z.string().trim().min(1),
       email: z.string().trim().email(),
       perfil: z.enum(["Administrador", ...PERFIS_CADASTRO]),
-      nivelAcesso: z.array(z.string()),
     }),
   )
   .handler(async ({ data, context }) => {
@@ -570,7 +570,7 @@ export const atualizarUsuario = createServerFn({ method: "POST" })
         email,
         perfil: data.perfil,
         tambemProfessor: data.perfil === "Coordenador",
-        nivelAcesso: data.nivelAcesso,
+        nivelAcesso: PERMISSOES_POR_PERFIL[data.perfil],
       },
     });
   });
