@@ -34,9 +34,9 @@ após alterar `prisma/schema.prisma`), `npm run db:studio` (visualizar o banco) 
 
 O sistema tem um único administrador:
 
-| E-mail             | Senha inicial |
-| ------------------ | ------------- |
-| unifev@admin.com   | admin102030   |
+| E-mail              | Senha inicial |
+| ------------------- | ------------- |
+| admin@unifev.com.br | admin102030   |
 
 A conta é criada pelo seed e, se ele não tiver sido rodado, no primeiro acesso à tela de login.
 O banco começa vazio: o administrador cadastra salas, disciplinas e usuários (Coordenador ou

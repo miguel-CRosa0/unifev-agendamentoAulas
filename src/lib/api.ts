@@ -20,7 +20,7 @@ import { ADMIN_EMAIL, criarContaUsuario, definirSenha } from "./usuarios.server"
 
 // ---------- Sessão e permissões ----------
 
-// Perfis que o administrador pode atribuir (o único Administrador é unifev@admin.com)
+// Perfis que o administrador pode atribuir (o único Administrador é admin@unifev.com.br)
 const PERFIS_CADASTRO = ["Coordenador", "Professor"] as const;
 const STATUS_SALA = ["disponível", "ocupada", "manutenção"] as const;
 const STATUS_AGENDAMENTO = ["confirmado", "pendente", "cancelado"] as const;

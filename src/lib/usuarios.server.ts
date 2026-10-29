@@ -3,7 +3,7 @@ import { auth } from "./auth.server";
 import { prisma } from "./db.server";
 
 /** Único administrador do sistema. Os demais usuários são cadastrados por ele. */
-export const ADMIN_EMAIL = "unifev@admin.com";
+export const ADMIN_EMAIL = "admin@unifev.com.br";
 const ADMIN_SENHA_INICIAL = "admin102030";
 
 export const PERMISSOES_ADMIN = [

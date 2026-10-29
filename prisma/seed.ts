@@ -1,5 +1,5 @@
 // Prepara o banco para uso: configurações padrão e a conta do administrador
-// (unifev@admin.com / admin102030). Rode com: npm run db:seed
+// (admin@unifev.com.br / admin102030). Rode com: npm run db:seed
 // Pode ser executado mais de uma vez. Salas, disciplinas e usuários são cadastrados pelo sistema.
 import "dotenv/config";
 
