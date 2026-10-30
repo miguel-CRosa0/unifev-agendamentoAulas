@@ -47,6 +47,29 @@ function statusColor(status: Agendamento["status"]) {
   }
 }
 
+function VazioAgendamentos({ semDados, onNovo }: { semDados: boolean; onNovo: () => void }) {
+  return (
+    <div className="mx-auto flex max-w-xs flex-col items-center text-center">
+      <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent text-primary">
+        <CalendarPlus className="h-5 w-5" />
+      </span>
+      <p className="mt-4 font-medium text-foreground">
+        {semDados ? "Nenhum agendamento ainda" : "Nada encontrado"}
+      </p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        {semDados
+          ? "Reserve a primeira sala para começar a montar a grade de aulas."
+          : "Tente outra busca ou mude o filtro de status."}
+      </p>
+      {semDados && (
+        <Button className="mt-4" onClick={onNovo}>
+          Novo agendamento
+        </Button>
+      )}
+    </div>
+  );
+}
+
 export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }) {
   const {
     openNovoAgendamento,
@@ -174,7 +197,7 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
         </CardHeader>
 
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          <div className="hidden overflow-x-auto md:block">
             <Table>
               <TableHeader>
                 <TableRow className="border-border hover:bg-transparent">
@@ -189,9 +212,9 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
               </TableHeader>
               <TableBody>
                 {filtered.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-10 text-muted-foreground">
-                      Nenhum agendamento encontrado para os filtros selecionados.
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell colSpan={7} className="py-12">
+                      <VazioAgendamentos semDados={agendamentos.length === 0} onNovo={() => openNovoAgendamento()} />
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -290,6 +313,51 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
               </TableBody>
             </Table>
           </div>
+
+          <ul className="divide-y divide-border md:hidden">
+            {filtered.length === 0 && (
+              <li className="px-4 py-10">
+                <VazioAgendamentos semDados={agendamentos.length === 0} onNovo={() => openNovoAgendamento()} />
+              </li>
+            )}
+            {filtered.map((ag) => (
+              <li key={ag.id}>
+                <button
+                  type="button"
+                  onClick={() => handleOpenDetails(ag)}
+                  className="flex w-full flex-col gap-2 px-4 py-4 text-left transition-colors hover:bg-accent/40"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-foreground">{ag.disciplina}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {ag.disciplinaCodigo} · {ag.turma}
+                      </p>
+                    </div>
+                    <Badge variant="outline" className={`shrink-0 capitalize font-medium ${statusColor(ag.status)}`}>
+                      {ag.status}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {ag.data.split("-").reverse().join("/")} · {ag.horaInicio}–{ag.horaFim} · {ag.salaCodigo}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{ag.professorResponsavel}</p>
+                </button>
+                {ag.status === "pendente" && isGestao && (
+                  <div className="px-4 pb-4">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full text-primary"
+                      onClick={(e) => handleQuickApprove(e, ag.id)}
+                    >
+                      <CheckCircle2 className="mr-1 h-3.5 w-3.5" /> Aprovar
+                    </Button>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
         </CardContent>
       </Card>
     </>

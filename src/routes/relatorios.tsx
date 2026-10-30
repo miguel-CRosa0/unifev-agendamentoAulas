@@ -209,7 +209,7 @@ function RelatoriosPage() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Relatórios de Uso e Ocupação</h1>
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground">Relatórios de Uso e Ocupação</h1>
             <p className="text-sm text-muted-foreground">
               {relatorio.faixa
                 ? `Período de ${dataBR(relatorio.faixa.inicio)} a ${dataBR(relatorio.faixa.fim)}.`

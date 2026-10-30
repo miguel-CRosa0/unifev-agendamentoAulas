@@ -3,6 +3,7 @@ import { CalendarPlus } from "lucide-react";
 
 import { useStore } from "@/context/store-context";
 import { DashboardLayout } from "@/components/dashboard/layout";
+import { GradeSalas } from "@/components/dashboard/grade-salas";
 import { CalendarPanel } from "@/components/dashboard/calendar-panel";
 import { RecentBookings } from "@/components/dashboard/recent-bookings";
 import { Button } from "@/components/ui/button";
@@ -30,10 +31,10 @@ function AgendamentosPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Agendamentos</h1>
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground">Agendamentos</h1>
             <p className="text-sm text-muted-foreground">
               {agendamentos.length} reservas registradas · <span className="text-blue-600 dark:text-blue-400 font-medium">{confirmados} confirmadas</span> · {pendentes} pendentes · {cancelados} canceladas
             </p>
@@ -43,6 +44,7 @@ function AgendamentosPage() {
           </Button>
         </div>
 
+        <GradeSalas agendamentos={agendamentos} />
         <CalendarPanel agendamentos={agendamentos} />
         <RecentBookings agendamentos={agendamentos} />
       </div>

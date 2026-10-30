@@ -31,7 +31,7 @@ function UsuariosPage() {
       <div className="space-y-6">
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Usuários e acessos</h1>
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground">Usuários e acessos</h1>
             <p className="text-sm text-muted-foreground">
               {usuarios.length} usuários registrados no sistema com controle de acesso baseado em papéis (RBAC).
             </p>
