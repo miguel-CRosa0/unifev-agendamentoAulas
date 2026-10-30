@@ -192,7 +192,7 @@ export function CadastroPage() {
                 </div>
 
                 {criadoInfo && (
-                  <div className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-700 dark:text-emerald-400 sm:col-span-2">
+                  <div className="flex items-center gap-2 rounded-lg border border-blue-500/30 bg-blue-500/10 p-3 text-sm text-blue-700 dark:text-blue-400 sm:col-span-2">
                     <CheckCircle2 className="h-5 w-5 shrink-0" />
                     <span>
                       Usuário <strong>{criadoInfo.nome}</strong> cadastrado! Senha temporária:{" "}

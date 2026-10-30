@@ -17,7 +17,7 @@ function iso(ano: number, mes: number, dia: number) {
 
 function statusDot(status: Agendamento["status"]) {
   if (status === "confirmado") return "bg-primary";
-  if (status === "pendente") return "bg-amber-500";
+  if (status === "pendente") return "bg-slate-400";
   return "bg-destructive";
 }
 
@@ -100,12 +100,12 @@ export function CalendarPanel({ agendamentos }: { agendamentos: Agendamento[] })
                   key={chave}
                   type="button"
                   onClick={() => setSelecionado(chave)}
-                  className={`flex aspect-[5/4] flex-col items-start justify-between rounded-md border p-2 text-left font-mono text-[13px] transition-colors ${
+                  className={`flex aspect-[5/4] flex-col items-start justify-between rounded-lg border p-2 text-left text-sm transition-colors ${
                     ativo
                       ? "border-primary bg-primary text-primary-foreground"
                       : ehHoje
                         ? "border-primary/50 bg-card font-medium text-primary hover:bg-accent"
-                        : "border-transparent text-foreground hover:border-border hover:bg-card"
+                        : "border-transparent text-foreground hover:bg-accent"
                   }`}
                 >
                   <span>{dia}</span>
@@ -120,14 +120,14 @@ export function CalendarPanel({ agendamentos }: { agendamentos: Agendamento[] })
           </div>
           <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-primary" /> Confirmado</span>
-            <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-amber-500" /> Pendente</span>
+            <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-slate-400" /> Pendente</span>
             <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-destructive" /> Cancelado</span>
           </div>
         </div>
 
         <div className="border-t border-border pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
           <p className="text-xs text-muted-foreground">Agendamentos do dia</p>
-          <p className="font-mono text-sm font-medium text-foreground">
+          <p className="text-base font-semibold text-foreground">
             {selecionado.split("-").reverse().join("/")}
           </p>
           <div className="mt-4 space-y-3.5">
@@ -141,7 +141,7 @@ export function CalendarPanel({ agendamentos }: { agendamentos: Agendamento[] })
                   <p className="truncate text-sm font-medium text-foreground">{a.disciplina}</p>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  <span className="font-mono">{a.horaInicio}–{a.horaFim}</span> · {a.salaCodigo}
+                  <span className="font-medium text-foreground">{a.horaInicio}–{a.horaFim}</span> · {a.salaCodigo}
                 </p>
                 <p className="text-xs text-muted-foreground">{a.professorResponsavel}</p>
               </div>

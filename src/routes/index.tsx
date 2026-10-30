@@ -44,18 +44,18 @@ function DashboardPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-8">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-[13px] capitalize text-muted-foreground">{dataExtensa()}</p>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Olá, {primeiroNome}</h1>
+            <p className="text-sm capitalize text-muted-foreground">{dataExtensa()}</p>
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground">Olá, {primeiroNome}</h1>
           </div>
         </div>
 
         {pendentesCount > 0 && (
           <Link
             to="/agendamentos"
-            className="flex items-center justify-between gap-3 rounded-lg border border-amber-300/60 bg-amber-50 px-4 py-2.5 text-[13px] text-amber-950 transition-colors hover:bg-amber-100 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-100"
+            className="flex items-center justify-between gap-3 rounded-xl border border-primary/20 bg-accent px-5 py-3 text-sm text-accent-foreground transition-colors hover:bg-accent/70"
           >
             <span>
               <strong className="font-semibold">

@@ -35,7 +35,7 @@ function AgendamentosPage() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">Agendamentos</h1>
             <p className="text-sm text-muted-foreground">
-              {agendamentos.length} reservas registradas · <span className="text-emerald-600 dark:text-emerald-400 font-medium">{confirmados} confirmadas</span> · {pendentes} pendentes · {cancelados} canceladas
+              {agendamentos.length} reservas registradas · <span className="text-blue-600 dark:text-blue-400 font-medium">{confirmados} confirmadas</span> · {pendentes} pendentes · {cancelados} canceladas
             </p>
           </div>
           <Button onClick={() => openNovoAgendamento()} className="gap-1.5">

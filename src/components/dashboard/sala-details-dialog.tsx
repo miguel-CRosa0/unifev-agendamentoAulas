@@ -62,10 +62,10 @@ export function SalaDetailsDialog({
               variant="outline"
               className={`capitalize px-2.5 py-1 ${
                 sala.status === "disponível"
-                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-transparent"
+                  ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-transparent"
                   : sala.status === "ocupada"
                   ? "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 border-transparent"
-                  : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-transparent"
+                  : "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400 border-transparent"
               }`}
             >
               {sala.status}
@@ -99,7 +99,7 @@ export function SalaDetailsDialog({
                 type="button"
                 size="sm"
                 variant={sala.status === "disponível" ? "default" : "outline"}
-                className={sala.status === "disponível" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+                className={sala.status === "disponível" ? "bg-blue-600 hover:bg-blue-700" : ""}
                 onClick={() => handleStatusChange("disponível")}
               >
                 <Check className="h-3.5 w-3.5 mr-1" /> Disponível
@@ -117,7 +117,7 @@ export function SalaDetailsDialog({
                 type="button"
                 size="sm"
                 variant={sala.status === "manutenção" ? "default" : "outline"}
-                className={sala.status === "manutenção" ? "bg-amber-600 hover:bg-amber-700" : ""}
+                className={sala.status === "manutenção" ? "bg-slate-600 hover:bg-slate-700" : ""}
                 onClick={() => handleStatusChange("manutenção")}
               >
                 <Wrench className="h-3.5 w-3.5 mr-1" /> Manutenção

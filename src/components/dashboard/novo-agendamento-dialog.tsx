@@ -200,7 +200,7 @@ export function NovoAgendamentoDialog() {
           )}
 
           {!conflict && aviso && (
-            <div className="flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-400">
+            <div className="flex items-start gap-3 rounded-lg border border-slate-500/30 bg-slate-500/10 p-3 text-sm text-slate-700 dark:text-slate-400">
               <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
               <p className="text-xs mt-0.5">{aviso}</p>
             </div>

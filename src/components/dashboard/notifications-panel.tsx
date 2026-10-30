@@ -20,9 +20,9 @@ import type { Notificacao } from "./data";
 function icon(tipo: Notificacao["tipo"]) {
   switch (tipo) {
     case "conflito":
-      return <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0" />;
+      return <AlertTriangle className="h-5 w-5 text-slate-600 dark:text-slate-400 shrink-0" />;
     case "confirmacao":
-      return <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />;
+      return <CheckCircle2 className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0" />;
     case "cancelamento":
       return <XCircle className="h-5 w-5 text-rose-600 dark:text-rose-400 shrink-0" />;
     default:
@@ -33,9 +33,9 @@ function icon(tipo: Notificacao["tipo"]) {
 function tipoBadge(tipo: Notificacao["tipo"]) {
   switch (tipo) {
     case "conflito":
-      return "border-amber-300 text-amber-700 bg-amber-50 dark:bg-amber-950/20";
+      return "border-slate-300 text-slate-700 bg-slate-50 dark:bg-slate-950/20";
     case "confirmacao":
-      return "border-emerald-300 text-emerald-700 bg-emerald-50 dark:bg-emerald-950/20";
+      return "border-blue-300 text-blue-700 bg-blue-50 dark:bg-blue-950/20";
     case "cancelamento":
       return "border-rose-300 text-rose-700 bg-rose-50 dark:bg-rose-950/20";
     default:

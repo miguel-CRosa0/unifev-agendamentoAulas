@@ -259,7 +259,7 @@ function RelatoriosPage() {
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Taxa de Ocupação
                 </p>
-                <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                <div className="p-2 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
                   <PieChart className="h-4 w-4" />
                 </div>
               </div>
@@ -276,7 +276,7 @@ function RelatoriosPage() {
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Reservas no Período
                 </p>
-                <div className="p-2 rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400">
+                <div className="p-2 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
                   <CalendarDays className="h-4 w-4" />
                 </div>
               </div>
@@ -294,7 +294,7 @@ function RelatoriosPage() {
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Média de Alunos
                 </p>
-                <div className="p-2 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                <div className="p-2 rounded-lg bg-slate-500/10 text-slate-600 dark:text-slate-400">
                   <Users className="h-4 w-4" />
                 </div>
               </div>

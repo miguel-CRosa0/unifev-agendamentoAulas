@@ -44,9 +44,9 @@ function perfilColor(perfil: Usuario["perfil"]) {
     case "Administrador":
       return "bg-primary/10 text-primary border-transparent font-semibold";
     case "Coordenador":
-      return "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 border-transparent font-semibold";
+      return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border-transparent font-semibold";
     case "Professor":
-      return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-transparent font-semibold";
+      return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-transparent font-semibold";
     default:
       return "bg-secondary text-secondary-foreground border-transparent font-semibold";
   }
@@ -297,7 +297,7 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
                         {u.tambemProfessor && (
                           <Badge
                             variant="outline"
-                            className="border-transparent bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 font-semibold"
+                            className="border-transparent bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 font-semibold"
                           >
                             Professor
                           </Badge>
@@ -315,7 +315,7 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
                             <Pencil className="h-4 w-4 mr-2" /> Editar usuário e perfil
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleResetPassword(u)} className="cursor-pointer">
-                            <KeyRound className="h-4 w-4 mr-2 text-amber-600" /> Gerar Senha Temporária
+                            <KeyRound className="h-4 w-4 mr-2 text-slate-600" /> Gerar Senha Temporária
                           </DropdownMenuItem>
                           {!isCurrent && u.perfil !== "Administrador" && (
                             <>

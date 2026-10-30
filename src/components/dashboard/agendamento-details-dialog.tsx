@@ -67,9 +67,9 @@ export function AgendamentoDetailsDialog({
               variant="outline"
               className={`capitalize px-2.5 py-1 ${
                 agendamento.status === "confirmado"
-                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-transparent"
+                  ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-transparent"
                   : agendamento.status === "pendente"
-                  ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-transparent"
+                  ? "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400 border-transparent"
                   : "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 border-transparent"
               }`}
             >
@@ -143,7 +143,7 @@ export function AgendamentoDetailsDialog({
           </div>
 
           {agendamento.status === "pendente" && (
-            <div className="flex items-start gap-2.5 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-400">
+            <div className="flex items-start gap-2.5 rounded-lg border border-slate-500/30 bg-slate-500/10 p-3 text-xs text-slate-700 dark:text-slate-400">
               <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
               <span>
                 Este agendamento foi solicitado e está aguardando homologação da coordenação ou do administrador para liberar a chave/sala.
@@ -181,7 +181,7 @@ export function AgendamentoDetailsDialog({
             {agendamento.status !== "confirmado" && isGestao && (
               <Button
                 type="button"
-                className="bg-emerald-600 hover:bg-emerald-700"
+                className="bg-blue-600 hover:bg-blue-700"
                 onClick={() => handleStatusChange("confirmado")}
               >
                 <CheckCircle2 className="h-4 w-4 mr-1.5" /> Confirmar Reserva

@@ -69,26 +69,28 @@ function LoginPage() {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-      <aside className="relative hidden flex-col justify-between overflow-hidden bg-sidebar p-12 text-sidebar-accent-foreground lg:flex">
-        <Marca escura />
+      <aside className="relative hidden flex-col justify-between overflow-hidden bg-[oklch(0.27_0.1_260)] p-12 text-white lg:flex">
+        <div className="[&_rect:first-child]:fill-sky-300">
+          <Marca escura />
+        </div>
 
         <div className="max-w-md">
           <h2 className="text-4xl font-semibold leading-[1.1] tracking-tight">
             Cada aula no seu horário. Cada turma na sua sala.
           </h2>
-          <p className="mt-5 text-[15px] leading-relaxed text-sidebar-foreground/70">
+          <p className="mt-5 text-base leading-relaxed text-white/70">
             Reserve salas e laboratórios, acompanhe conflitos de horário e veja a ocupação do campus em um só lugar.
           </p>
         </div>
 
-        <p className="font-mono text-xs text-sidebar-foreground/50">Unifev · Gestão de salas</p>
+        <p className="text-sm text-white/50">Unifev · Gestão de salas</p>
 
         <div
           aria-hidden
           className="pointer-events-none absolute -right-24 top-1/2 grid -translate-y-1/2 grid-cols-4 gap-2 opacity-[0.07]"
         >
           {Array.from({ length: 28 }, (_, i) => (
-            <span key={i} className={`h-20 w-20 rounded-md ${i % 5 === 1 || i % 7 === 3 ? "bg-sidebar-primary" : "border border-current"}`} />
+            <span key={i} className={`h-20 w-20 rounded-md ${i % 5 === 1 || i % 7 === 3 ? "bg-white" : "border border-current"}`} />
           ))}
         </div>
       </aside>

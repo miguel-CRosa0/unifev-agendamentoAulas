@@ -32,7 +32,7 @@ function SalasPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Salas e laboratórios</h1>
           <p className="text-sm text-muted-foreground">
-            {total} espaços cadastrados · <span className="text-emerald-600 dark:text-emerald-400 font-medium">{disponiveis} disponíveis</span> · {ocupadas} em uso · {manutencao} em manutenção
+            {total} espaços cadastrados · <span className="text-blue-600 dark:text-blue-400 font-medium">{disponiveis} disponíveis</span> · {ocupadas} em uso · {manutencao} em manutenção
           </p>
         </div>
         <RoomsGrid salas={salas} />

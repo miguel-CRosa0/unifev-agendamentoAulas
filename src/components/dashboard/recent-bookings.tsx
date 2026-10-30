@@ -37,9 +37,9 @@ import type { Agendamento } from "./data";
 function statusColor(status: Agendamento["status"]) {
   switch (status) {
     case "confirmado":
-      return "bg-emerald-50 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400 border-transparent";
+      return "bg-blue-50 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 border-transparent";
     case "pendente":
-      return "bg-amber-50 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border-transparent";
+      return "bg-slate-50 text-slate-800 dark:bg-slate-900/30 dark:text-slate-400 border-transparent";
     case "cancelado":
       return "bg-rose-50 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400 border-transparent";
     default:
@@ -235,7 +235,7 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
                             <Button
                               size="sm"
                               variant="outline"
-                              className="h-7 px-2 text-xs text-emerald-600 border-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
+                              className="h-7 px-2 text-xs text-blue-600 border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/20"
                               title="Aprovar reserva"
                               onClick={(e) => handleQuickApprove(e, ag.id)}
                             >
@@ -256,7 +256,7 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
                               {ag.status === "pendente" && isGestao && (
                                 <DropdownMenuItem
                                   onClick={(e) => handleQuickApprove(e, ag.id)}
-                                  className="text-emerald-600 cursor-pointer"
+                                  className="text-blue-600 cursor-pointer"
                                 >
                                   <CheckCircle2 className="h-3.5 w-3.5 mr-2" /> Aprovar Reserva
                                 </DropdownMenuItem>
