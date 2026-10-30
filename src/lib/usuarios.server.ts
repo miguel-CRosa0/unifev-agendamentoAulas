@@ -84,8 +84,18 @@ export async function garantirAdministrador() {
 
 let adminPronto: Promise<unknown> | null = null;
 
-/** Executa garantirAdministrador uma vez por processo (tenta de novo se falhar). */
-export function garantirAdministradorUmaVez() {
+/**
+ * Executa garantirAdministrador uma vez por processo (tenta de novo se falhar) e
+ * recria a conta se ela for apagada do banco com o servidor já no ar.
+ */
+export async function garantirAdministradorUmaVez() {
+  const atual = adminPronto;
+  if (atual) {
+    await atual.catch(() => {});
+    const existe = await prisma.user.findUnique({ where: { email: ADMIN_EMAIL }, select: { id: true } });
+    // Só recria se outra requisição ainda não começou a recriar
+    if (!existe && adminPronto === atual) adminPronto = null;
+  }
   adminPronto ??= garantirAdministrador().catch((e) => {
     adminPronto = null;
     throw e;
