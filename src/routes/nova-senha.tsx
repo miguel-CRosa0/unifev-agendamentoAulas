@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Loader2, Lock, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
-import { trocarMinhaSenha } from "@/lib/api";
+import { getRegrasSenha, trocarMinhaSenha } from "@/lib/api";
 import { mensagemErro } from "@/lib/erros";
 import { sessaoQueryOptions } from "@/lib/sessao";
 
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/nova-senha")({
+  loader: () => getRegrasSenha(),
   component: NovaSenhaPage,
   head: () => ({
     meta: [
@@ -28,6 +29,7 @@ export const Route = createFileRoute("/nova-senha")({
 
 function NovaSenhaPage() {
   const { sessao } = Route.useRouteContext();
+  const { tamanhoMinimo } = Route.useLoaderData();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [salvando, setSalvando] = useState(false);
@@ -35,12 +37,12 @@ function NovaSenhaPage() {
   const [confirma, setConfirma] = useState("");
   const [erro, setErro] = useState("");
 
-  const forte = senha.length >= 8 && /[A-Za-z]/.test(senha) && /\d/.test(senha);
+  const forte = senha.length >= tamanhoMinimo && /[A-Za-z]/.test(senha) && /\d/.test(senha);
 
   async function salvar(e: React.FormEvent) {
     e.preventDefault();
     if (!forte) {
-      setErro("A senha deve ter ao menos 8 caracteres, com letras e números.");
+      setErro(`A senha deve ter ao menos ${tamanhoMinimo} caracteres, com letras e números.`);
       return;
     }
     if (senha !== confirma) {
@@ -85,9 +87,9 @@ function NovaSenhaPage() {
           </div>
 
           <ul className="space-y-1 text-xs text-muted-foreground">
-            <li>Mínimo de 8 caracteres</li>
+            <li>Mínimo de {tamanhoMinimo} caracteres</li>
             <li>Ao menos uma letra e um número</li>
-            <li>Diferente da data de nascimento</li>
+            <li>Recomendado: use uma senha forte, misturando maiúsculas, minúsculas e símbolos</li>
           </ul>
 
           {erro && <p className="text-sm text-destructive">{erro}</p>}

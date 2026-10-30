@@ -597,6 +597,14 @@ export const redefinirSenhaUsuario = createServerFn({ method: "POST" })
     return { senhaTemporaria };
   });
 
+// Liberada para quem ainda está com a senha temporária (tela de nova senha)
+export const getRegrasSenha = createServerFn({ method: "GET" })
+  .middleware([sessaoMiddleware])
+  .handler(async () => {
+    const config = await obterConfiguracoes();
+    return { tamanhoMinimo: config.tamanhoMinimoSenha };
+  });
+
 export const trocarMinhaSenha = createServerFn({ method: "POST" })
   .middleware([sessaoMiddleware])
   .validator(z.object({ novaSenha: z.string() }))
