@@ -242,12 +242,12 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 function Marca() {
   return (
     <div className="flex h-[4.5rem] items-center gap-3 border-b border-sidebar-border px-6">
-      <div className="flex h-10 w-10 items-center justify-center rounded-md bg-white text-primary">
+      <div className="flex h-10 w-10 items-center justify-center rounded-md bg-ouro text-ouro-foreground">
         <GraduationCap className="h-6 w-6" />
       </div>
       <div className="leading-tight">
-        <span className="block text-lg font-bold text-white">SalaFácil</span>
-        <span className="block text-xs text-sidebar-foreground/75">Unifev</span>
+        <span className="block font-serif text-xl font-semibold text-white">SalaFácil</span>
+        <span className="block text-xs font-semibold uppercase tracking-[0.14em] text-sidebar-foreground/70">Unifev</span>
       </div>
     </div>
   );

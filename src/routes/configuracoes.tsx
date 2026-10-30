@@ -80,7 +80,7 @@ function ConfiguracoesPage() {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Configurações Gerais</h1>
+          <h1 className="text-3xl text-foreground">Configurações Gerais</h1>
           <p className="text-sm text-muted-foreground">
             Definições de políticas acadêmicas, regras de conflito de horários e parâmetros de segurança.
           </p>

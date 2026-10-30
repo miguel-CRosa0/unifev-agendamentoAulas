@@ -87,7 +87,7 @@ function DisciplinasPage() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Disciplinas e Turmas</h1>
+            <h1 className="text-3xl text-foreground">Disciplinas e Turmas</h1>
             <p className="text-sm text-muted-foreground">
               {disciplinas.length} disciplinas cadastradas · Gerenciamento acadêmico e alocação de salas
             </p>

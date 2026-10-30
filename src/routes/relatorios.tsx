@@ -209,7 +209,7 @@ function RelatoriosPage() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Relatórios de Uso e Ocupação</h1>
+            <h1 className="text-3xl text-foreground">Relatórios de Uso e Ocupação</h1>
             <p className="text-sm text-muted-foreground">
               {relatorio.faixa
                 ? `Período de ${dataBR(relatorio.faixa.inicio)} a ${dataBR(relatorio.faixa.fim)}.`
@@ -248,7 +248,7 @@ function RelatoriosPage() {
                   <Clock className="h-4 w-4" />
                 </div>
               </div>
-              <p className="mt-2 text-3xl font-bold text-foreground">{formatarHoras(relatorio.horas)}</p>
+              <p className="mt-2 text-3xl text-foreground">{formatarHoras(relatorio.horas)}</p>
               <p className="mt-1 text-xs text-muted-foreground">Soma das reservas confirmadas</p>
             </CardContent>
           </Card>
@@ -263,7 +263,7 @@ function RelatoriosPage() {
                   <PieChart className="h-4 w-4" />
                 </div>
               </div>
-              <p className="mt-2 text-3xl font-bold text-foreground">{relatorio.taxaOcupacao}%</p>
+              <p className="mt-2 text-3xl text-foreground">{relatorio.taxaOcupacao}%</p>
               <p className="mt-1 text-xs text-muted-foreground">
                 {relatorio.salasUsadas} de {salas.length} salas utilizadas no período
               </p>
@@ -280,7 +280,7 @@ function RelatoriosPage() {
                   <CalendarDays className="h-4 w-4" />
                 </div>
               </div>
-              <p className="mt-2 text-3xl font-bold text-foreground">{relatorio.doPeriodo.length}</p>
+              <p className="mt-2 text-3xl text-foreground">{relatorio.doPeriodo.length}</p>
               <p className="mt-1 text-xs text-muted-foreground">
                 {relatorio.confirmados.length} confirmadas · {relatorio.pendentes.length} pendentes ·{" "}
                 {relatorio.cancelados.length} canceladas
@@ -298,7 +298,7 @@ function RelatoriosPage() {
                   <Users className="h-4 w-4" />
                 </div>
               </div>
-              <p className="mt-2 text-3xl font-bold text-foreground">{relatorio.mediaAlunos}</p>
+              <p className="mt-2 text-3xl text-foreground">{relatorio.mediaAlunos}</p>
               <p className="mt-1 text-xs text-muted-foreground">Por reserva confirmada</p>
             </CardContent>
           </Card>

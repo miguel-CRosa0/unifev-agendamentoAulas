@@ -80,7 +80,7 @@ export function CadastroPage() {
       <div className="space-y-6">
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Cadastro de Usuários</h1>
+            <h1 className="text-3xl text-foreground">Cadastro de Usuários</h1>
             <p className="text-sm text-muted-foreground">
               Cadastre professores e coordenadores. Eles entram com o RA e a senha temporária.
             </p>

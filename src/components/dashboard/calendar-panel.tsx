@@ -107,7 +107,7 @@ export function CalendarPanel({ agendamentos }: { agendamentos: Agendamento[] })
                     ativo
                       ? "border-primary bg-primary font-bold text-primary-foreground"
                       : ehHoje
-                        ? "border-primary bg-card font-bold text-primary ring-1 ring-primary hover:bg-accent"
+                        ? "border-ouro bg-ouro/15 font-bold text-foreground ring-1 ring-ouro hover:bg-ouro/25"
                         : "border-border bg-card text-foreground hover:border-primary/50 hover:bg-accent"
                   }`}
                 >
@@ -130,7 +130,7 @@ export function CalendarPanel({ agendamentos }: { agendamentos: Agendamento[] })
 
         <div className="rounded-md border border-border bg-muted p-5">
           <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Agendamentos do dia</p>
-          <p className="mt-0.5 text-lg font-bold text-foreground">
+          <p className="mt-0.5 font-serif text-xl font-semibold text-foreground">
             {selecionado.split("-").reverse().join("/")}
           </p>
           <div className="mt-3 space-y-2">

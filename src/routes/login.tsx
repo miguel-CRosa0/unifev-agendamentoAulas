@@ -71,17 +71,18 @@ function LoginPage() {
       {/* Faixa institucional */}
       <div className="flex flex-col justify-between bg-sidebar px-8 py-8 text-sidebar-foreground lg:w-[42%] lg:px-14 lg:py-12">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-md bg-white text-primary">
+          <div className="flex h-12 w-12 items-center justify-center rounded-md bg-ouro text-ouro-foreground">
             <GraduationCap className="h-7 w-7" />
           </div>
           <div className="leading-tight">
-            <span className="block text-2xl font-bold text-white">SalaFácil</span>
+            <span className="block font-serif text-2xl font-semibold text-white">SalaFácil</span>
             <span className="block text-sm text-sidebar-foreground/80">Unifev · Agendamento de salas</span>
           </div>
         </div>
 
         <div className="hidden max-w-md lg:block">
-          <p className="text-3xl font-bold leading-snug text-white">
+          <div className="mb-6 h-[3px] w-12 rounded bg-ouro" />
+          <p className="font-serif text-4xl font-semibold leading-tight text-white">
             Reserve salas de aula e laboratórios de forma simples.
           </p>
           <p className="mt-4 text-lg text-sidebar-foreground/85">
@@ -97,7 +98,7 @@ function LoginPage() {
       {/* Formulário */}
       <div className="flex flex-1 items-center justify-center px-4 py-10 sm:px-8">
         <div className="w-full max-w-md">
-          <h1 className="text-3xl font-bold text-foreground">Entrar no sistema</h1>
+          <h1 className="text-4xl text-foreground">Entrar no sistema</h1>
           <p className="mt-2 text-base text-muted-foreground">
             Informe seu RA (ou e-mail) e sua senha.
           </p>

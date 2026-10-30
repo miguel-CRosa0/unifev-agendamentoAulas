@@ -33,7 +33,7 @@ function AgendamentosPage() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Agendamentos</h1>
+            <h1 className="text-3xl text-foreground">Agendamentos</h1>
             <p className="text-sm text-muted-foreground">
               {agendamentos.length} reservas registradas · <span className="text-emerald-600 dark:text-emerald-400 font-medium">{confirmados} confirmadas</span> · {pendentes} pendentes · {cancelados} canceladas
             </p>

@@ -6,6 +6,7 @@ import { CalendarPanel } from "@/components/dashboard/calendar-panel";
 import { DashboardLayout } from "@/components/dashboard/layout";
 import { RecentBookings } from "@/components/dashboard/recent-bookings";
 import { StatsCards } from "@/components/dashboard/stats-cards";
+import { HojePanel } from "@/components/dashboard/hoje-panel";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -89,7 +90,7 @@ function DashboardPage() {
         <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm font-medium text-muted-foreground first-letter:uppercase">{dataExtenso}</p>
-            <h1 className="mt-1 text-3xl font-bold text-foreground">
+            <h1 className="mt-1 text-4xl text-foreground">
               {saudacao}, {primeiroNome}
             </h1>
             <p className="mt-1 text-base text-muted-foreground">
@@ -102,19 +103,23 @@ function DashboardPage() {
           </Button>
         </div>
 
-        {/* Dynamic Indicators */}
-        <StatsCards indicadores={indicadores} />
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.7fr)_minmax(20rem,1fr)]">
+          <HojePanel agendamentos={agendamentos} />
+          <StatsCards indicadores={indicadores} />
+        </div>
 
         {/* Atalhos */}
         <section aria-labelledby="atalhos">
-          <h2 id="atalhos" className="mb-3 text-lg font-bold text-foreground">
+          <h2 id="atalhos" className="mb-3 text-xl text-foreground">
             O que você deseja fazer?
           </h2>
           <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
             {atalhos.map((atalho) => {
               const conteudo = (
                 <>
-                  <atalho.icon className="h-7 w-7 shrink-0 text-primary" />
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-border bg-muted text-primary transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
+                    <atalho.icon className="h-6 w-6" />
+                  </span>
                   <div className="min-w-0 flex-1">
                     <p className="text-base font-bold text-foreground">{atalho.titulo}</p>
                     <p className="text-sm text-muted-foreground">{atalho.descricao}</p>
