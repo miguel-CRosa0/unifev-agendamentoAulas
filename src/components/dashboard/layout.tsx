@@ -74,34 +74,62 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       <NovoAgendamentoDialog />
 
       {/* Sidebar desktop */}
-      <aside className="hidden w-72 shrink-0 flex-col bg-sidebar text-sidebar-foreground lg:flex">
-        <Marca />
+      <aside className="hidden w-64 flex-col border-r border-border bg-card lg:flex">
+        <div className="flex h-16 items-center gap-2 border-b border-border px-6">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+            <GraduationCap className="h-5 w-5" />
+          </div>
+          <span className="text-lg font-bold tracking-tight text-foreground">SalaFácil</span>
+        </div>
 
-        <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4" aria-label="Menu principal">
-          <ItensMenu itens={itensMenu} pathname={pathname} naoLidas={unreadNotificacoesCount} />
+        <nav className="flex flex-1 flex-col gap-1 p-4 overflow-y-auto">
+          {itensMenu.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.label}
+                to={item.href}
+                className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-primary/10 text-primary font-semibold"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <item.icon className="h-4 w-4" />
+                  {item.label}
+                </div>
+                {item.hasBadge && unreadNotificacoesCount > 0 && (
+                  <Badge variant="secondary" className="h-5 min-w-5 px-1.5 text-[10px] font-bold bg-primary text-primary-foreground">
+                    {unreadNotificacoesCount}
+                  </Badge>
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* User Card Bottom Sidebar */}
-        <div className="border-t border-sidebar-border p-3">
+        <div className="border-t border-border p-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className="flex w-full items-center gap-3 rounded-md p-3 text-left transition-colors hover:bg-sidebar-accent"
+                className="w-full text-left flex items-center gap-3 rounded-lg border border-border bg-background p-3 hover:bg-accent/50 transition-colors"
               >
-                <Avatar className="h-10 w-10">
-                  <AvatarFallback className="bg-sidebar-primary text-sm font-bold text-sidebar-primary-foreground">
+                <Avatar className="h-9 w-9 border border-border">
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                     {currentUser.nome.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate text-sm font-semibold text-white">{currentUser.nome}</span>
-                  <span className="truncate text-xs text-sidebar-foreground/75">{currentUser.perfil}</span>
+                  <span className="truncate text-sm font-medium text-foreground">{currentUser.nome}</span>
+                  <span className="truncate text-xs text-muted-foreground">{currentUser.perfil}</span>
                 </div>
-                <Settings className="h-5 w-5 shrink-0 text-sidebar-foreground/70" />
+                <Settings className="h-4 w-4 text-muted-foreground shrink-0" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-60">
+            <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel className="text-xs">
                 <p className="font-semibold text-foreground">{currentUser.nome}</p>
                 <p className="font-normal text-muted-foreground">
@@ -124,34 +152,54 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       {/* Main Container */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Header */}
-        <header className="flex h-[4.5rem] items-center gap-3 border-b border-border bg-card px-4 sm:px-6 lg:px-10">
+        <header className="flex h-16 items-center gap-3 border-b border-border bg-card px-4 sm:px-6 lg:px-8">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Abrir menu">
-                <Menu className="h-6 w-6" />
+              <Button variant="ghost" size="icon" className="lg:hidden">
+                <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-72 border-0 bg-sidebar p-0 text-sidebar-foreground">
-              <Marca />
-              <nav className="flex flex-col gap-1 px-3 py-4" aria-label="Menu principal">
-                <ItensMenu
-                  itens={itensMenu}
-                  pathname={pathname}
-                  naoLidas={unreadNotificacoesCount}
-                  onNavegar={() => setOpen(false)}
-                />
+            <SheetContent side="left" className="w-64 p-0">
+              <div className="flex h-16 items-center gap-2 border-b border-border px-6">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+                  <GraduationCap className="h-5 w-5" />
+                </div>
+                <span className="text-lg font-bold tracking-tight text-foreground">SalaFácil</span>
+              </div>
+              <nav className="flex flex-col gap-1 p-4">
+                {itensMenu.map((item) => (
+                  <Link
+                    key={item.label}
+                    to={item.href}
+                    onClick={() => setOpen(false)}
+                    className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                      pathname === item.href
+                        ? "bg-primary/10 text-primary font-semibold"
+                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <item.icon className="h-4 w-4" />
+                      {item.label}
+                    </div>
+                    {item.hasBadge && unreadNotificacoesCount > 0 && (
+                      <Badge variant="secondary" className="h-5 min-w-5 px-1.5 text-[10px] font-bold bg-primary text-primary-foreground">
+                        {unreadNotificacoesCount}
+                      </Badge>
+                    )}
+                  </Link>
+                ))}
               </nav>
             </SheetContent>
           </Sheet>
 
           {/* Search Trigger */}
-          <div className="relative flex-1 max-w-lg">
-            <Search className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
             <Input
               type="search"
-              placeholder="Buscar salas, turmas ou professores"
-              aria-label="Buscar salas, turmas ou professores"
-              className="pl-11 bg-muted cursor-pointer"
+              placeholder="Buscar salas, turmas, professores... (Ctrl+K)"
+              className="pl-9 bg-background border-border text-sm cursor-pointer"
               onClick={() => setSearchOpen(true)}
               onFocus={() => setSearchOpen(true)}
               readOnly
@@ -159,24 +207,19 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
-            <Link
-              to="/notificacoes"
-              aria-label="Notificações"
-              className="relative flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
-            >
-              <Bell className="h-6 w-6" />
+            <Link to="/notificacoes" className="relative p-2 text-muted-foreground hover:text-foreground">
+              <Bell className="h-5 w-5" />
               {unreadNotificacoesCount > 0 && (
-                <span className="absolute top-1.5 right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1 text-xs font-bold text-white">
-                  {unreadNotificacoesCount}
-                </span>
+                <span className="absolute top-1.5 right-1.5 flex h-2 w-2 rounded-full bg-primary" />
               )}
             </Link>
 
             <Button
               onClick={() => openNovoAgendamento()}
-              className="hidden sm:inline-flex"
+              className="hidden sm:inline-flex items-center gap-1.5 font-medium shadow-sm"
+              size="sm"
             >
-              <Plus />
+              <Plus className="h-4 w-4" />
               Novo agendamento
             </Button>
             <Button
@@ -184,16 +227,15 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               className="sm:hidden"
               size="icon"
               title="Novo agendamento"
-              aria-label="Novo agendamento"
             >
-              <Plus />
+              <Plus className="h-4 w-4" />
             </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button type="button" aria-label="Minha conta" className="rounded-full ring-offset-background transition-opacity hover:opacity-80">
-                  <Avatar className="h-11 w-11">
-                    <AvatarFallback className="bg-secondary text-sm font-bold text-secondary-foreground">
+                <button type="button" className="rounded-full ring-offset-background transition-opacity hover:opacity-80">
+                  <Avatar className="h-9 w-9 border border-border">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                       {currentUser.nome.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
@@ -203,7 +245,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 <DropdownMenuLabel>
                   <p className="text-sm font-semibold text-foreground">{currentUser.nome}</p>
                   <p className="text-xs text-muted-foreground font-normal">{currentUser.email}</p>
-                  <Badge variant="outline" className="mt-1 text-xs text-primary border-primary/20">
+                  <Badge variant="outline" className="mt-1 text-[10px] text-primary border-primary/20">
                     {currentUser.perfil}
                   </Badge>
                 </DropdownMenuLabel>
@@ -231,63 +273,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-          <div className="mx-auto w-full max-w-[90rem]">{children}</div>
-        </main>
+        <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );
-}
-
-function Marca() {
-  return (
-    <div className="flex h-[4.5rem] items-center gap-3 border-b border-sidebar-border px-6">
-      <div className="flex h-10 w-10 items-center justify-center rounded-md bg-ouro text-ouro-foreground">
-        <GraduationCap className="h-6 w-6" />
-      </div>
-      <div className="leading-tight">
-        <span className="block font-serif text-xl font-semibold text-white">SalaFácil</span>
-        <span className="block text-xs font-semibold uppercase tracking-[0.14em] text-sidebar-foreground/70">Unifev</span>
-      </div>
-    </div>
-  );
-}
-
-function ItensMenu({
-  itens,
-  pathname,
-  naoLidas,
-  onNavegar,
-}: {
-  itens: typeof navItems;
-  pathname: string;
-  naoLidas: number;
-  onNavegar?: () => void;
-}) {
-  return itens.map((item) => {
-    const isActive = pathname === item.href;
-    return (
-      <Link
-        key={item.label}
-        to={item.href}
-        onClick={onNavegar}
-        aria-current={isActive ? "page" : undefined}
-        className={`relative flex items-center justify-between rounded-md px-4 py-3 text-base transition-colors ${
-          isActive
-            ? "bg-sidebar-accent font-bold text-white before:absolute before:inset-y-2 before:left-0 before:w-1 before:rounded-r before:bg-sidebar-primary"
-            : "font-medium text-sidebar-foreground/85 hover:bg-sidebar-accent/60 hover:text-white"
-        }`}
-      >
-        <span className="flex items-center gap-3">
-          <item.icon className="h-5 w-5 shrink-0" />
-          {item.label}
-        </span>
-        {item.hasBadge && naoLidas > 0 && (
-          <Badge className="h-6 min-w-6 justify-center bg-sidebar-primary px-1.5 text-sidebar-primary-foreground hover:bg-sidebar-primary">
-            {naoLidas}
-          </Badge>
-        )}
-      </Link>
-    );
-  });
 }

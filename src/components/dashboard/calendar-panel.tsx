@@ -55,17 +55,17 @@ export function CalendarPanel({ agendamentos }: { agendamentos: Agendamento[] })
   }
 
   return (
-    <Card>
+    <Card className="border-border bg-card shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between gap-2 pb-4">
-        <CardTitle className="flex items-center gap-2 text-xl text-foreground">
-          <CalendarDays className="h-5 w-5 text-primary" />
+        <CardTitle className="flex items-center gap-2 text-lg font-semibold text-foreground">
+          <CalendarDays className="h-4 w-4 text-primary" />
           Calendário de agendamentos
         </CardTitle>
         <div className="flex items-center gap-1">
           <Button
             variant="outline"
             size="sm"
-            className="mr-2"
+            className="mr-1 h-8 text-xs"
             onClick={() => {
               setCursor({ ano, mes: mes - 1 });
               setSelecionado(hoje);
@@ -73,25 +73,25 @@ export function CalendarPanel({ agendamentos }: { agendamentos: Agendamento[] })
           >
             Hoje
           </Button>
-          <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => mover(-1)} aria-label="Mês anterior">
-            <ChevronLeft className="!size-6" />
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => mover(-1)} aria-label="Mês anterior">
+            <ChevronLeft className="h-4 w-4" />
           </Button>
-          <span className="min-w-[10rem] text-center text-base font-bold text-foreground">
+          <span className="min-w-[8.5rem] text-center text-sm font-medium text-foreground">
             {MESES[cursor.mes]} {cursor.ano}
           </span>
-          <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => mover(1)} aria-label="Próximo mês">
-            <ChevronRight className="!size-6" />
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => mover(1)} aria-label="Próximo mês">
+            <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="grid gap-6 lg:grid-cols-[1fr_20rem]">
+      <CardContent className="grid gap-6 lg:grid-cols-[1fr_18rem]">
         <div>
-          <div className="grid grid-cols-7 gap-1.5 pb-2 text-center text-xs font-bold uppercase tracking-wide text-muted-foreground">
+          <div className="grid grid-cols-7 gap-1 pb-2 text-center text-[11px] font-medium uppercase text-muted-foreground">
             {DIAS.map((d) => (
               <span key={d}>{d}</span>
             ))}
           </div>
-          <div className="grid grid-cols-7 gap-1.5">
+          <div className="grid grid-cols-7 gap-1">
             {celulas.map((dia, i) => {
               if (dia === null) return <div key={`v-${i}`} />;
               const chave = iso(cursor.ano, cursor.mes, dia);
@@ -103,34 +103,34 @@ export function CalendarPanel({ agendamentos }: { agendamentos: Agendamento[] })
                   key={chave}
                   type="button"
                   onClick={() => setSelecionado(chave)}
-                  className={`flex aspect-[4/3] flex-col items-center justify-start gap-1.5 rounded-md border p-2 text-base tabular-nums transition-colors ${
+                  className={`flex aspect-square flex-col items-center justify-start gap-1 rounded-lg border p-1.5 text-sm transition-colors ${
                     ativo
-                      ? "border-primary bg-primary font-bold text-primary-foreground"
+                      ? "border-primary bg-primary/10 font-semibold text-primary"
                       : ehHoje
-                        ? "border-ouro bg-ouro/15 font-bold text-foreground ring-1 ring-ouro hover:bg-ouro/25"
-                        : "border-border bg-card text-foreground hover:border-primary/50 hover:bg-accent"
+                        ? "border-primary/40 bg-background font-semibold text-primary hover:bg-accent"
+                        : "border-border bg-background text-foreground hover:bg-accent"
                   }`}
                 >
                   <span>{dia}</span>
                   <span className="flex flex-wrap items-center justify-center gap-0.5">
                     {itens.slice(0, 3).map((a) => (
-                      <span key={a.id} className={`h-2 w-2 rounded-full ${ativo ? "bg-white" : statusDot(a.status)}`} />
+                      <span key={a.id} className={`h-1.5 w-1.5 rounded-full ${statusDot(a.status)}`} />
                     ))}
                   </span>
                 </button>
               );
             })}
           </div>
-          <div className="mt-4 flex flex-wrap gap-5 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1.5"><i className="h-3 w-3 rounded-full bg-primary" /> Confirmado</span>
-            <span className="flex items-center gap-1.5"><i className="h-3 w-3 rounded-full bg-amber-500" /> Pendente</span>
-            <span className="flex items-center gap-1.5"><i className="h-3 w-3 rounded-full bg-destructive" /> Cancelado</span>
+          <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-primary" /> Confirmado</span>
+            <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-amber-500" /> Pendente</span>
+            <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-destructive" /> Cancelado</span>
           </div>
         </div>
 
-        <div className="rounded-md border border-border bg-muted p-5">
-          <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Agendamentos do dia</p>
-          <p className="mt-0.5 font-serif text-xl font-semibold text-foreground">
+        <div className="rounded-lg border border-border bg-background p-4">
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">Agendamentos do dia</p>
+          <p className="text-sm font-semibold text-foreground">
             {selecionado.split("-").reverse().join("/")}
           </p>
           <div className="mt-3 space-y-2">
@@ -138,15 +138,15 @@ export function CalendarPanel({ agendamentos }: { agendamentos: Agendamento[] })
               <p className="text-sm text-muted-foreground">Nenhum agendamento nesta data.</p>
             )}
             {doDia.map((a) => (
-              <div key={a.id} className="rounded-md border border-border bg-card p-3">
+              <div key={a.id} className="rounded-md border border-border p-2.5">
                 <div className="flex items-center gap-2">
-                  <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${statusDot(a.status)}`} />
-                  <p className="truncate text-sm font-bold text-foreground">{a.disciplina}</p>
+                  <span className={`h-2 w-2 rounded-full ${statusDot(a.status)}`} />
+                  <p className="truncate text-sm font-medium text-foreground">{a.disciplina}</p>
                 </div>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="mt-1 text-xs text-muted-foreground">
                   {a.horaInicio}–{a.horaFim} · {a.salaCodigo}
                 </p>
-                <p className="text-sm text-muted-foreground">{a.professorResponsavel}</p>
+                <p className="text-xs text-muted-foreground">{a.professorResponsavel}</p>
               </div>
             ))}
           </div>

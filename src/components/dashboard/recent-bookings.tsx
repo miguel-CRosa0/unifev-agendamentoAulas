@@ -38,11 +38,11 @@ import type { Agendamento } from "./data";
 function statusColor(status: Agendamento["status"]) {
   switch (status) {
     case "confirmado":
-      return "bg-emerald-50 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 border-emerald-300";
+      return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-transparent";
     case "pendente":
-      return "bg-amber-50 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 border-amber-300";
+      return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-transparent";
     case "cancelado":
-      return "bg-rose-50 text-rose-800 dark:bg-rose-900/30 dark:text-rose-300 border-rose-300";
+      return "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 border-transparent";
     default:
       return "";
   }
@@ -107,24 +107,25 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
         onOpenChange={setDetailsOpen}
       />
 
-      <Card className="overflow-hidden">
+      <Card className="border-border bg-card shadow-sm">
         <CardHeader className="pb-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle className="text-xl text-foreground flex items-center gap-2">
+              <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
                 <CalendarDays className="h-5 w-5 text-primary" />
-                Agendamentos
+                Agendamentos Acadêmicos
               </CardTitle>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Clique em uma linha para ver os detalhes. Use os filtros para encontrar uma reserva.
+              <p className="text-sm text-muted-foreground">
+                Consulte horários, aprove solicitações de salas e filtre por status ou disciplina
               </p>
             </div>
             <div className="flex items-center gap-2">
               <Button
                 onClick={() => openNovoAgendamento()}
-                variant="outline"
+                size="sm"
+                className="gap-1.5 shadow-sm"
               >
-                <CalendarPlus /> Novo agendamento
+                <CalendarPlus className="h-4 w-4" /> Novo agendamento
               </Button>
             </div>
           </div>
@@ -132,19 +133,20 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
           {/* Search & Filter Toolbar */}
           <div className="flex flex-col sm:flex-row gap-2 pt-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Buscar por disciplina, professor, sala ou turma"
+                placeholder="Filtrar por disciplina, professor, sala ou turma..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-11"
+                className="pl-9 h-9 text-sm"
               />
             </div>
 
-            <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por situação">
+            <div className="flex flex-wrap gap-1.5">
               <Button
                 variant={filterStatus === "todos" ? "default" : "outline"}
                 size="sm"
+                className="h-9 text-xs"
                 onClick={() => setFilterStatus("todos")}
               >
                 Todos ({agendamentos.length})
@@ -152,6 +154,7 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
               <Button
                 variant={filterStatus === "confirmado" ? "default" : "outline"}
                 size="sm"
+                className="h-9 text-xs"
                 onClick={() => setFilterStatus("confirmado")}
               >
                 Confirmados ({agendamentos.filter((a) => a.status === "confirmado").length})
@@ -159,6 +162,7 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
               <Button
                 variant={filterStatus === "pendente" ? "default" : "outline"}
                 size="sm"
+                className="h-9 text-xs"
                 onClick={() => setFilterStatus("pendente")}
               >
                 Pendentes ({agendamentos.filter((a) => a.status === "pendente").length})
@@ -166,6 +170,7 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
               <Button
                 variant={filterStatus === "cancelado" ? "default" : "outline"}
                 size="sm"
+                className="h-9 text-xs"
                 onClick={() => setFilterStatus("cancelado")}
               >
                 Cancelados ({agendamentos.filter((a) => a.status === "cancelado").length})
@@ -179,13 +184,13 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
             <Table>
               <TableHeader>
                 <TableRow className="border-border hover:bg-transparent">
-                  <TableHead>Disciplina / Turma</TableHead>
-                  <TableHead>Espaço / Sala</TableHead>
-                  <TableHead>Data e Horário</TableHead>
-                  <TableHead>Professor Responsável</TableHead>
-                  <TableHead>Solicitante</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
+                  <TableHead className="text-muted-foreground">Disciplina / Turma</TableHead>
+                  <TableHead className="text-muted-foreground">Espaço / Sala</TableHead>
+                  <TableHead className="text-muted-foreground">Data e Horário</TableHead>
+                  <TableHead className="text-muted-foreground">Professor Responsável</TableHead>
+                  <TableHead className="text-muted-foreground">Solicitante</TableHead>
+                  <TableHead className="text-muted-foreground">Status</TableHead>
+                  <TableHead className="text-right text-muted-foreground">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -204,29 +209,29 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
                     >
                       <TableCell>
                         <div className="font-semibold text-foreground">{ag.disciplina}</div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-xs text-muted-foreground">
                           {ag.disciplinaCodigo} · {ag.turma}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="font-medium text-foreground">{ag.salaCodigo}</div>
-                        <div className="text-sm text-muted-foreground">{ag.salaLocalizacao}</div>
+                        <div className="text-xs text-muted-foreground">{ag.salaLocalizacao}</div>
                       </TableCell>
                       <TableCell className="whitespace-nowrap">
                         <div className="text-sm font-medium text-foreground">
                           {ag.data.split("-").reverse().join("/")}
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-xs text-muted-foreground">
                           {ag.horaInicio} — {ag.horaFim}
                         </div>
                       </TableCell>
                       <TableCell className="text-foreground">{ag.professorResponsavel}</TableCell>
                       <TableCell>
                         <div className="text-foreground">{ag.solicitanteNome}</div>
-                        <div className="text-sm text-muted-foreground">{ag.solicitantePerfil}</div>
+                        <div className="text-xs text-muted-foreground">{ag.solicitantePerfil}</div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className={`capitalize ${statusColor(ag.status)}`}>
+                        <Badge variant="outline" className={`capitalize font-medium ${statusColor(ag.status)}`}>
                           {ag.status}
                         </Badge>
                       </TableCell>
@@ -236,18 +241,18 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
                             <Button
                               size="sm"
                               variant="outline"
-                              className="h-9 px-3 text-emerald-800 border-emerald-600 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/20"
+                              className="h-7 px-2 text-xs text-emerald-600 border-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
                               title="Aprovar reserva"
                               onClick={(e) => handleQuickApprove(e, ag.id)}
                             >
-                              <CheckCircle2 /> Aprovar
+                              <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Aprovar
                             </Button>
                           )}
 
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground" aria-label="Mais ações">
-                                <MoreHorizontal className="!size-5" />
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                                <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-44">

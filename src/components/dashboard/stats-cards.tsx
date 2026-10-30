@@ -1,5 +1,6 @@
-import { AlertTriangle, ArrowDownRight, ArrowUpRight, CalendarCheck, DoorOpen, PieChart } from "lucide-react";
+import { AlertTriangle, ArrowDownRight, ArrowUpRight, CalendarCheck, DoorOpen, Minus, PieChart } from "lucide-react";
 
+import { Card, CardContent } from "@/components/ui/card";
 import type { Indicador } from "./data";
 
 const icons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -9,44 +10,45 @@ const icons: Record<string, React.ComponentType<{ className?: string }>> = {
   "Taxa de ocupação": PieChart,
 };
 
-// Indicadores em formato de ficha: uma lista com divisórias, números em serifa
 export function StatsCards({ indicadores }: { indicadores: Indicador[] }) {
   return (
-    <section aria-label="Indicadores" className="rounded-lg border border-border bg-card">
-      <ul className="divide-y divide-border">
-        {indicadores.map((stat) => {
-          const Icon = icons[stat.label] ?? DoorOpen;
-          return (
-            <li key={stat.label} className="flex items-center gap-4 px-5 py-4">
-              <Icon className="h-6 w-6 shrink-0 text-primary" />
-              <div className="min-w-0 flex-1">
-                <p className="text-base font-semibold text-foreground">{stat.label}</p>
-                <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                  {stat.trend === "up" ? (
-                    <ArrowUpRight className="h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-400" />
-                  ) : stat.trend === "down" ? (
-                    <ArrowDownRight className="h-4 w-4 shrink-0 text-rose-700 dark:text-rose-400" />
-                  ) : null}
-                  <span
-                    className={
-                      stat.trend === "up"
-                        ? "text-emerald-700 dark:text-emerald-400"
-                        : stat.trend === "down"
-                          ? "font-semibold text-rose-700 dark:text-rose-400"
-                          : undefined
-                    }
-                  >
-                    {stat.change}
-                  </span>
-                </p>
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {indicadores.map((stat) => {
+        const Icon = icons[stat.label] ?? DoorOpen;
+        return (
+          <Card key={stat.label} className="border-border bg-card shadow-sm">
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
+                  <p className="mt-2 text-3xl font-bold tracking-tight text-foreground">{stat.value}</p>
+                </div>
+                <div className="rounded-lg bg-primary/10 p-2.5 text-primary">
+                  <Icon className="h-5 w-5" />
+                </div>
               </div>
-              <p className="font-serif text-4xl font-semibold tabular-nums text-foreground">
-                {stat.value.replace(/^0(?=\d)/, "")}
-              </p>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
+              <div className="mt-4 flex items-center gap-1.5 text-xs font-medium">
+                {stat.trend === "up" ? (
+                  <>
+                    <ArrowUpRight className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-emerald-600 dark:text-emerald-400">{stat.change}</span>
+                  </>
+                ) : stat.trend === "down" ? (
+                  <>
+                    <ArrowDownRight className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
+                    <span className="text-rose-600 dark:text-rose-400">{stat.change}</span>
+                  </>
+                ) : (
+                  <>
+                    <Minus className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-muted-foreground">{stat.change}</span>
+                  </>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
   );
 }

@@ -25,7 +25,7 @@ function NotificacoesPage() {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl text-foreground">Notificações</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">Notificações</h1>
           <p className="text-sm text-muted-foreground">
             {notificacoes.length} alertas e mensagens registradas pelo sistema
           </p>

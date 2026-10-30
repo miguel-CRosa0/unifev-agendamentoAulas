@@ -31,12 +31,12 @@ function UsuariosPage() {
       <div className="space-y-6">
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
-            <h1 className="text-3xl text-foreground">Usuários e acessos</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">Usuários e acessos</h1>
             <p className="text-sm text-muted-foreground">
               {usuarios.length} usuários registrados no sistema com controle de acesso baseado em papéis (RBAC).
             </p>
           </div>
-          <Button asChild className="gap-1.5">
+          <Button asChild className="gap-1.5 shadow-sm">
             <Link to="/cadastro">
               <UserPlus className="h-4 w-4" /> Cadastrar novo usuário
             </Link>

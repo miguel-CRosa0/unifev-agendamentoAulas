@@ -66,27 +66,27 @@ function NovaSenhaPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
-      <div className="w-full max-w-md rounded-lg border border-border border-t-4 border-t-primary bg-card p-8 sm:p-10">
-        <div className="flex h-12 w-12 items-center justify-center rounded-md bg-secondary text-primary">
-          <Lock className="h-6 w-6" />
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-primary/10 to-background px-4 py-10">
+      <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-8 shadow-sm">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+          <Lock className="h-5 w-5" />
         </div>
-        <h1 className="mt-5 text-2xl font-bold text-foreground">Crie sua nova senha</h1>
+        <h1 className="mt-5 text-xl font-bold text-foreground">Crie sua nova senha</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {sessao?.ra ? `RA ${sessao.ra} — ` : ""}defina uma senha pessoal para continuar.
         </p>
 
-        <form className="mt-7 space-y-5" onSubmit={salvar}>
-          <div className="space-y-2">
+        <form className="mt-6 space-y-4" onSubmit={salvar}>
+          <div className="space-y-1.5">
             <Label htmlFor="nova">Nova senha</Label>
             <Input id="nova" type="password" value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="••••••••" />
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="confirma">Confirmar senha</Label>
             <Input id="confirma" type="password" value={confirma} onChange={(e) => setConfirma(e.target.value)} placeholder="••••••••" />
           </div>
 
-          <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+          <ul className="space-y-1 text-xs text-muted-foreground">
             <li>Mínimo de {tamanhoMinimo} caracteres</li>
             <li>Ao menos uma letra e um número</li>
             <li>Recomendado: use uma senha forte, misturando maiúsculas, minúsculas e símbolos</li>
@@ -94,14 +94,14 @@ function NovaSenhaPage() {
 
           {erro && <p className="text-sm text-destructive">{erro}</p>}
 
-          <Button type="submit" size="lg" className="w-full" disabled={salvando}>
+          <Button type="submit" className="w-full" disabled={salvando}>
             {salvando && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
             Salvar e continuar
           </Button>
         </form>
 
-        <div className="mt-6 flex items-center gap-3 rounded-md bg-muted p-4 text-sm text-muted-foreground">
-          <ShieldCheck className="h-5 w-5 shrink-0 text-primary" />
+        <div className="mt-5 flex items-center gap-2 rounded-lg border border-border bg-background p-3 text-xs text-muted-foreground">
+          <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
           A senha é armazenada criptografada, nunca em texto puro.
         </div>
       </div>

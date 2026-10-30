@@ -209,7 +209,7 @@ function RelatoriosPage() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
           <div>
-            <h1 className="text-3xl text-foreground">Relatórios de Uso e Ocupação</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">Relatórios de Uso e Ocupação</h1>
             <p className="text-sm text-muted-foreground">
               {relatorio.faixa
                 ? `Período de ${dataBR(relatorio.faixa.inicio)} a ${dataBR(relatorio.faixa.fim)}.`
@@ -238,7 +238,7 @@ function RelatoriosPage() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card className="border-border bg-card">
+          <Card className="border-border bg-card shadow-sm">
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -248,39 +248,39 @@ function RelatoriosPage() {
                   <Clock className="h-4 w-4" />
                 </div>
               </div>
-              <p className="mt-2 text-3xl text-foreground">{formatarHoras(relatorio.horas)}</p>
+              <p className="mt-2 text-3xl font-bold text-foreground">{formatarHoras(relatorio.horas)}</p>
               <p className="mt-1 text-xs text-muted-foreground">Soma das reservas confirmadas</p>
             </CardContent>
           </Card>
 
-          <Card className="border-border bg-card">
+          <Card className="border-border bg-card shadow-sm">
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Taxa de Ocupação
                 </p>
-                <div className="p-2 rounded-md bg-secondary text-primary">
+                <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                   <PieChart className="h-4 w-4" />
                 </div>
               </div>
-              <p className="mt-2 text-3xl text-foreground">{relatorio.taxaOcupacao}%</p>
+              <p className="mt-2 text-3xl font-bold text-foreground">{relatorio.taxaOcupacao}%</p>
               <p className="mt-1 text-xs text-muted-foreground">
                 {relatorio.salasUsadas} de {salas.length} salas utilizadas no período
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-border bg-card">
+          <Card className="border-border bg-card shadow-sm">
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Reservas no Período
                 </p>
-                <div className="p-2 rounded-md bg-secondary text-primary">
+                <div className="p-2 rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400">
                   <CalendarDays className="h-4 w-4" />
                 </div>
               </div>
-              <p className="mt-2 text-3xl text-foreground">{relatorio.doPeriodo.length}</p>
+              <p className="mt-2 text-3xl font-bold text-foreground">{relatorio.doPeriodo.length}</p>
               <p className="mt-1 text-xs text-muted-foreground">
                 {relatorio.confirmados.length} confirmadas · {relatorio.pendentes.length} pendentes ·{" "}
                 {relatorio.cancelados.length} canceladas
@@ -288,23 +288,23 @@ function RelatoriosPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-border bg-card">
+          <Card className="border-border bg-card shadow-sm">
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Média de Alunos
                 </p>
-                <div className="p-2 rounded-md bg-secondary text-primary">
+                <div className="p-2 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
                   <Users className="h-4 w-4" />
                 </div>
               </div>
-              <p className="mt-2 text-3xl text-foreground">{relatorio.mediaAlunos}</p>
+              <p className="mt-2 text-3xl font-bold text-foreground">{relatorio.mediaAlunos}</p>
               <p className="mt-1 text-xs text-muted-foreground">Por reserva confirmada</p>
             </CardContent>
           </Card>
         </div>
 
-        <Card className="border-border bg-card">
+        <Card className="border-border bg-card shadow-sm">
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold text-foreground">
               <FileBarChart className="h-5 w-5 text-primary" />
@@ -316,7 +316,7 @@ function RelatoriosPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             {relatorio.porSala.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-border py-10 text-center text-sm text-muted-foreground">
+              <div className="rounded-xl border border-dashed border-border py-10 text-center text-sm text-muted-foreground">
                 Nenhuma sala cadastrada.
               </div>
             ) : (

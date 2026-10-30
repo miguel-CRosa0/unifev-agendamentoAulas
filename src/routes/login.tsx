@@ -67,92 +67,64 @@ function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background lg:flex-row">
-      {/* Faixa institucional */}
-      <div className="flex flex-col justify-between bg-sidebar px-8 py-8 text-sidebar-foreground lg:w-[42%] lg:px-14 lg:py-12">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-md bg-ouro text-ouro-foreground">
-            <GraduationCap className="h-7 w-7" />
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-primary/10 via-background to-background px-4 py-10">
+      <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-sm">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+            <GraduationCap className="h-6 w-6" />
           </div>
-          <div className="leading-tight">
-            <span className="block font-serif text-2xl font-semibold text-white">SalaFácil</span>
-            <span className="block text-sm text-sidebar-foreground/80">Unifev · Agendamento de salas</span>
+          <div>
+            <span className="text-xl font-bold tracking-tight text-foreground">SalaFácil</span>
+            <p className="text-[11px] text-muted-foreground">Sistema Integrado de Gestão de Salas</p>
           </div>
         </div>
 
-        <div className="hidden max-w-md lg:block">
-          <div className="mb-6 h-[3px] w-12 rounded bg-ouro" />
-          <p className="font-serif text-4xl font-semibold leading-tight text-white">
-            Reserve salas de aula e laboratórios de forma simples.
-          </p>
-          <p className="mt-4 text-lg text-sidebar-foreground/85">
-            Consulte a disponibilidade, faça seus agendamentos e acompanhe tudo em um só lugar.
-          </p>
-        </div>
-
-        <p className="hidden text-sm text-sidebar-foreground/70 lg:block">
-          Centro Universitário de Votuporanga
+        <h1 className="mt-6 text-xl font-bold text-foreground">Entrar no Sistema</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Informe seu RA institucional (ou e-mail) e sua senha.
         </p>
-      </div>
 
-      {/* Formulário */}
-      <div className="flex flex-1 items-center justify-center px-4 py-10 sm:px-8">
-        <div className="w-full max-w-md">
-          <h1 className="text-4xl text-foreground">Entrar no sistema</h1>
-          <p className="mt-2 text-base text-muted-foreground">
-            Informe seu RA (ou e-mail) e sua senha.
-          </p>
-
-          <form className="mt-8 space-y-5" onSubmit={entrar}>
-            <div className="space-y-2">
-              <Label htmlFor="login">RA ou e-mail</Label>
-              <Input
-                id="login"
-                autoComplete="username"
-                autoCapitalize="none"
-                className="h-12 text-lg"
-                value={login}
-                onChange={(e) => setLogin(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="senha">Senha</Label>
-              <Input
-                id="senha"
-                type="password"
-                autoComplete="current-password"
-                className="h-12 text-lg"
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-              />
-            </div>
-
-            {erro && (
-              <p
-                role="alert"
-                className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm font-medium text-destructive"
-              >
-                <ShieldAlert className="h-5 w-5 shrink-0" /> {erro}
-              </p>
-            )}
-
-            <Button type="submit" size="lg" className="w-full" disabled={entrando}>
-              {entrando ? <Loader2 className="animate-spin" /> : <LogIn />} Entrar
-            </Button>
-          </form>
-
-          <div className="mt-8 flex gap-3 rounded-md bg-muted p-4 text-sm text-muted-foreground">
-            <KeyRound className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-            <p>
-              <strong className="font-semibold text-foreground">Primeiro acesso?</strong> Use a senha
-              temporária informada pelo administrador. Em seguida, você vai criar sua senha pessoal.
-            </p>
+        <form className="mt-6 space-y-4" onSubmit={entrar}>
+          <div className="space-y-1.5">
+            <Label htmlFor="login">RA ou e-mail</Label>
+            <Input
+              id="login"
+              autoComplete="username"
+              autoCapitalize="none"
+              value={login}
+              onChange={(e) => setLogin(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="senha">Senha de Acesso</Label>
+            <Input
+              id="senha"
+              type="password"
+              autoComplete="current-password"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+            />
           </div>
 
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            Não tem acesso? Peça o cadastro ao administrador do sistema.
-          </p>
+          {erro && (
+            <p className="text-xs text-destructive flex items-center gap-1.5">
+              <ShieldAlert className="h-3.5 w-3.5" /> {erro}
+            </p>
+          )}
+
+          <Button type="submit" className="w-full font-medium gap-1.5" disabled={entrando}>
+            {entrando ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />} Entrar
+          </Button>
+        </form>
+
+        <div className="mt-5 flex items-center gap-2 rounded-lg border border-border bg-background p-3 text-xs text-muted-foreground">
+          <KeyRound className="h-4 w-4 shrink-0 text-primary" />
+          Primeiro acesso? Use a senha temporária informada pelo administrador. Em seguida você definirá sua senha pessoal.
         </div>
+
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          Não tem acesso? Solicite o cadastro ao administrador do sistema.
+        </p>
       </div>
     </div>
   );

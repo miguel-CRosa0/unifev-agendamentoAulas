@@ -1,12 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarPlus, ChevronRight, Clock, DoorOpen, FileBarChart } from "lucide-react";
+import {
+  CalendarDays,
+  CalendarPlus,
+  CheckCircle2,
+  Clock,
+  DoorOpen,
+  FileBarChart,
+  Layers,
+  Plus,
+} from "lucide-react";
 
 import { useStore } from "@/context/store-context";
 import { CalendarPanel } from "@/components/dashboard/calendar-panel";
 import { DashboardLayout } from "@/components/dashboard/layout";
 import { RecentBookings } from "@/components/dashboard/recent-bookings";
 import { StatsCards } from "@/components/dashboard/stats-cards";
-import { HojePanel } from "@/components/dashboard/hoje-panel";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -36,109 +44,91 @@ function DashboardPage() {
   const salasDisponiveis = salas.filter((s) => s.status === "disponível").length;
   const pendentesCount = agendamentos.filter((a) => a.status === "pendente").length;
 
-  const primeiroNome = currentUser.nome.split(" ")[0];
-  const hora = Number(
-    new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", hour12: false, timeZone: "America/Sao_Paulo" }),
-  );
-  const saudacao = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
-  const dataExtenso = new Date().toLocaleDateString("pt-BR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "America/Sao_Paulo",
-  });
-
-  const atalhos = [
-    {
-      icon: CalendarPlus,
-      titulo: "Reservar uma sala",
-      descricao: "Para aula, prova ou evento",
-      onClick: () => openNovoAgendamento(),
-    },
-    {
-      icon: DoorOpen,
-      titulo: salasDisponiveis === 1 ? "1 sala livre" : `${salasDisponiveis} salas livres`,
-      descricao: "Ver salas e laboratórios",
-      to: "/salas" as const,
-    },
-    {
-      icon: Clock,
-      titulo:
-        pendentesCount === 0
-          ? "Nada pendente"
-          : pendentesCount === 1
-            ? "1 pedido pendente"
-            : `${pendentesCount} pedidos pendentes`,
-      descricao: "Revisar e aprovar reservas",
-      to: "/agendamentos" as const,
-    },
-    {
-      icon: FileBarChart,
-      titulo: "Relatórios",
-      descricao: "Ocupação e uso das salas",
-      to: "/relatorios" as const,
-    },
-  ];
-
-  const classeAtalho =
-    "group flex items-center gap-4 rounded-lg border border-border bg-card p-5 text-left transition-colors hover:border-primary hover:bg-secondary";
-
   return (
     <DashboardLayout>
-      <div className="space-y-8">
-        <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
+      <div className="space-y-6">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-medium text-muted-foreground first-letter:uppercase">{dataExtenso}</p>
-            <h1 className="mt-1 text-4xl text-foreground">
-              {saudacao}, {primeiroNome}
-            </h1>
-            <p className="mt-1 text-base text-muted-foreground">
-              Aqui está o resumo das salas e dos agendamentos.
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">Dashboard</h1>
+            <p className="text-sm text-muted-foreground">
+              Gestão e controle de agendamento de salas de aula, laboratórios e turmas acadêmicas.
             </p>
           </div>
-          <Button onClick={() => openNovoAgendamento()} size="lg" className="px-6">
-            <CalendarPlus />
-            Agendar sala
-          </Button>
-        </div>
-
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.7fr)_minmax(20rem,1fr)]">
-          <HojePanel agendamentos={agendamentos} />
-          <StatsCards indicadores={indicadores} />
-        </div>
-
-        {/* Atalhos */}
-        <section aria-labelledby="atalhos">
-          <h2 id="atalhos" className="mb-3 text-xl text-foreground">
-            O que você deseja fazer?
-          </h2>
-          <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
-            {atalhos.map((atalho) => {
-              const conteudo = (
-                <>
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-border bg-muted text-primary transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
-                    <atalho.icon className="h-6 w-6" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-base font-bold text-foreground">{atalho.titulo}</p>
-                    <p className="text-sm text-muted-foreground">{atalho.descricao}</p>
-                  </div>
-                  <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
-                </>
-              );
-              return atalho.to ? (
-                <Link key={atalho.titulo} to={atalho.to} className={classeAtalho}>
-                  {conteudo}
-                </Link>
-              ) : (
-                <button key={atalho.titulo} type="button" onClick={atalho.onClick} className={classeAtalho}>
-                  {conteudo}
-                </button>
-              );
-            })}
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => openNovoAgendamento()}
+              className="font-medium shadow-sm"
+              size="sm"
+            >
+              <CalendarPlus className="mr-1.5 h-4 w-4" />
+              Agendar Sala
+            </Button>
+            <div className="hidden md:block text-xs text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-lg border border-border">
+              Sessão: <span className="font-semibold text-foreground">{currentUser.nome}</span> ({currentUser.perfil})
+            </div>
           </div>
-        </section>
+        </div>
+
+        {/* Dynamic Indicators */}
+        <StatsCards indicadores={indicadores} />
+
+        {/* Quick Action Shortcuts Banner */}
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <button
+            type="button"
+            onClick={() => openNovoAgendamento()}
+            className="flex items-center gap-3 rounded-xl border border-border bg-card p-3.5 text-left transition-all hover:border-primary/50 hover:shadow-sm"
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <CalendarPlus className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-foreground">Nova Reserva</p>
+              <p className="text-xs text-muted-foreground">Reservar sala para aula ou evento</p>
+            </div>
+          </button>
+
+          <Link
+            to="/salas"
+            className="flex items-center gap-3 rounded-xl border border-border bg-card p-3.5 text-left transition-all hover:border-primary/50 hover:shadow-sm"
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              <DoorOpen className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-foreground">{salasDisponiveis} Salas Livres</p>
+              <p className="text-xs text-muted-foreground">Consultar mapa de laboratórios</p>
+            </div>
+          </Link>
+
+          <Link
+            to="/agendamentos"
+            className="flex items-center gap-3 rounded-xl border border-border bg-card p-3.5 text-left transition-all hover:border-primary/50 hover:shadow-sm"
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
+              <Clock className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-foreground">
+                {pendentesCount > 0 ? `${pendentesCount} Pendentes` : "Sem Pendências"}
+              </p>
+              <p className="text-xs text-muted-foreground">Revisar e aprovar agendamentos</p>
+            </div>
+          </Link>
+
+          <Link
+            to="/relatorios"
+            className="flex items-center gap-3 rounded-xl border border-border bg-card p-3.5 text-left transition-all hover:border-primary/50 hover:shadow-sm"
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400">
+              <FileBarChart className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-foreground">Relatório e Ocupação</p>
+              <p className="text-xs text-muted-foreground">Exportar dados de frequência</p>
+            </div>
+          </Link>
+        </div>
 
         {/* Interactive Calendar View */}
         <CalendarPanel agendamentos={agendamentos} />

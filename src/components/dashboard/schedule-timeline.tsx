@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function ScheduleTimeline({ agenda }: { agenda: { time: string; itens: string[] }[] }) {
   return (
-    <Card className="border-border bg-card">
+    <Card className="border-border bg-card shadow-sm">
       <CardHeader className="pb-4">
         <CardTitle className="text-lg font-semibold text-foreground">Agenda do dia</CardTitle>
         <p className="text-sm text-muted-foreground">Grade por horário de aula</p>
@@ -28,7 +28,7 @@ export function ScheduleTimeline({ agenda }: { agenda: { time: string; itens: st
                     {slot.itens.map((item) => (
                       <div
                         key={item}
-                        className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
+                        className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground shadow-sm"
                       >
                         {item}
                       </div>

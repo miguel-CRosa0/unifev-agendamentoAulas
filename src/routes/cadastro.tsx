@@ -80,7 +80,7 @@ export function CadastroPage() {
       <div className="space-y-6">
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
-            <h1 className="text-3xl text-foreground">Cadastro de Usuários</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">Cadastro de Usuários</h1>
             <p className="text-sm text-muted-foreground">
               Cadastre professores e coordenadores. Eles entram com o RA e a senha temporária.
             </p>
@@ -91,7 +91,7 @@ export function CadastroPage() {
         </div>
 
         <div className="grid gap-6 xl:grid-cols-3">
-          <Card className="border-border bg-card xl:col-span-2">
+          <Card className="border-border bg-card shadow-sm xl:col-span-2">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-lg font-semibold text-foreground">
                 <UserPlus className="h-4 w-4 text-primary" />
@@ -169,7 +169,7 @@ export function CadastroPage() {
                   </Select>
                 </div>
 
-                <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm sm:col-span-2">
+                <div className="rounded-xl border border-border bg-muted/40 p-4 text-sm sm:col-span-2">
                   <p className="text-xs uppercase font-bold tracking-wider text-muted-foreground">
                     Senha Temporária Gerada Automaticamente
                   </p>
@@ -224,7 +224,7 @@ export function CadastroPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-border bg-card">
+          <Card className="border-border bg-card shadow-sm">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
@@ -241,7 +241,7 @@ export function CadastroPage() {
                 <div key={u.id} className="rounded-lg border border-border bg-background p-3">
                   <div className="flex items-center justify-between">
                     <p className="truncate text-sm font-semibold text-foreground">{u.nome}</p>
-                    <Badge variant="outline" className="text-xs text-primary border-primary/20 bg-primary/5">
+                    <Badge variant="outline" className="text-[10px] text-primary border-primary/20 bg-primary/5">
                       {u.perfil}
                     </Badge>
                   </div>
