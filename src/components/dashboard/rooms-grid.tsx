@@ -123,7 +123,7 @@ export function RoomsGrid({ salas }: { salas: Sala[] }) {
         onEdit={(s) => handleEdit(s)}
       />
 
-      <Card className="border-border bg-card shadow-sm">
+      <Card className="border-border bg-card">
         <CardHeader className="pb-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -142,7 +142,7 @@ export function RoomsGrid({ salas }: { salas: Sala[] }) {
                   setNovaSalaOpen(true);
                 }}
                 size="sm"
-                className="gap-1.5 shadow-sm"
+                className="gap-1.5"
               >
                 <Plus className="h-4 w-4" /> Nova sala
               </Button>
@@ -200,7 +200,7 @@ export function RoomsGrid({ salas }: { salas: Sala[] }) {
 
         <CardContent>
           {filteredSalas.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-border py-12 text-center">
+            <div className="rounded-lg border border-dashed border-border py-12 text-center">
               <DoorOpen className="mx-auto h-8 w-8 text-muted-foreground/60" />
               <p className="mt-2 text-sm font-medium text-foreground">Nenhuma sala encontrada</p>
               <p className="text-xs text-muted-foreground mt-0.5">
@@ -223,7 +223,7 @@ export function RoomsGrid({ salas }: { salas: Sala[] }) {
               {filteredSalas.map((sala) => (
                 <div
                   key={sala.id}
-                  className="group relative flex flex-col justify-between rounded-xl border border-border bg-background p-4 transition-all hover:border-primary/40 hover:shadow-sm"
+                  className="group relative flex flex-col justify-between rounded-lg border border-border bg-background p-4 transition-all hover:border-primary/40 hover:shadow-sm"
                 >
                   <div>
                     <div className="flex items-start justify-between gap-2">

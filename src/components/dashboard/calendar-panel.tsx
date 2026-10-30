@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -55,12 +55,9 @@ export function CalendarPanel({ agendamentos }: { agendamentos: Agendamento[] })
   }
 
   return (
-    <Card className="border-border bg-card shadow-sm">
+    <Card className="border-border bg-card">
       <CardHeader className="flex flex-row items-center justify-between gap-2 pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg font-semibold text-foreground">
-          <CalendarDays className="h-4 w-4 text-primary" />
-          Calendário de agendamentos
-        </CardTitle>
+        <CardTitle className="text-base font-semibold text-foreground">Calendário</CardTitle>
         <div className="flex items-center gap-1">
           <Button
             variant="outline"
@@ -86,7 +83,7 @@ export function CalendarPanel({ agendamentos }: { agendamentos: Agendamento[] })
       </CardHeader>
       <CardContent className="grid gap-6 lg:grid-cols-[1fr_18rem]">
         <div>
-          <div className="grid grid-cols-7 gap-1 pb-2 text-center text-[11px] font-medium uppercase text-muted-foreground">
+          <div className="grid grid-cols-7 gap-1 pb-2 text-center text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
             {DIAS.map((d) => (
               <span key={d}>{d}</span>
             ))}
@@ -103,18 +100,18 @@ export function CalendarPanel({ agendamentos }: { agendamentos: Agendamento[] })
                   key={chave}
                   type="button"
                   onClick={() => setSelecionado(chave)}
-                  className={`flex aspect-square flex-col items-center justify-start gap-1 rounded-lg border p-1.5 text-sm transition-colors ${
+                  className={`flex aspect-[5/4] flex-col items-start justify-between rounded-md border p-2 text-left font-mono text-[13px] transition-colors ${
                     ativo
-                      ? "border-primary bg-primary/10 font-semibold text-primary"
+                      ? "border-primary bg-primary text-primary-foreground"
                       : ehHoje
-                        ? "border-primary/40 bg-background font-semibold text-primary hover:bg-accent"
-                        : "border-border bg-background text-foreground hover:bg-accent"
+                        ? "border-primary/50 bg-card font-medium text-primary hover:bg-accent"
+                        : "border-transparent text-foreground hover:border-border hover:bg-card"
                   }`}
                 >
                   <span>{dia}</span>
-                  <span className="flex flex-wrap items-center justify-center gap-0.5">
-                    {itens.slice(0, 3).map((a) => (
-                      <span key={a.id} className={`h-1.5 w-1.5 rounded-full ${statusDot(a.status)}`} />
+                  <span className="flex items-center gap-0.5">
+                    {itens.slice(0, 4).map((a) => (
+                      <span key={a.id} className={`h-1 w-3 rounded-full ${ativo ? "bg-primary-foreground/80" : statusDot(a.status)}`} />
                     ))}
                   </span>
                 </button>
@@ -128,23 +125,23 @@ export function CalendarPanel({ agendamentos }: { agendamentos: Agendamento[] })
           </div>
         </div>
 
-        <div className="rounded-lg border border-border bg-background p-4">
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">Agendamentos do dia</p>
-          <p className="text-sm font-semibold text-foreground">
+        <div className="border-t border-border pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
+          <p className="text-xs text-muted-foreground">Agendamentos do dia</p>
+          <p className="font-mono text-sm font-medium text-foreground">
             {selecionado.split("-").reverse().join("/")}
           </p>
-          <div className="mt-3 space-y-2">
+          <div className="mt-4 space-y-3.5">
             {doDia.length === 0 && (
               <p className="text-sm text-muted-foreground">Nenhum agendamento nesta data.</p>
             )}
             {doDia.map((a) => (
-              <div key={a.id} className="rounded-md border border-border p-2.5">
+              <div key={a.id} className="border-l-2 border-border py-0.5 pl-3">
                 <div className="flex items-center gap-2">
                   <span className={`h-2 w-2 rounded-full ${statusDot(a.status)}`} />
                   <p className="truncate text-sm font-medium text-foreground">{a.disciplina}</p>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {a.horaInicio}–{a.horaFim} · {a.salaCodigo}
+                  <span className="font-mono">{a.horaInicio}–{a.horaFim}</span> · {a.salaCodigo}
                 </p>
                 <p className="text-xs text-muted-foreground">{a.professorResponsavel}</p>
               </div>

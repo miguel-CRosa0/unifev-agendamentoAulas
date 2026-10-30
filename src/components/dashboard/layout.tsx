@@ -6,7 +6,6 @@ import {
   BookOpen,
   CalendarDays,
   FileBarChart,
-  GraduationCap,
   Home,
   LogOut,
   MapPin,
@@ -16,14 +15,11 @@ import {
   Search,
   Settings,
   KeyRound,
-  ShieldCheck,
   Users,
 } from "lucide-react";
 
 import { useStore } from "@/context/store-context";
 import { authClient } from "@/lib/auth-client";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -33,10 +29,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { GlobalSearchDialog } from "@/components/dashboard/global-search-dialog";
 import { NovoAgendamentoDialog } from "@/components/dashboard/novo-agendamento-dialog";
+
+function iniciais(nome: string) {
+  const p = nome.trim().split(/\s+/);
+  return ((p[0]?.[0] ?? "") + (p.length > 1 ? p[p.length - 1]![0]! : "")).toUpperCase();
+}
 
 const navItems = [
   { icon: Home, label: "Dashboard", href: "/" },
@@ -48,6 +48,55 @@ const navItems = [
   { icon: MessageSquare, label: "Notificações", href: "/notificacoes", hasBadge: true },
   { icon: Settings, label: "Configurações", href: "/configuracoes", adminOnly: true },
 ];
+
+export function Marca({ escura = false }: { escura?: boolean }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden>
+        <rect x="2" y="2" width="9" height="9" rx="1.5" className={escura ? "fill-sidebar-primary" : "fill-primary"} />
+        <rect x="13" y="2" width="9" height="9" rx="1.5" className="fill-current opacity-25" />
+        <rect x="2" y="13" width="9" height="9" rx="1.5" className="fill-current opacity-25" />
+        <rect x="13" y="13" width="9" height="9" rx="1.5" className="fill-current opacity-60" />
+      </svg>
+      <span className="text-[15px] font-semibold tracking-tight">SalaFácil</span>
+    </div>
+  );
+}
+
+function ItemMenu({
+  item,
+  ativo,
+  naoLidas,
+  onClick,
+}: {
+  item: (typeof navItems)[number];
+  ativo: boolean;
+  naoLidas: number;
+  onClick?: () => void;
+}) {
+  return (
+    <Link
+      to={item.href}
+      onClick={onClick}
+      className={`relative flex items-center justify-between rounded-md px-3 py-2 text-[13px] transition-colors ${
+        ativo
+          ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
+          : "text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
+      }`}
+    >
+      {ativo && <span className="absolute -left-3 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-sidebar-primary" />}
+      <span className="flex items-center gap-2.5">
+        <item.icon className={`h-4 w-4 ${ativo ? "text-sidebar-primary" : ""}`} strokeWidth={1.75} />
+        {item.label}
+      </span>
+      {item.hasBadge && naoLidas > 0 && (
+        <span className="rounded bg-sidebar-primary px-1.5 font-mono text-[10px] font-medium text-sidebar-primary-foreground">
+          {naoLidas}
+        </span>
+      )}
+    </Link>
+  );
+}
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -74,62 +123,34 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       <NovoAgendamentoDialog />
 
       {/* Sidebar desktop */}
-      <aside className="hidden w-64 flex-col border-r border-border bg-card lg:flex">
-        <div className="flex h-16 items-center gap-2 border-b border-border px-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-            <GraduationCap className="h-5 w-5" />
-          </div>
-          <span className="text-lg font-bold tracking-tight text-foreground">SalaFácil</span>
+      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col bg-sidebar text-sidebar-foreground lg:flex">
+        <div className="flex h-14 items-center px-6 text-sidebar-accent-foreground">
+          <Marca escura />
         </div>
 
-        <nav className="flex flex-1 flex-col gap-1 p-4 overflow-y-auto">
-          {itensMenu.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.label}
-                to={item.href}
-                className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                  isActive
-                    ? "bg-primary/10 text-primary font-semibold"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <item.icon className="h-4 w-4" />
-                  {item.label}
-                </div>
-                {item.hasBadge && unreadNotificacoesCount > 0 && (
-                  <Badge variant="secondary" className="h-5 min-w-5 px-1.5 text-[10px] font-bold bg-primary text-primary-foreground">
-                    {unreadNotificacoesCount}
-                  </Badge>
-                )}
-              </Link>
-            );
-          })}
+        <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-3 py-3">
+          {itensMenu.map((item) => (
+            <ItemMenu key={item.label} item={item} ativo={pathname === item.href} naoLidas={unreadNotificacoesCount} />
+          ))}
         </nav>
 
-        {/* User Card Bottom Sidebar */}
-        <div className="border-t border-border p-4">
+        <div className="border-t border-sidebar-border p-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className="w-full text-left flex items-center gap-3 rounded-lg border border-border bg-background p-3 hover:bg-accent/50 transition-colors"
+                className="flex w-full items-center gap-2.5 rounded-md p-2 text-left transition-colors hover:bg-sidebar-accent/60"
               >
-                <Avatar className="h-9 w-9 border border-border">
-                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                    {currentUser.nome.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate text-sm font-medium text-foreground">{currentUser.nome}</span>
-                  <span className="truncate text-xs text-muted-foreground">{currentUser.perfil}</span>
-                </div>
-                <Settings className="h-4 w-4 text-muted-foreground shrink-0" />
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-sidebar-accent font-mono text-[11px] font-medium text-sidebar-accent-foreground">
+                  {iniciais(currentUser.nome)}
+                </span>
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="truncate text-[13px] font-medium text-sidebar-accent-foreground">{currentUser.nome}</span>
+                  <span className="truncate text-xs capitalize text-sidebar-foreground/60">{currentUser.perfil}</span>
+                </span>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="start" side="top" className="w-56">
               <DropdownMenuLabel className="text-xs">
                 <p className="font-semibold text-foreground">{currentUser.nome}</p>
                 <p className="font-normal text-muted-foreground">
@@ -138,11 +159,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => navigate({ to: "/nova-senha" })} className="cursor-pointer">
-                <KeyRound className="h-4 w-4 mr-2" /> Alterar senha
+                <KeyRound className="mr-2 h-4 w-4" /> Alterar senha
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="text-destructive cursor-pointer">
-                <LogOut className="h-4 w-4 mr-2" /> Sair do sistema
+              <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive">
+                <LogOut className="mr-2 h-4 w-4" /> Sair do sistema
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -150,130 +171,65 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main Container */}
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex min-w-0 flex-1 flex-col">
         {/* Header */}
-        <header className="flex h-16 items-center gap-3 border-b border-border bg-card px-4 sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-background/90 px-4 backdrop-blur sm:px-6 lg:px-10">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="lg:hidden">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-64 p-0">
-              <div className="flex h-16 items-center gap-2 border-b border-border px-6">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-                  <GraduationCap className="h-5 w-5" />
-                </div>
-                <span className="text-lg font-bold tracking-tight text-foreground">SalaFácil</span>
+            <SheetContent side="left" className="w-64 border-0 bg-sidebar p-0 text-sidebar-foreground">
+              <div className="flex h-14 items-center px-6 text-sidebar-accent-foreground">
+                <Marca escura />
               </div>
-              <nav className="flex flex-col gap-1 p-4">
+              <nav className="flex flex-col gap-0.5 px-3 py-3">
                 {itensMenu.map((item) => (
-                  <Link
+                  <ItemMenu
                     key={item.label}
-                    to={item.href}
+                    item={item}
+                    ativo={pathname === item.href}
+                    naoLidas={unreadNotificacoesCount}
                     onClick={() => setOpen(false)}
-                    className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                      pathname === item.href
-                        ? "bg-primary/10 text-primary font-semibold"
-                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <item.icon className="h-4 w-4" />
-                      {item.label}
-                    </div>
-                    {item.hasBadge && unreadNotificacoesCount > 0 && (
-                      <Badge variant="secondary" className="h-5 min-w-5 px-1.5 text-[10px] font-bold bg-primary text-primary-foreground">
-                        {unreadNotificacoesCount}
-                      </Badge>
-                    )}
-                  </Link>
+                  />
                 ))}
               </nav>
             </SheetContent>
           </Sheet>
 
           {/* Search Trigger */}
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-            <Input
-              type="search"
-              placeholder="Buscar salas, turmas, professores... (Ctrl+K)"
-              className="pl-9 bg-background border-border text-sm cursor-pointer"
-              onClick={() => setSearchOpen(true)}
-              onFocus={() => setSearchOpen(true)}
-              readOnly
-            />
-          </div>
+          <button
+            type="button"
+            onClick={() => setSearchOpen(true)}
+            className="flex h-8 w-full max-w-sm items-center gap-2 rounded-md border border-input bg-card px-2.5 text-left text-[13px] text-muted-foreground transition-colors hover:border-ring/50"
+          >
+            <Search className="h-3.5 w-3.5" />
+            <span className="flex-1 truncate">Buscar sala, turma ou professor</span>
+            <kbd className="hidden rounded border border-border bg-muted px-1 font-mono text-[10px] sm:block">Ctrl K</kbd>
+          </button>
 
-          <div className="ml-auto flex items-center gap-2 sm:gap-3">
-            <Link to="/notificacoes" className="relative p-2 text-muted-foreground hover:text-foreground">
-              <Bell className="h-5 w-5" />
+          <div className="ml-auto flex items-center gap-1.5">
+            <Link
+              to="/notificacoes"
+              className="relative rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              aria-label="Notificações"
+            >
+              <Bell className="h-4 w-4" />
               {unreadNotificacoesCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 flex h-2 w-2 rounded-full bg-primary" />
+                <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-destructive" />
               )}
             </Link>
 
-            <Button
-              onClick={() => openNovoAgendamento()}
-              className="hidden sm:inline-flex items-center gap-1.5 font-medium shadow-sm"
-              size="sm"
-            >
-              <Plus className="h-4 w-4" />
-              Novo agendamento
+            <Button onClick={() => openNovoAgendamento()} size="sm" className="gap-1.5">
+              <Plus className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Novo agendamento</span>
+              <span className="sm:hidden sr-only">Novo agendamento</span>
             </Button>
-            <Button
-              onClick={() => openNovoAgendamento()}
-              className="sm:hidden"
-              size="icon"
-              title="Novo agendamento"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button type="button" className="rounded-full ring-offset-background transition-opacity hover:opacity-80">
-                  <Avatar className="h-9 w-9 border border-border">
-                    <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                      {currentUser.nome.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>
-                  <p className="text-sm font-semibold text-foreground">{currentUser.nome}</p>
-                  <p className="text-xs text-muted-foreground font-normal">{currentUser.email}</p>
-                  <Badge variant="outline" className="mt-1 text-[10px] text-primary border-primary/20">
-                    {currentUser.perfil}
-                  </Badge>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {isAdmin && (
-                  <>
-                    <DropdownMenuItem onClick={() => navigate({ to: "/configuracoes" })} className="cursor-pointer">
-                      <Settings className="h-4 w-4 mr-2" /> Configurações
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate({ to: "/usuarios" })} className="cursor-pointer">
-                      <ShieldCheck className="h-4 w-4 mr-2" /> Gerenciar Acessos
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                  </>
-                )}
-                <DropdownMenuItem onClick={() => navigate({ to: "/nova-senha" })} className="cursor-pointer">
-                  <KeyRound className="h-4 w-4 mr-2" /> Alterar senha
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-destructive cursor-pointer">
-                  <LogOut className="h-4 w-4 mr-2" /> Sair
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
         </header>
 
-        <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">{children}</main>
+        <main className="mx-auto w-full max-w-[1280px] flex-1 p-4 sm:p-6 lg:px-10 lg:py-8">{children}</main>
       </div>
     </div>
   );

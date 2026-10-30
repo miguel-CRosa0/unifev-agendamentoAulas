@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { GraduationCap, KeyRound, Loader2, LogIn, ShieldAlert } from "lucide-react";
+import { Loader2, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 
 import { authClient } from "@/lib/auth-client";
@@ -9,6 +9,7 @@ import { sessaoQueryOptions } from "@/lib/sessao";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Marca } from "@/components/dashboard/layout";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -67,65 +68,84 @@ function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-primary/10 via-background to-background px-4 py-10">
-      <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-sm">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-            <GraduationCap className="h-6 w-6" />
-          </div>
-          <div>
-            <span className="text-xl font-bold tracking-tight text-foreground">SalaFácil</span>
-            <p className="text-[11px] text-muted-foreground">Sistema Integrado de Gestão de Salas</p>
-          </div>
+    <div className="grid min-h-screen lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+      <aside className="relative hidden flex-col justify-between overflow-hidden bg-sidebar p-12 text-sidebar-accent-foreground lg:flex">
+        <Marca escura />
+
+        <div className="max-w-md">
+          <h2 className="text-4xl font-semibold leading-[1.1] tracking-tight">
+            Cada aula no seu horário. Cada turma na sua sala.
+          </h2>
+          <p className="mt-5 text-[15px] leading-relaxed text-sidebar-foreground/70">
+            Reserve salas e laboratórios, acompanhe conflitos de horário e veja a ocupação do campus em um só lugar.
+          </p>
         </div>
 
-        <h1 className="mt-6 text-xl font-bold text-foreground">Entrar no Sistema</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Informe seu RA institucional (ou e-mail) e sua senha.
-        </p>
+        <p className="font-mono text-xs text-sidebar-foreground/50">Unifev · Gestão de salas</p>
 
-        <form className="mt-6 space-y-4" onSubmit={entrar}>
-          <div className="space-y-1.5">
-            <Label htmlFor="login">RA ou e-mail</Label>
-            <Input
-              id="login"
-              autoComplete="username"
-              autoCapitalize="none"
-              value={login}
-              onChange={(e) => setLogin(e.target.value)}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="senha">Senha de Acesso</Label>
-            <Input
-              id="senha"
-              type="password"
-              autoComplete="current-password"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-            />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-24 top-1/2 grid -translate-y-1/2 grid-cols-4 gap-2 opacity-[0.07]"
+        >
+          {Array.from({ length: 28 }, (_, i) => (
+            <span key={i} className={`h-20 w-20 rounded-md ${i % 5 === 1 || i % 7 === 3 ? "bg-sidebar-primary" : "border border-current"}`} />
+          ))}
+        </div>
+      </aside>
+
+      <main className="flex items-center justify-center px-6 py-10">
+        <div className="w-full max-w-[22rem]">
+          <div className="mb-10 text-foreground lg:hidden">
+            <Marca />
           </div>
 
-          {erro && (
-            <p className="text-xs text-destructive flex items-center gap-1.5">
-              <ShieldAlert className="h-3.5 w-3.5" /> {erro}
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Entrar</h1>
+          <p className="mt-1.5 text-sm text-muted-foreground">Use seu RA institucional ou e-mail.</p>
+
+          <form className="mt-8 space-y-4" onSubmit={entrar}>
+            <div className="space-y-1.5">
+              <Label htmlFor="login">RA ou e-mail</Label>
+              <Input
+                id="login"
+                autoComplete="username"
+                autoCapitalize="none"
+                className="h-10"
+                value={login}
+                onChange={(e) => setLogin(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="senha">Senha</Label>
+              <Input
+                id="senha"
+                type="password"
+                autoComplete="current-password"
+                className="h-10"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+              />
+            </div>
+
+            {erro && (
+              <p role="alert" className="flex items-center gap-1.5 text-[13px] text-destructive">
+                <ShieldAlert className="h-3.5 w-3.5 shrink-0" /> {erro}
+              </p>
+            )}
+
+            <Button type="submit" className="h-10 w-full gap-2" disabled={entrando}>
+              {entrando && <Loader2 className="h-4 w-4 animate-spin" />} Entrar
+            </Button>
+          </form>
+
+          <div className="mt-8 border-t border-border pt-5 text-[13px] leading-relaxed text-muted-foreground">
+            <p>
+              <span className="font-medium text-foreground">Primeiro acesso?</span> Entre com a senha temporária passada
+              pelo administrador; em seguida você define a sua.
             </p>
-          )}
-
-          <Button type="submit" className="w-full font-medium gap-1.5" disabled={entrando}>
-            {entrando ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />} Entrar
-          </Button>
-        </form>
-
-        <div className="mt-5 flex items-center gap-2 rounded-lg border border-border bg-background p-3 text-xs text-muted-foreground">
-          <KeyRound className="h-4 w-4 shrink-0 text-primary" />
-          Primeiro acesso? Use a senha temporária informada pelo administrador. Em seguida você definirá sua senha pessoal.
+            <p className="mt-2">Sem acesso? Peça o cadastro ao administrador do sistema.</p>
+          </div>
         </div>
-
-        <p className="mt-4 text-center text-xs text-muted-foreground">
-          Não tem acesso? Solicite o cadastro ao administrador do sistema.
-        </p>
-      </div>
+      </main>
     </div>
   );
 }

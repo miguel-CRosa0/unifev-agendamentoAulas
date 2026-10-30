@@ -91,7 +91,7 @@ export function CadastroPage() {
         </div>
 
         <div className="grid gap-6 xl:grid-cols-3">
-          <Card className="border-border bg-card shadow-sm xl:col-span-2">
+          <Card className="border-border bg-card xl:col-span-2">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-lg font-semibold text-foreground">
                 <UserPlus className="h-4 w-4 text-primary" />
@@ -169,7 +169,7 @@ export function CadastroPage() {
                   </Select>
                 </div>
 
-                <div className="rounded-xl border border-border bg-muted/40 p-4 text-sm sm:col-span-2">
+                <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm sm:col-span-2">
                   <p className="text-xs uppercase font-bold tracking-wider text-muted-foreground">
                     Senha Temporária Gerada Automaticamente
                   </p>
@@ -224,7 +224,7 @@ export function CadastroPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-border bg-card shadow-sm">
+          <Card className="border-border bg-card">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">

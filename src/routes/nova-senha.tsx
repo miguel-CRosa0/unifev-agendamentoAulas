@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Loader2, Lock, ShieldCheck } from "lucide-react";
+import { Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 import { getRegrasSenha, trocarMinhaSenha } from "@/lib/api";
@@ -66,12 +66,9 @@ function NovaSenhaPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-primary/10 to-background px-4 py-10">
-      <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-8 shadow-sm">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-          <Lock className="h-5 w-5" />
-        </div>
-        <h1 className="mt-5 text-xl font-bold text-foreground">Crie sua nova senha</h1>
+    <div className="flex min-h-screen items-center justify-center px-4 py-10">
+      <div className="w-full max-w-sm rounded-lg border border-border bg-card p-8">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Crie sua nova senha</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {sessao?.ra ? `RA ${sessao.ra} — ` : ""}defina uma senha pessoal para continuar.
         </p>
@@ -100,7 +97,7 @@ function NovaSenhaPage() {
           </Button>
         </form>
 
-        <div className="mt-5 flex items-center gap-2 rounded-lg border border-border bg-background p-3 text-xs text-muted-foreground">
+        <div className="mt-5 flex items-center gap-2 rounded-md bg-muted p-3 text-xs text-muted-foreground">
           <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
           A senha é armazenada criptografada, nunca em texto puro.
         </div>

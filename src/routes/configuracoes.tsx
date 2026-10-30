@@ -89,7 +89,7 @@ function ConfiguracoesPage() {
         <form onSubmit={handleSalvar} className="space-y-6">
           <div className="grid gap-6 lg:grid-cols-2">
             {/* Scheduling Rules */}
-            <Card className="border-border bg-card shadow-sm">
+            <Card className="border-border bg-card">
               <CardHeader className="pb-4">
                 <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
                   <Settings className="h-5 w-5 text-primary" />
@@ -123,7 +123,7 @@ function ConfiguracoesPage() {
                   <p className="text-xs text-muted-foreground">Equivalente padrão a 2 blocos de 50min (100min).</p>
                 </div>
 
-                <div className="flex items-center justify-between rounded-xl border border-border bg-background p-3.5">
+                <div className="flex items-center justify-between rounded-lg border border-border bg-background p-3.5">
                   <div className="pr-4">
                     <p className="text-sm font-semibold text-foreground">Bloquear conflitos de horário</p>
                     <p className="text-xs text-muted-foreground">
@@ -136,7 +136,7 @@ function ConfiguracoesPage() {
                   />
                 </div>
 
-                <div className="flex items-center justify-between rounded-xl border border-border bg-background p-3.5">
+                <div className="flex items-center justify-between rounded-lg border border-border bg-background p-3.5">
                   <div className="pr-4">
                     <p className="text-sm font-semibold text-foreground">Aprovação obrigatória pela coordenação</p>
                     <p className="text-xs text-muted-foreground">
@@ -152,7 +152,7 @@ function ConfiguracoesPage() {
             </Card>
 
             {/* Access & Password Rules */}
-            <Card className="border-border bg-card shadow-sm">
+            <Card className="border-border bg-card">
               <CardHeader className="pb-4">
                 <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
                   <ShieldCheck className="h-5 w-5 text-primary" />
@@ -160,7 +160,7 @@ function ConfiguracoesPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between rounded-xl border border-border bg-background p-3.5">
+                <div className="flex items-center justify-between rounded-lg border border-border bg-background p-3.5">
                   <div className="pr-4">
                     <p className="text-sm font-semibold text-foreground">Senha temporária pela data de nascimento</p>
                     <p className="text-xs text-muted-foreground">
@@ -173,7 +173,7 @@ function ConfiguracoesPage() {
                   />
                 </div>
 
-                <div className="flex items-center justify-between rounded-xl border border-border bg-background p-3.5">
+                <div className="flex items-center justify-between rounded-lg border border-border bg-background p-3.5">
                   <div className="pr-4">
                     <p className="text-sm font-semibold text-foreground">Troca obrigatória no primeiro login</p>
                     <p className="text-xs text-muted-foreground">
@@ -212,7 +212,7 @@ function ConfiguracoesPage() {
               <RotateCcw className="h-4 w-4" /> Restaurar Padrões
             </Button>
 
-            <Button type="submit" className="gap-1.5 shadow-sm">
+            <Button type="submit" className="gap-1.5">
               <Save className="h-4 w-4" /> Salvar Configurações
             </Button>
           </div>

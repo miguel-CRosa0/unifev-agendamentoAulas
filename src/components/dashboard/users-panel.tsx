@@ -196,7 +196,7 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
         </DialogContent>
       </Dialog>
 
-      <Card className="border-border bg-card shadow-sm">
+      <Card className="border-border bg-card">
         <CardHeader className="pb-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -270,7 +270,7 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
               return (
                 <div
                   key={u.id}
-                  className={`rounded-xl border p-4 transition-colors ${
+                  className={`rounded-lg border p-4 transition-colors ${
                     isCurrent
                       ? "border-primary/50 bg-primary/[0.03]"
                       : "border-border bg-background hover:bg-accent/30"

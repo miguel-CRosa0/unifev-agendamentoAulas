@@ -238,7 +238,7 @@ function RelatoriosPage() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card className="border-border bg-card shadow-sm">
+          <Card className="border-border bg-card">
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -253,7 +253,7 @@ function RelatoriosPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-border bg-card shadow-sm">
+          <Card className="border-border bg-card">
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -270,7 +270,7 @@ function RelatoriosPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-border bg-card shadow-sm">
+          <Card className="border-border bg-card">
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -288,7 +288,7 @@ function RelatoriosPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-border bg-card shadow-sm">
+          <Card className="border-border bg-card">
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -304,7 +304,7 @@ function RelatoriosPage() {
           </Card>
         </div>
 
-        <Card className="border-border bg-card shadow-sm">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold text-foreground">
               <FileBarChart className="h-5 w-5 text-primary" />
@@ -316,7 +316,7 @@ function RelatoriosPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             {relatorio.porSala.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-border py-10 text-center text-sm text-muted-foreground">
+              <div className="rounded-lg border border-dashed border-border py-10 text-center text-sm text-muted-foreground">
                 Nenhuma sala cadastrada.
               </div>
             ) : (

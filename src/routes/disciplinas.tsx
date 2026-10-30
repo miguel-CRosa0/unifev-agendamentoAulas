@@ -98,7 +98,7 @@ function DisciplinasPage() {
                 setEditingDisc(null);
                 setDialogOpen(true);
               }}
-              className="gap-1.5 shadow-sm"
+              className="gap-1.5"
             >
               <Plus className="h-4 w-4" /> Nova disciplina
             </Button>
@@ -155,7 +155,7 @@ function DisciplinasPage() {
 
         {/* Cards Grid */}
         {filtered.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border py-12 text-center bg-card">
+          <div className="rounded-lg border border-dashed border-border py-12 text-center bg-card">
             <BookOpen className="mx-auto h-8 w-8 text-muted-foreground/60" />
             <p className="mt-2 text-sm font-medium text-foreground">Nenhuma disciplina encontrada</p>
             <p className="text-xs text-muted-foreground mt-0.5">
@@ -167,7 +167,7 @@ function DisciplinasPage() {
             {filtered.map((d) => (
               <Card
                 key={d.id}
-                className="flex flex-col justify-between border-border bg-card shadow-sm transition-all hover:border-primary/40 hover:shadow-sm"
+                className="flex flex-col justify-between border-border bg-card transition-all hover:border-primary/40 hover:shadow-sm"
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-2">

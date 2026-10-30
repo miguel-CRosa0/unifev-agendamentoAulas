@@ -36,7 +36,7 @@ function UsuariosPage() {
               {usuarios.length} usuários registrados no sistema com controle de acesso baseado em papéis (RBAC).
             </p>
           </div>
-          <Button asChild className="gap-1.5 shadow-sm">
+          <Button asChild className="gap-1.5">
             <Link to="/cadastro">
               <UserPlus className="h-4 w-4" /> Cadastrar novo usuário
             </Link>

@@ -38,7 +38,7 @@ function AgendamentosPage() {
               {agendamentos.length} reservas registradas · <span className="text-emerald-600 dark:text-emerald-400 font-medium">{confirmados} confirmadas</span> · {pendentes} pendentes · {cancelados} canceladas
             </p>
           </div>
-          <Button onClick={() => openNovoAgendamento()} className="gap-1.5 shadow-sm">
+          <Button onClick={() => openNovoAgendamento()} className="gap-1.5">
             <CalendarPlus className="h-4 w-4" /> Novo agendamento
           </Button>
         </div>

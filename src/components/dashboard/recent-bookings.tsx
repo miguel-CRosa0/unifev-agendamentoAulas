@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  CalendarDays,
   CalendarPlus,
   CheckCircle2,
   Clock,
@@ -38,11 +37,11 @@ import type { Agendamento } from "./data";
 function statusColor(status: Agendamento["status"]) {
   switch (status) {
     case "confirmado":
-      return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-transparent";
+      return "bg-emerald-50 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400 border-transparent";
     case "pendente":
-      return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-transparent";
+      return "bg-amber-50 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border-transparent";
     case "cancelado":
-      return "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 border-transparent";
+      return "bg-rose-50 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400 border-transparent";
     default:
       return "";
   }
@@ -107,23 +106,18 @@ export function RecentBookings({ agendamentos }: { agendamentos: Agendamento[] }
         onOpenChange={setDetailsOpen}
       />
 
-      <Card className="border-border bg-card shadow-sm">
+      <Card className="border-border bg-card">
         <CardHeader className="pb-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <CalendarDays className="h-5 w-5 text-primary" />
-                Agendamentos Acadêmicos
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Consulte horários, aprove solicitações de salas e filtre por status ou disciplina
-              </p>
+              <CardTitle className="text-base font-semibold text-foreground">Agendamentos</CardTitle>
+              <p className="text-[13px] text-muted-foreground">Horários, solicitações e status por disciplina.</p>
             </div>
             <div className="flex items-center gap-2">
               <Button
                 onClick={() => openNovoAgendamento()}
                 size="sm"
-                className="gap-1.5 shadow-sm"
+                className="gap-1.5"
               >
                 <CalendarPlus className="h-4 w-4" /> Novo agendamento
               </Button>
