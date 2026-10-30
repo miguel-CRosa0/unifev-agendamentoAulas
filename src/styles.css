@@ -154,3 +154,57 @@
     text-wrap: balance;
   }
 }
+
+/* Animações: curtas e discretas; desligadas para quem pede menos movimento */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@layer utilities {
+  .animate-rise {
+    animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 70ms);
+  }
+
+  .animate-pop {
+    animation: pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 40ms);
+  }
+
+  /* Blocos da página entram em sequência: <main class="page-stagger"><div>…blocos…</div></main> */
+  .page-stagger > * > * {
+    animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .page-stagger > * > :nth-child(2) { animation-delay: 70ms; }
+  .page-stagger > * > :nth-child(3) { animation-delay: 140ms; }
+  .page-stagger > * > :nth-child(4) { animation-delay: 210ms; }
+  .page-stagger > * > :nth-child(n + 5) { animation-delay: 280ms; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

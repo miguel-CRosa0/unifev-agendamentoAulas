@@ -151,7 +151,7 @@ export function GradeSalas({ agendamentos }: { agendamentos: Agendamento[] }) {
                             style={{ top: i * ALTURA_HORA }}
                           />
                         ))}
-                        {itens.map((a) => {
+                        {itens.map((a, idx) => {
                           const { faixa, total } = faixas.get(a.id)!;
                           const topo = ((emMinutos(a.horaInicio) - horaInicial * 60) / 60) * ALTURA_HORA;
                           const alt = Math.max(((emMinutos(a.horaFim) - emMinutos(a.horaInicio)) / 60) * ALTURA_HORA, 24);
@@ -160,13 +160,16 @@ export function GradeSalas({ agendamentos }: { agendamentos: Agendamento[] }) {
                               key={a.id}
                               type="button"
                               onClick={() => setAberto(a)}
-                              className={`absolute overflow-hidden rounded-md border px-2 py-1 text-left text-xs transition-colors hover:brightness-95 ${estiloStatus[a.status]}`}
-                              style={{
-                                top: topo + 1,
-                                height: alt - 2,
-                                left: `calc(${(faixa / total) * 100}% + 2px)`,
-                                width: `calc(${100 / total}% - 4px)`,
-                              }}
+                              className={`animate-pop absolute overflow-hidden rounded-md border px-2 py-1 text-left text-xs transition-colors hover:brightness-95 ${estiloStatus[a.status]}`}
+                              style={
+                                {
+                                  "--i": idx,
+                                  top: topo + 1,
+                                  height: alt - 2,
+                                  left: `calc(${(faixa / total) * 100}% + 2px)`,
+                                  width: `calc(${100 / total}% - 4px)`,
+                                } as React.CSSProperties
+                              }
                               title={`${a.disciplina} · ${a.horaInicio}–${a.horaFim}`}
                             >
                               <span className="block truncate font-medium">{a.disciplina}</span>

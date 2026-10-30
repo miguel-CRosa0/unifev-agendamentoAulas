@@ -75,10 +75,10 @@ function LoginPage() {
         </div>
 
         <div className="max-w-md">
-          <h2 className="text-4xl font-semibold leading-[1.1] tracking-tight">
+          <h2 className="animate-rise text-4xl font-semibold leading-[1.1] tracking-tight">
             Cada aula no seu horário. Cada turma na sua sala.
           </h2>
-          <p className="mt-5 text-base leading-relaxed text-white/70">
+          <p style={{ "--i": 2 } as React.CSSProperties} className="animate-rise mt-5 text-base leading-relaxed text-white/70">
             Reserve salas e laboratórios, acompanhe conflitos de horário e veja a ocupação do campus em um só lugar.
           </p>
         </div>
@@ -96,7 +96,7 @@ function LoginPage() {
       </aside>
 
       <main className="flex items-center justify-center px-6 py-10">
-        <div className="w-full max-w-[22rem]">
+        <div className="animate-rise w-full max-w-[22rem]">
           <div className="mb-10 text-foreground lg:hidden">
             <Marca />
           </div>

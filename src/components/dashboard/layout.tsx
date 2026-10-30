@@ -227,7 +227,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-[1280px] flex-1 p-4 sm:p-6 lg:px-10 lg:py-10">{children}</main>
+        <main className="page-stagger mx-auto w-full max-w-[1280px] flex-1 p-4 sm:p-6 lg:px-10 lg:py-10">{children}</main>
       </div>
     </div>
   );
