@@ -26,9 +26,9 @@ export const Route = createFileRoute("/cadastro")({
   component: CadastroPage,
   head: () => ({
     meta: [
-      { title: "Cadastro de usuários — SalaFácil" },
+      { title: "Cadastro de usuários — Agendamento de Aulas" },
       { name: "description", content: "Área do administrador para cadastrar professores e coordenadores com senha temporária." },
-      { property: "og:title", content: "Cadastro de usuários — SalaFácil" },
+      { property: "og:title", content: "Cadastro de usuários — Agendamento de Aulas" },
       { property: "og:description", content: "Cadastro de usuários com RA, dados pessoais e senha temporária." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

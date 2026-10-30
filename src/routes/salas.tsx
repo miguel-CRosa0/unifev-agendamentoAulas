@@ -8,9 +8,9 @@ export const Route = createFileRoute("/salas")({
   component: SalasPage,
   head: () => ({
     meta: [
-      { title: "Salas e laboratórios — SalaFácil" },
+      { title: "Salas e laboratórios — Agendamento de Aulas" },
       { name: "description", content: "Cadastro de salas e laboratórios com capacidade, localização, recursos e status de uso." },
-      { property: "og:title", content: "Salas e laboratórios — SalaFácil" },
+      { property: "og:title", content: "Salas e laboratórios — Agendamento de Aulas" },
       { property: "og:description", content: "Recursos e disponibilidade de cada sala e laboratório." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

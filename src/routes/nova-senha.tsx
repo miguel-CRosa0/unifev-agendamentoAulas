@@ -17,9 +17,9 @@ export const Route = createFileRoute("/nova-senha")({
   component: NovaSenhaPage,
   head: () => ({
     meta: [
-      { title: "Definir nova senha — SalaFácil" },
+      { title: "Definir nova senha — Agendamento de Aulas" },
       { name: "description", content: "Primeiro acesso: troque a senha temporária por uma senha definitiva." },
-      { property: "og:title", content: "Definir nova senha — SalaFácil" },
+      { property: "og:title", content: "Definir nova senha — Agendamento de Aulas" },
       { property: "og:description", content: "Troca obrigatória da senha temporária no primeiro acesso." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -8,9 +8,9 @@ export const Route = createFileRoute("/notificacoes")({
   component: NotificacoesPage,
   head: () => ({
     meta: [
-      { title: "Notificações — SalaFácil" },
+      { title: "Notificações — Agendamento de Aulas" },
       { name: "description", content: "Avisos de conflitos de horário, confirmações e cancelamentos de agendamentos." },
-      { property: "og:title", content: "Notificações — SalaFácil" },
+      { property: "og:title", content: "Notificações — Agendamento de Aulas" },
       { property: "og:description", content: "Alertas do sistema de agendamento de salas." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

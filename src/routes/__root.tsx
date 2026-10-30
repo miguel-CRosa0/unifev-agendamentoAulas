@@ -98,10 +98,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "SalaFácil — Agendamento de Salas de Aula" },
+      { title: "Sistema de Agendamento de Aulas" },
       { name: "description", content: "Sistema de gestão e controle de agendamento de salas de aula e laboratórios." },
-      { name: "author", content: "SalaFácil" },
-      { property: "og:title", content: "SalaFácil — Agendamento de Salas de Aula" },
+      { name: "author", content: "Unifev" },
+      { property: "og:title", content: "Sistema de Agendamento de Aulas" },
       { property: "og:description", content: "Sistema de gestão e controle de agendamento de salas de aula e laboratórios." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

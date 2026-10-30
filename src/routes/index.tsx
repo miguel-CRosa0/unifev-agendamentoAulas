@@ -10,13 +10,13 @@ export const Route = createFileRoute("/")({
   component: DashboardPage,
   head: () => ({
     meta: [
-      { title: "Dashboard — SalaFácil Gestão de Salas" },
+      { title: "Dashboard — Agendamento de Aulas" },
       {
         name: "description",
         content:
           "Painel de gestão e controle de agendamento de salas de aula e laboratórios: calendário de agendamentos e indicadores.",
       },
-      { property: "og:title", content: "Dashboard — SalaFácil Gestão de Salas" },
+      { property: "og:title", content: "Dashboard — Agendamento de Aulas" },
       {
         property: "og:description",
         content: "Gestão de salas, laboratórios, turmas, disciplinas e agendamentos acadêmicos.",

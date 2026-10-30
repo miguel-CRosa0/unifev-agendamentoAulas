@@ -21,9 +21,9 @@ export const Route = createFileRoute("/relatorios")({
   component: RelatoriosPage,
   head: () => ({
     meta: [
-      { title: "Relatórios de uso — SalaFácil" },
+      { title: "Relatórios de uso — Agendamento de Aulas" },
       { name: "description", content: "Relatórios de ocupação de salas e laboratórios por período, com horas de uso e exportação." },
-      { property: "og:title", content: "Relatórios de uso — SalaFácil" },
+      { property: "og:title", content: "Relatórios de uso — Agendamento de Aulas" },
       { property: "og:description", content: "Taxa de ocupação e horas de uso das salas por período." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

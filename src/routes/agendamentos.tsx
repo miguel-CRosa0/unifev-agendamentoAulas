@@ -12,9 +12,9 @@ export const Route = createFileRoute("/agendamentos")({
   component: AgendamentosPage,
   head: () => ({
     meta: [
-      { title: "Agendamentos — SalaFácil" },
+      { title: "Agendamentos — Agendamento de Aulas" },
       { name: "description", content: "Consulte, confirme e edite agendamentos de salas e laboratórios por data, turma e professor." },
-      { property: "og:title", content: "Agendamentos — SalaFácil" },
+      { property: "og:title", content: "Agendamentos — Agendamento de Aulas" },
       { property: "og:description", content: "Lista e calendário de agendamentos acadêmicos." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

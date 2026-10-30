@@ -58,7 +58,7 @@ export function Marca({ escura = false }: { escura?: boolean }) {
         <rect x="2" y="13" width="9" height="9" rx="1.5" className="fill-current opacity-25" />
         <rect x="13" y="13" width="9" height="9" rx="1.5" className="fill-current opacity-60" />
       </svg>
-      <span className="text-lg font-semibold tracking-tight">SalaFácil</span>
+      <span className="text-base font-semibold leading-tight tracking-tight">Agendamento de Aulas</span>
     </div>
   );
 }

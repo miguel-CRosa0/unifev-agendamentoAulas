@@ -13,9 +13,9 @@ export const Route = createFileRoute("/usuarios")({
   component: UsuariosPage,
   head: () => ({
     meta: [
-      { title: "Usuários e acessos — SalaFácil" },
+      { title: "Usuários e acessos — Agendamento de Aulas" },
       { name: "description", content: "Gerencie perfis de administrador, coordenador e professor e seus níveis de acesso." },
-      { property: "og:title", content: "Usuários e acessos — SalaFácil" },
+      { property: "og:title", content: "Usuários e acessos — Agendamento de Aulas" },
       { property: "og:description", content: "Perfis e permissões dos usuários do sistema." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

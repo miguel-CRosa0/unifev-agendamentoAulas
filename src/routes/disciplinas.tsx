@@ -32,9 +32,9 @@ export const Route = createFileRoute("/disciplinas")({
   component: DisciplinasPage,
   head: () => ({
     meta: [
-      { title: "Disciplinas e turmas — SalaFácil" },
+      { title: "Disciplinas e turmas — Agendamento de Aulas" },
       { name: "description", content: "Disciplinas, turmas e professores responsáveis vinculados aos agendamentos." },
-      { property: "og:title", content: "Disciplinas e turmas — SalaFácil" },
+      { property: "og:title", content: "Disciplinas e turmas — Agendamento de Aulas" },
       { property: "og:description", content: "Vínculo entre disciplinas, turmas e professores." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

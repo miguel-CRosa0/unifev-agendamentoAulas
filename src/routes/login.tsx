@@ -15,9 +15,9 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
   head: () => ({
     meta: [
-      { title: "Entrar — SalaFácil" },
-      { name: "description", content: "Acesse o SalaFácil com seu RA (ou e-mail) e senha para agendar salas e laboratórios." },
-      { property: "og:title", content: "Entrar — SalaFácil" },
+      { title: "Entrar — Agendamento de Aulas" },
+      { name: "description", content: "Acesse o sistema com seu RA (ou e-mail) e senha para agendar salas e laboratórios." },
+      { property: "og:title", content: "Entrar — Agendamento de Aulas" },
       { property: "og:description", content: "Acesso ao sistema de agendamento de salas e laboratórios." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

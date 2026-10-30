@@ -18,9 +18,9 @@ export const Route = createFileRoute("/configuracoes")({
   component: ConfiguracoesPage,
   head: () => ({
     meta: [
-      { title: "Configurações — SalaFácil" },
+      { title: "Configurações — Agendamento de Aulas" },
       { name: "description", content: "Preferências da instituição, regras de agendamento e política de senhas do sistema." },
-      { property: "og:title", content: "Configurações — SalaFácil" },
+      { property: "og:title", content: "Configurações — Agendamento de Aulas" },
       { property: "og:description", content: "Regras de agendamento e segurança de acesso." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
