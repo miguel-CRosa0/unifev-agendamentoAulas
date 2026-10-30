@@ -49,16 +49,17 @@ const navItems = [
   { icon: Settings, label: "Configurações", href: "/configuracoes", adminOnly: true },
 ];
 
-export function Marca({ escura = false }: { escura?: boolean }) {
+export function Marca({ invertida = false }: { invertida?: boolean }) {
   return (
-    <div className="flex items-center gap-2.5">
-      <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden>
-        <rect x="2" y="2" width="9" height="9" rx="1.5" className={escura ? "fill-sidebar-primary" : "fill-primary"} />
-        <rect x="13" y="2" width="9" height="9" rx="1.5" className="fill-current opacity-25" />
-        <rect x="2" y="13" width="9" height="9" rx="1.5" className="fill-current opacity-25" />
-        <rect x="13" y="13" width="9" height="9" rx="1.5" className="fill-current opacity-60" />
-      </svg>
-      <span className="text-base font-semibold leading-tight tracking-tight">Agendamento de Aulas</span>
+    <div className="flex flex-col gap-1">
+      <img
+        src="/logo-unifev.svg"
+        alt="Unifev"
+        className={`h-7 w-auto self-start ${invertida ? "brightness-0 invert" : ""}`}
+      />
+      <span className={`text-xs leading-none ${invertida ? "text-white/60" : "text-muted-foreground"}`}>
+        Agendamento de Aulas
+      </span>
     </div>
   );
 }
@@ -124,7 +125,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       {/* Sidebar desktop */}
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground lg:flex">
         <div className="flex h-16 items-center px-6 text-sidebar-accent-foreground">
-          <Marca escura />
+          <Marca />
         </div>
 
         <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-3 py-3">
@@ -181,7 +182,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             </SheetTrigger>
             <SheetContent side="left" className="w-64 bg-sidebar p-0 text-sidebar-foreground">
               <div className="flex h-16 items-center px-6 text-sidebar-accent-foreground">
-                <Marca escura />
+                <Marca />
               </div>
               <nav className="flex flex-col gap-0.5 px-3 py-3">
                 {itensMenu.map((item) => (

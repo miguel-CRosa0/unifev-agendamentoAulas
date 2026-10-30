@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader2, ShieldAlert } from "lucide-react";
+import { Eye, EyeOff, Loader2, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 
 import { authClient } from "@/lib/auth-client";
@@ -30,6 +30,7 @@ function LoginPage() {
   const queryClient = useQueryClient();
   const [login, setLogin] = useState("");
   const [senha, setSenha] = useState("");
+  const [verSenha, setVerSenha] = useState(false);
   const [erro, setErro] = useState("");
   const [entrando, setEntrando] = useState(false);
 
@@ -70,9 +71,7 @@ function LoginPage() {
   return (
     <div className="grid min-h-screen lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
       <aside className="relative hidden flex-col justify-between overflow-hidden bg-[oklch(0.27_0.1_260)] p-12 text-white lg:flex">
-        <div className="[&_rect:first-child]:fill-sky-300">
-          <Marca escura />
-        </div>
+        <Marca invertida />
 
         <div className="max-w-md">
           <h2 className="animate-rise text-4xl font-semibold leading-[1.1] tracking-tight">
@@ -118,14 +117,25 @@ function LoginPage() {
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="senha">Senha</Label>
-              <Input
-                id="senha"
-                type="password"
-                autoComplete="current-password"
-                className="h-10"
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-              />
+              <div className="relative">
+                <Input
+                  id="senha"
+                  type={verSenha ? "text" : "password"}
+                  autoComplete="current-password"
+                  className="h-10 pr-11"
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setVerSenha((v) => !v)}
+                  aria-label={verSenha ? "Ocultar senha" : "Mostrar senha"}
+                  aria-pressed={verSenha}
+                  className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-lg text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+                >
+                  {verSenha ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
 
             {erro && (
