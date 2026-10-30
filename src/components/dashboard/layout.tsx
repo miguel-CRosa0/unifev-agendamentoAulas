@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useRouter, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -106,20 +106,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
 
   const { currentUser, openNovoAgendamento, unreadNotificacoesCount, isAdmin } = useStore();
-  // Atalho "N" abre o novo agendamento (fora de campos de texto e diálogos)
-  useEffect(() => {
-    const aoTeclar = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() !== "n" || e.metaKey || e.ctrlKey || e.altKey) return;
-      const alvo = e.target as HTMLElement | null;
-      if (alvo?.closest("input, textarea, select, [contenteditable='true']")) return;
-      if (document.querySelector("[role='dialog']")) return;
-      e.preventDefault();
-      openNovoAgendamento();
-    };
-    document.addEventListener("keydown", aoTeclar);
-    return () => document.removeEventListener("keydown", aoTeclar);
-  }, [openNovoAgendamento]);
-
   const itensMenu = navItems.filter((item) => !item.adminOnly || isAdmin);
 
   const handleLogout = async () => {
