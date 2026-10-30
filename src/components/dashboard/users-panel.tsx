@@ -196,7 +196,7 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
         </DialogContent>
       </Dialog>
 
-      <Card className="border-border bg-card shadow-sm">
+      <Card className="border-border bg-card">
         <CardHeader className="pb-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -270,7 +270,7 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
               return (
                 <div
                   key={u.id}
-                  className={`rounded-xl border p-4 transition-colors ${
+                  className={`rounded-lg border p-4 transition-colors ${
                     isCurrent
                       ? "border-primary/50 bg-primary/[0.03]"
                       : "border-border bg-background hover:bg-accent/30"
@@ -281,7 +281,7 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
                       <div className="flex items-center gap-2">
                         <p className="truncate text-sm font-semibold text-foreground">{u.nome}</p>
                         {isCurrent && (
-                          <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20">
+                          <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
                             Sua Sessão Ativa
                           </Badge>
                         )}
@@ -337,7 +337,7 @@ export function UsersPanel({ usuarios }: { usuarios: Usuario[] }) {
                     {u.nivelAcesso.map((f) => (
                         <span
                           key={f}
-                          className="rounded-md bg-secondary px-2 py-0.5 text-[10px] font-medium text-secondary-foreground"
+                          className="rounded-md bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground"
                         >
                           {f}
                         </span>

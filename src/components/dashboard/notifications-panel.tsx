@@ -62,7 +62,7 @@ export function NotificationsPanel({ notificacoes }: { notificacoes: Notificacao
   };
 
   return (
-    <Card className="border-border bg-card shadow-sm">
+    <Card className="border-border bg-card">
       <CardHeader className="pb-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -136,7 +136,7 @@ export function NotificationsPanel({ notificacoes }: { notificacoes: Notificacao
 
       <CardContent className="space-y-2.5">
         {filtered.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border py-12 text-center text-sm text-muted-foreground">
+          <div className="rounded-lg border border-dashed border-border py-12 text-center text-sm text-muted-foreground">
             <BellRing className="mx-auto h-8 w-8 text-muted-foreground/50 mb-2" />
             Nenhuma notificação encontrada nesta categoria.
           </div>
@@ -144,12 +144,12 @@ export function NotificationsPanel({ notificacoes }: { notificacoes: Notificacao
           filtered.map((n) => (
             <div
               key={n.id}
-              className="group relative flex items-start gap-3 rounded-xl border border-border bg-background p-3.5 transition-colors hover:bg-accent/30"
+              className="group relative flex items-start gap-3 rounded-lg border border-border bg-background p-3.5 transition-colors hover:bg-accent/30"
             >
               <div className="mt-0.5">{icon(n.tipo)}</div>
               <div className="min-w-0 flex-1 pr-6">
                 <div className="flex items-center gap-2 mb-1">
-                  <Badge variant="outline" className={`capitalize text-[10px] ${tipoBadge(n.tipo)}`}>
+                  <Badge variant="outline" className={`capitalize text-xs ${tipoBadge(n.tipo)}`}>
                     {n.tipo}
                   </Badge>
                   <span className="text-xs text-muted-foreground">{n.dataHora}</span>

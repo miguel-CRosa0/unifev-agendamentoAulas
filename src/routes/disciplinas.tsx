@@ -87,7 +87,7 @@ function DisciplinasPage() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Disciplinas e Turmas</h1>
+            <h1 className="text-3xl font-bold text-foreground">Disciplinas e Turmas</h1>
             <p className="text-sm text-muted-foreground">
               {disciplinas.length} disciplinas cadastradas · Gerenciamento acadêmico e alocação de salas
             </p>
@@ -98,7 +98,7 @@ function DisciplinasPage() {
                 setEditingDisc(null);
                 setDialogOpen(true);
               }}
-              className="gap-1.5 shadow-sm"
+              className="gap-1.5"
             >
               <Plus className="h-4 w-4" /> Nova disciplina
             </Button>
@@ -155,7 +155,7 @@ function DisciplinasPage() {
 
         {/* Cards Grid */}
         {filtered.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border py-12 text-center bg-card">
+          <div className="rounded-lg border border-dashed border-border py-12 text-center bg-card">
             <BookOpen className="mx-auto h-8 w-8 text-muted-foreground/60" />
             <p className="mt-2 text-sm font-medium text-foreground">Nenhuma disciplina encontrada</p>
             <p className="text-xs text-muted-foreground mt-0.5">
@@ -167,7 +167,7 @@ function DisciplinasPage() {
             {filtered.map((d) => (
               <Card
                 key={d.id}
-                className="flex flex-col justify-between border-border bg-card shadow-sm transition-all hover:border-primary/40 hover:shadow-sm"
+                className="flex flex-col justify-between border-border bg-card transition-all hover:border-primary/40 hover:shadow-sm"
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-2">
@@ -176,11 +176,11 @@ function DisciplinasPage() {
                         <Badge variant="outline" className="border-transparent bg-primary/10 text-primary font-bold text-xs">
                           {d.codigo}
                         </Badge>
-                        <Badge variant="secondary" className="text-[10px]">
+                        <Badge variant="secondary" className="text-xs">
                           {d.turno}
                         </Badge>
                         {d.semestre && (
-                          <span className="text-[11px] text-muted-foreground">
+                          <span className="text-xs text-muted-foreground">
                             {d.semestre}
                           </span>
                         )}
